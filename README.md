@@ -71,7 +71,7 @@ npm installs packages in the folder "node_modules" withing the project folder.
      * "cd" to project folder
      * npm install
 
-## Running the NOLF show server
+## Running the Gridzilla show server
 
 1. Optional - Update the software from github.com
     * Open a terminal or command line window
