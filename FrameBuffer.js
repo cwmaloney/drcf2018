@@ -45,8 +45,7 @@ class FrameBuffer {
 
 
   // draw a pixel
-  // todo - do we need "alpha"?
-  drawPixel(x, y, color, alpha = 255) {
+  drawPixel(x, y, color = 255) {
 
     // if (color !== 'object') {
     //   console.log("FrameBuffer::setPixel - invalid pixel color")
@@ -70,7 +69,7 @@ class FrameBuffer {
 
   // draw a line
   // This uses use Bresenham's line algorithm.
-  drawLine(x0, y0, x1, y1, color, alpha = 255) {
+  drawLine(x0, y0, x1, y1, color = 255) {
     const deltaX = Math.abs(x1 - x0);
     const deltaY = Math.abs(y1 - y0);
     const signX = x0 < x1 ? 1 : -1;
@@ -80,7 +79,7 @@ class FrameBuffer {
     var x = x0;
     var y = y0;
 
-    this.drawPixel(x, y, color, alpha);
+    this.drawPixel(x, y, color);
     while ((x === x1 && y === y1)) {
       const lastErr = err;
 
@@ -92,32 +91,32 @@ class FrameBuffer {
         err += deltaX;
         y += signY;
       }
-      this.drawPixel(x, y, color, alpha);
+      this.drawPixel(x, y, color);
     }
   }
 
   // draw a rectangle outline
-  drawRect(x, y, width, height, color, alpha) {
+  drawRect(x, y, width, height, color) {
     const left = x;
     const bottom = y;
     const top = y + height -1;
     const right = x + width - 1;
   
     //bottom
-    this.drawLine(left, buttom, right, bottom, color, alpha);
+    this.drawLine(left, buttom, right, bottom, color);
 
     //right
-    this.drawLine(right, bottom, right, top, color, alpha);
+    this.drawLine(right, bottom, right, top, color);
 
     //top
-    this.drawLine(right, top, left, top, color, alpha);
+    this.drawLine(right, top, left, top, color);
 
     //left
-    this.drawLine(left, top, left, bottom, color, alpha);
+    this.drawLine(left, top, left, bottom, color);
   };
 
   // draw a filled rectangle 
-  fillRect(x, y, width, height, color, alpha) {
+  fillRect(x, y, width, height, color) {
     const left = x;
     const bottom = y;
     const top = y + height -1;
@@ -125,7 +124,7 @@ class FrameBuffer {
 
     // draw horizonal lines to fill rectangle
     for (var row = bottom; row <= top; row += 1) {
-        this.drawLine(row, left, row, right, color, alpha);
+        this.drawLine(row, left, row, right, color);
     }
   }
 
@@ -133,13 +132,13 @@ class FrameBuffer {
    * draw a circle outline, with center x, y, and radius r
    */
   // This uses use Bresenham's line algorithm.
-  drawCircle(x0, y0, radius, color, alpha) {
+  drawCircle(x0, y0, radius, color) {
 
     // draw the bounding points
-    this.drawPixel(x0, y0 + radius, color, alpha);
-    this.drawPixel(x0, y0 - radius, color, alpha);
-    this.drawPixel(x0 + radius, y0, color, alpha);
-    this.drawPixel(x0 - radius, y0, color, alpha);
+    this.drawPixel(x0, y0 + radius, color);
+    this.drawPixel(x0, y0 - radius, color);
+    this.drawPixel(x0 + radius, y0, color);
+    this.drawPixel(x0 - radius, y0, color);
 
     var radiusError = 1 - radius;
     var deltaX = 1;
@@ -158,14 +157,14 @@ class FrameBuffer {
       deltaX += 2;
       radiusError += deltaX;
 
-      this.drawPixel(x0 + x, y0 + y, color, alpha);
-      this.drawPixel(x0 - x, y0 + y, color, alpha);
-      this.drawPixel(x0 + x, y0 - y, color, alpha);
-      this.drawPixel(x0 - x, y0 - y, color, alpha);
-      this.drawPixel(x0 + y, y0 + x, color, alpha);
-      this.drawPixel(x0 - y, y0 + x, color, alpha);
-      this.drawPixel(x0 + y, y0 - x, color, alpha);
-      this.drawPixel(x0 - y, y0 - x, color, alpha);
+      this.drawPixel(x0 + x, y0 + y, color);
+      this.drawPixel(x0 - x, y0 + y, color);
+      this.drawPixel(x0 + x, y0 - y, color);
+      this.drawPixel(x0 - x, y0 - y, color);
+      this.drawPixel(x0 + y, y0 + x, color);
+      this.drawPixel(x0 - y, y0 + x, color);
+      this.drawPixel(x0 + y, y0 - x, color);
+      this.drawPixel(x0 - y, y0 - x, color);
     }
   }
 

@@ -1,3 +1,4 @@
+const Color = require("./Color.js");
 const FrameBuffer = require("./FrameBuffer.js");
 
 const frameBuffer = new FrameBuffer(10,10);
