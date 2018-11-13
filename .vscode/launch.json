@@ -9,6 +9,21 @@
       "request": "launch",
       "name": "FrameBuffer Test",
       "program": "${workspaceFolder}/testFrameBuffer.js"
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+          "-u",
+          "tdd",
+          "--timeout",
+          "999999",
+          "--colors",
+          "${workspaceFolder}/test"
+      ],
+      "internalConsoleOptions": "openOnSessionStart"
+  }
   ]
 }
