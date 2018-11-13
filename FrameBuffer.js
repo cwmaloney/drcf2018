@@ -17,6 +17,23 @@ class FrameBuffer {
     this.inverted = false;
   }
 
+  getPixelIndex(x, y) {
+    return ((y * this.width) + x) * bytesPerPixel;
+  }
+
+  getPixel(x, y) {
+    // check pixel address
+    if (x > this.width || y > this.height) {
+      console.log("FrameBuffer::getPixel - invalid pixel address")
+      return;
+    }
+
+    const pixelStartIndex = this.getPixelIndex(x, y);
+    return new Color(this.buffer[pixelStartIndex],
+                     this.buffer[pixelStartIndex + 1],
+                     this.buffer[pixelStartIndex + 2]);
+  }
+
   clear() {
     this.buffer.fill(0x00);
   }
@@ -45,7 +62,7 @@ class FrameBuffer {
 
 
   // draw a pixel
-  drawPixel(x, y, color = 255) {
+  drawPixel(x, y, color) {
 
     // if (color !== 'object') {
     //   console.log("FrameBuffer::setPixel - invalid pixel color")
@@ -57,19 +74,19 @@ class FrameBuffer {
       return;
     }
 
-    const pixelStartIndex = y * this.width + x;
+    const pixelStartIndex = this.getPixelIndex(x, y);
     this.buffer[pixelStartIndex] = color.red;
     this.buffer[pixelStartIndex + 1] = color.green;
     this.buffer[pixelStartIndex + 2] = color.blue;
 
-    console.log("FrameBuffer::drawPixel(", x, y, ")", " r=", color.red, " g=", color.green, " b=", color.blue)
+    // console.log("FrameBuffer::drawPixel(", x, y, ")", " r=", color.red, " g=", color.green, " b=", color.blue)
   }
 
 
 
   // draw a line
   // This uses use Bresenham's line algorithm.
-  drawLine(x0, y0, x1, y1, color = 255) {
+  drawLine(x0, y0, x1, y1, color) {
     const deltaX = Math.abs(x1 - x0);
     const deltaY = Math.abs(y1 - y0);
     const signX = x0 < x1 ? 1 : -1;
@@ -80,7 +97,7 @@ class FrameBuffer {
     var y = y0;
 
     this.drawPixel(x, y, color);
-    while ((x === x1 && y === y1)) {
+    while (!(x === x1 && y === y1)) {
       const lastErr = err;
 
       if (lastErr > -deltaX) {
