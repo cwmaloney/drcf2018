@@ -31,7 +31,7 @@ const {
 
 const {
   systemPassword
-} = require('./secerts.js');
+} = require('./secrets.js');
 
 //////////////////////////////////////////////////////////////////////////////
 // Create an ArtNet interface object and configure the universes
