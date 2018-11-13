@@ -11,7 +11,7 @@ class Color {
   get r() { return this.red; };
   get g() { return this.green; };
   get b() { return this.blue; };
-  get b() { return this.alpha; };
+  get a() { return this.alpha; };
 }
 
 module.exports = Color;
