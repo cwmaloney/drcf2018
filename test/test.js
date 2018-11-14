@@ -1,41 +1,14 @@
 const assert = require('assert');
 const { GridzillaTransform } = require("../GridzillaTransform.js");
+const { Screen } = require("./Screen.js");
 
 //run with: >npm test or IDE run config 
+
+// universeMap is the mapping from x,y coordinates to the universe channel for that position's red value.
+// add one for the green value channel position and two for the blue value
 var universeMap;
 
-
 const controllerAddresses = ["10.7.87.6","10.7.87.8","10.7.87.10"];
-
-class Screen{
-
-  constructor(xSize, ySize) {
-    this.data = Screen.prototype.createArray.call(this, xSize, ySize);
-    //this.data = createArray(xSize, ySize);
-  }
-
-  //Returns a 3 element array containing RGB values
-  getPixelColors(x, y)
-  {
-    return this.data[x][y];
-  }
-
-  setPixelColors(x, y, rgbArray)
-  {
-    this.data[x][y] = rgbArray;
-  }
-
-  createArray(xSize, ySize) {
-    var result = [];
-    for (var x = 0; x < xSize; ++x) {
-      result[x] = [];
-      for (var y = 0; y < ySize; ++y) {
-        result[x][y] = [0, 0, 0];
-      }
-    }
-    return result;
-  }
-}
 
 describe('GridzillaTransfomer tests', function () {
   before(function() {
@@ -47,7 +20,7 @@ describe('GridzillaTransfomer tests', function () {
     it('diagonal line', function () {
 
       var screen = new Screen(14,12);
-      diagonalLine(screen, 0, 0, 12);
+      screen.diagonalLine(0, 0, 12);
       
       //transform
       var transformer = new GridzillaTransform();
@@ -64,23 +37,23 @@ describe('GridzillaTransfomer tests', function () {
 
     it('diagonal line', function () {
       var screen = new Screen(168,36);
-      diagonalLine(screen, 0, 0, 36);
+      screen.diagonalLine(0, 0, 36);
       
       //transform
       var transformer = new GridzillaTransform();
       transformer.transformScreen(screen);
 
       //check the result
-      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 9).channelData, 0, 0, 12);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 5).channelData, 12, 0, 2);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 6).channelData, 0, 2, 10);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 2).channelData, 10, 0, 4);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 3).channelData, 0, 4, 8);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 8).channelData, 0, 0, 12);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 4).channelData, 12, 0, 2);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 5).channelData, 0, 2, 10);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 1).channelData, 10, 0, 4);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 2).channelData, 0, 4, 8);
     });
     
     it('horizontal line', function () {
       var screen = new Screen(168,36);
-      horizontalLine(screen, 17, 168);
+      screen.horizontalLine(17, 168);
       
       //transform
       var transformer = new GridzillaTransform();
@@ -106,17 +79,6 @@ describe('GridzillaTransfomer tests', function () {
 
 
 
-function diagonalLine(screen, x, y, size) {
-  for (var i = 0; i < size; ++i){
-    screen.setPixelColors(x + i, y + i, [255,255,255]);
-  }
-}
-
-function horizontalLine(screen, yPosition, length){
-  for (var i = 0; i < length; ++i){
-    screen.setPixelColors(i, yPosition, [255,255,255]);
-  }
-}
 
 function checkDiagonalLine(universeData, x, y, size){
   for (var i = 0; i < size; ++i){

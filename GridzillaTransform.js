@@ -29,13 +29,6 @@ const { ArtNet } = require("./ArtNet.js");
  *  [[3, 3, 3], [6, 6, 6], [9, 9, 9]]];
  */
 
- /**
- * To think about:
- * Are the gridzilla universes 0 or 1 based? Does it matter? I think it does since we assign a number to the universe we give to artnet
- *   And I think it's 1 based
- * If not, change the universeNumber in the constructor
- * Are the universes really incrementing across controllers?
- */
 
 const controllerAddresses = ["10.7.87.6","10.7.87.8","10.7.87.10"];
 const universeInfos = [];
