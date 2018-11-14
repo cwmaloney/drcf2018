@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Display Emulator</title>
+    <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/p5.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.dom.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.sound.js"></script>
+    <script type="text/javascript">
+
+var socket = io.connect('http://localhost:3000');
+
+function drawPixel(x, y, r, g, b) {
+  console.log("drawPixel: ", x, ",", y, "-", r, ",", g, ",", b);
+  fill(r, g, b);
+  rectangle(x, y, 2, 2);
+}
+
+var rows = 36;
+var columns = 168;
+
+function setup() {
+  createCanvas(columns*2, rows*2);
+  background(0);
+  socket.on('screen',
+     function(data) {
+      background(0);
+       for (var row = 0; row < rows; row++) {
+         for (var column = 0; column < colunns; column++) {
+           const pixelIndex = row*rows + column*columns;
+           drawPixel(row, column, data[pixelIndex], data[pixelIndex+1], data[pixelIndex+2]);
+         }
+       }
+    }
+  );
+}
+
+function draw() {
+}
+
+</script>
+
+    <style>
+      body {
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+  </body>
+</html>
