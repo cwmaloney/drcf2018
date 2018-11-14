@@ -4,6 +4,9 @@ const { GridzillaTransform } = require("../GridzillaTransform.js");
 //run with: >npm test or IDE run config 
 var universeMap;
 
+
+const controllerAddresses = ["10.7.87.6","10.7.87.8","10.7.87.10"];
+
 class Screen{
 
   constructor(xSize, ySize) {
@@ -31,7 +34,7 @@ class Screen{
       }
     }
     return result;
-  };
+  }
 }
 
 describe('GridzillaTransfomer tests', function () {
@@ -48,11 +51,11 @@ describe('GridzillaTransfomer tests', function () {
       
       //transform
       var transformer = new GridzillaTransform();
-      transformer.transformUniverse(screen, 0, 0, "", 1);
+      transformer.transformUniverse(screen, 0, 0, controllerAddresses[0], 1);
 
       //check the result
       //universe cells 1,23,27,45,53,67,79,89,105,111,131,133
-      var channelData = transformer.artnet.getUniverseInfo("", 1).channelData;
+      var channelData = transformer.artnet.getUniverseInfo(controllerAddresses[0], 1).channelData;
       checkDiagonalLine(channelData, 0, 0, 12);
     });
   });
@@ -68,11 +71,11 @@ describe('GridzillaTransfomer tests', function () {
       transformer.transformScreen(screen);
 
       //check the result
-      checkDiagonalLine(transformer.artnet.getUniverseInfo("", 9).channelData, 0, 0, 12);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo("", 5).channelData, 12, 0, 2);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo("", 6).channelData, 0, 2, 10);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo("", 2).channelData, 10, 0, 4);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo("", 3).channelData, 0, 4, 8);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 9).channelData, 0, 0, 12);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 5).channelData, 12, 0, 2);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 6).channelData, 0, 2, 10);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 2).channelData, 10, 0, 4);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 3).channelData, 0, 4, 8);
     });
     
     it('horizontal line', function () {
@@ -84,18 +87,19 @@ describe('GridzillaTransfomer tests', function () {
       transformer.transformScreen(screen);
 
       //check the result
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 5).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 6).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 7).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 8).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 17).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 18).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 19).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 20).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 29).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 30).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 31).channelData, 5, 14);
-      checkHorizontalLine(transformer.artnet.getUniverseInfo("", 32).channelData, 5, 14);
+      //TODO: renumber these to be 0 based universes
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 4).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 5).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 6).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 7).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[1], 4).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[1], 5).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[1], 6).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[1], 7).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[2], 4).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[2], 5).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[2], 6).channelData, 5, 14);
+      checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[2], 7).channelData, 5, 14);
     });
   });
 });
@@ -104,15 +108,15 @@ describe('GridzillaTransfomer tests', function () {
 
 function diagonalLine(screen, x, y, size) {
   for (var i = 0; i < size; ++i){
-    screen.setPixelColors(x + i, y + i, [i+1,i+1,i+1]);
+    screen.setPixelColors(x + i, y + i, [255,255,255]);
   }
-};
+}
 
 function horizontalLine(screen, yPosition, length){
   for (var i = 0; i < length; ++i){
-    screen.setPixelColors(i, yPosition, [i+1,i+1,i+1]);
+    screen.setPixelColors(i, yPosition, [255,255,255]);
   }
-};
+}
 
 function checkDiagonalLine(universeData, x, y, size){
   for (var i = 0; i < size; ++i){
@@ -130,7 +134,7 @@ function checkHorizontalLine(universeData, yPosition, length){
     assert.equal(universeData[universeOffset + 1] > 0, true);
     assert.equal(universeData[universeOffset + 2] > 0, true);
   }
-};
+}
 
 function getUniverseOffset(x, y)
 {
@@ -146,18 +150,18 @@ function initializeUniverseMap(){
     universeMap[x] = column;
     //up or down the height
     if (up) {
-        for (var y = 0; y < GridzillaTransform.universeHeight; ++y) {
+        for (let y = 0; y < GridzillaTransform.universeHeight; ++y) {
           column[y] = channelIndex;
           channelIndex += 3;
         }
         up = false;
     }
     else {
-        for (var y = GridzillaTransform.universeHeight - 1; y >= 0; --y) {
+        for (let y = GridzillaTransform.universeHeight - 1; y >= 0; --y) {
           column[y] = channelIndex;
           channelIndex += 3;
         }
         up = true;
     }
   }
-};
+}

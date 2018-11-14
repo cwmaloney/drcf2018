@@ -37,8 +37,7 @@ const { ArtNet } = require("./ArtNet.js");
  * Are the universes really incrementing across controllers?
  */
 
-//TODO: Set the controller addresses
-const controllerAddresses = ["","",""];
+const controllerAddresses = ["10.7.87.6","10.7.87.8","10.7.87.10"];
 const universeInfos = [];
 
 
@@ -48,18 +47,16 @@ class GridzillaTransform {
         this.artnet = new ArtNet();
         
         //configure universes
-        var universeNumber = 1;
         for (var controllerIndex = 0; controllerIndex < controllerAddresses.length; ++controllerIndex){
             for (var i = 0; i < GridzillaTransform.universesPerController; ++i){
             
 
                 let universeInfo = {
                     "address": controllerAddresses[controllerIndex],
-                    "universe": universeNumber++,
+                    "universe": i,
                     "sourcePort": 6454,
                     "sendOnlyChangeData": false,
-                    "sendSequenceNumbers": false,
-                    "refreshInterval": 1000
+                    "sendSequenceNumbers": false
                 };
                 
                 universeInfos[universeInfos.length] = universeInfo;
@@ -69,9 +66,10 @@ class GridzillaTransform {
     }
 
     transformScreen(screen){
-        var universeIndex = 1;
+        
         //transform all universes
         for (var controllerIndex = 0; controllerIndex < controllerAddresses.length; ++controllerIndex){
+          let universeIndex = 0;
             for (var rowIndex = GridzillaTransform.controllerHeight - 1; rowIndex >= 0; --rowIndex){
                 this.transformControllerRow(screen, 
                     GridzillaTransform.universeWidth * GridzillaTransform.controllerWidth * controllerIndex, 
@@ -83,8 +81,8 @@ class GridzillaTransform {
         }
      
         //send all universes
-        for (var controllerIndex = 0; controllerIndex < universeInfos.length; ++controllerIndex){
-            // this.artnet.send(universeInfos[controllerIndex].address, universeInfos[controllerIndex].universe);
+        for (var universeIndex = 0; universeIndex < universeInfos.length; ++universeIndex){
+             this.artnet.send(universeInfos[universeIndex].address, universeInfos[universeIndex].universe);
         }
     }
 

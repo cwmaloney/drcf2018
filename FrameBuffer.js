@@ -6,7 +6,7 @@ const Color = require("./Color.js");
 
 class FrameBuffer {
 
-  constructor(height, width) {
+  constructor(width, height) {
     this.height = height;
     this.width = width;
 
@@ -24,7 +24,7 @@ class FrameBuffer {
   getPixel(x, y) {
     // check pixel address
     if (x > this.width || y > this.height) {
-      console.log("FrameBuffer::getPixel - invalid pixel address")
+      console.log("FrameBuffer::getPixel - invalid pixel address ", + x + ", " + y);
       return;
     }
 
@@ -32,6 +32,19 @@ class FrameBuffer {
     return new Color(this.buffer[pixelStartIndex],
                      this.buffer[pixelStartIndex + 1],
                      this.buffer[pixelStartIndex + 2]);
+  }
+
+  getPixelColors(x, y) {
+    // check pixel address
+    if (x > this.width || y > this.height) {
+      console.log("FrameBuffer::getPixelColors - invalid pixel address " + x + ", " + y);
+      return;
+    }
+
+    const pixelStartIndex = this.getPixelIndex(x, y);
+    return [this.buffer[pixelStartIndex],
+                     this.buffer[pixelStartIndex + 1],
+                     this.buffer[pixelStartIndex + 2]];
   }
 
   clear() {
@@ -54,7 +67,7 @@ class FrameBuffer {
     if (!color) {
       this.dim = null;
     } else if (color !== 'object') {
-      console.log("FrameBuffer::dimDisplay - invalid pixel color")
+      console.log("FrameBuffer::dimDisplay - invalid pixel color");
     } else {
       this.dim = color;
     }
@@ -70,7 +83,7 @@ class FrameBuffer {
 
     // check pixel address
     if (x > this.width || y > this.height) {
-      console.log("FrameBuffer::setPixel - invalid pixel address")
+      console.log("FrameBuffer::setPixel - invalid pixel address " + x + ", " + y);
       return;
     }
 
@@ -120,7 +133,7 @@ class FrameBuffer {
     const right = x + width - 1;
   
     //bottom
-    this.drawLine(left, buttom, right, bottom, color);
+    this.drawLine(left, bottom, right, bottom, color);
 
     //right
     this.drawLine(right, bottom, right, top, color);
@@ -130,7 +143,7 @@ class FrameBuffer {
 
     //left
     this.drawLine(left, top, left, bottom, color);
-  };
+  }
 
   // draw a filled rectangle 
   fillRect(x, y, width, height, color) {
@@ -141,7 +154,7 @@ class FrameBuffer {
 
     // draw horizonal lines to fill rectangle
     for (var row = bottom; row <= top; row += 1) {
-        this.drawLine(row, left, row, right, color);
+        this.drawLine(left, row, right, row, color);
     }
   }
 
@@ -190,12 +203,6 @@ class FrameBuffer {
   }
   scrollRight() {
 
-  }
-  scrollLeft() {
-
-  }
-  scrollRight() {
-    
   }
 }
 
