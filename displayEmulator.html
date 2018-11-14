@@ -6,41 +6,44 @@
     <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/p5.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.dom.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.sound.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.sound.js"></script> 
     <script type="text/javascript">
+      var pixelSize = 4;
+      var rows = 36;
+      var columns = 168;
 
-var socket = io.connect('http://localhost:3000');
+      var socket = io.connect('http://localhost:3000');
 
-function drawPixel(x, y, r, g, b) {
-  console.log("drawPixel: ", x, ",", y, "-", r, ",", g, ",", b);
-  fill(r, g, b);
-  rectangle(x, y, 2, 2);
-}
-
-var rows = 36;
-var columns = 168;
-
-function setup() {
-  createCanvas(columns*2, rows*2);
-  background(0);
-  socket.on('screen',
-     function(data) {
-      background(0);
-       for (var row = 0; row < rows; row++) {
-         for (var column = 0; column < colunns; column++) {
-           const pixelIndex = row*rows + column*columns;
-           drawPixel(row, column, data[pixelIndex], data[pixelIndex+1], data[pixelIndex+2]);
-         }
-       }
-    }
-  );
-}
-
-function draw() {
-}
-
-</script>
-
+      function setup() {
+        createCanvas(columns*pixelSize, rows*pixelSize);
+        background(0);
+        socket.on('screen',
+            function(data) {
+            background(0);
+              for (var x = 0; x < columns; x++) {
+                for (var y = 0; y < rows; y++) {
+                  const pixelIndex = (y * columns + x) * 3;
+                  drawPixel(x, y, data[pixelIndex], data[pixelIndex+1], data[pixelIndex+2]);
+                }
+              }
+            }
+        );
+      }
+      
+      function drawPixel(x, y, r, g, b) {
+        console.log("drawPixel: ", x, ",", y, "-", r, ",", g, ",", b);
+        fill(r, g, b);
+        rect(x * pixelSize, rows * pixelSize - y * pixelSize - pixelSize, pixelSize, pixelSize);
+      }
+      
+      function draw() {
+          // drawPixel(0, 0, 255, 0 ,0);
+          // drawPixel(167, 0, 255, 0 ,0);
+          // drawPixel(0, 35, 255, 0 ,0);
+          // drawPixel(167, 35, 255, 0 ,0);
+      }
+        
+    </script>
     <style>
       body {
         padding: 20px;
