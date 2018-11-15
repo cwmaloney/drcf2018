@@ -3,7 +3,6 @@ const Express = require('express');
 const BodyParser = require("body-parser");
 
 const app = Express();
-const SocketIo = require('socket.io');
 
 // contants
 const port = process.env.PORT || 3000;
@@ -16,14 +15,15 @@ const server = app.listen(port, function () {
 });
 
 // accept JSON and URL encodded parameters
-app.use(BodyParser.json());
+app.use(BodyParser.json({limit: '200kb', extended: true}));
 app.use(BodyParser.urlencoded({extended: true}));
 
 
 // setup routes
 app.get("/", function (req, res) {
-  res.status(200).send({ message: 'Display Emulator is listening' });
+  res.sendFile(__dirname  + "/displayEmulator.html");
 });
+
 
 app.get("/random", function (req, res) {
   const data = {
@@ -62,23 +62,42 @@ app.get("/echoQuery", function (req, res) {
   }
 });
 
-app.get("/screen", function (req, res) {
-  const data = req.params.data;
-  SocketIo.emit("screen", data);
+app.get("/status", function (req, res) {
+    res.status(200).send(Object.keys(socketIo.connected).length + " Client(s) connected!");
+});
+
+app.get("/background/:data", function (req, res) {
+  let data = req.params.data;
+  socketIo.emit("background", data);
+  res.status(200).send(data);
+});
+
+app.get("/pixel", function (req, res) {
+  let x = req.query.x;
+  let y = req.query.y;
+  let r = req.query.r;
+  let g = req.query.g;
+  let b = req.query.b;
+  socketIo.emit("pixel", x, y, r, g, b);
+  res.status(200).send(x + ", " + y + ", " + r + ", " + g + ", " + b);
+});
+
+
+app.post("/screen", function (req, res) {
+  const data = req.body.data;
+  socketIo.emit("screen", data);
   res.status(200).send(data);
 });
 
 
-
-
-// initialize sockets //SocketIO.Server
-SocketIo(server).on('connection',
+// initialize sockets //SocketIO.Namespace
+var socketIo = require('socket.io')(server).on('connection',
   function (socket) {
-  
+    
     console.log("Client connected: " + socket.id);
       
     socket.on('disconnect', function(socket) {
-      console.log("Client disconnected" + socket.id);
+      console.log("Client disconnected: " + socket.id);
     });
   }
 );

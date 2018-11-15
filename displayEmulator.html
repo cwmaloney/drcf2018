@@ -17,9 +17,21 @@
       function setup() {
         createCanvas(columns*pixelSize, rows*pixelSize);
         background(0);
+        socket.on('background',
+          function(data) {
+            if (isFinite(data) && data  > 0 ) {
+              data = parseInt(data);
+            }
+            background(data);
+          });
+        socket.on('pixel',
+          function(x,y,r,g,b) {
+            drawPixel(x,y,r,g,b);
+          });
         socket.on('screen',
             function(data) {
-            background(0);
+              console.log("socket on 'screen'");
+              background(0);
               for (var x = 0; x < columns; x++) {
                 for (var y = 0; y < rows; y++) {
                   const pixelIndex = (y * columns + x) * 3;
@@ -31,7 +43,7 @@
       }
       
       function drawPixel(x, y, r, g, b) {
-        console.log("drawPixel: ", x, ",", y, "-", r, ",", g, ",", b);
+        //console.log("drawPixel: ", x, ",", y, "-", r, ",", g, ",", b);
         fill(r, g, b);
         rect(x * pixelSize, rows * pixelSize - y * pixelSize - pixelSize, pixelSize, pixelSize);
       }
