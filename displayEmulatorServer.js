@@ -25,14 +25,6 @@ app.get("/", function (req, res) {
 });
 
 
-app.get("/random", function (req, res) {
-  const data = {
-    value: Math.floor(Math.random() * 10)
-  };
-  res.status(200).send(data);
-});
-
-
 //ex: http://localhost:3000/echoQuery/4
 app.get("/echo/:input", function (req, res) {
   var input = req.params.input;
@@ -66,12 +58,15 @@ app.get("/status", function (req, res) {
     res.status(200).send(Object.keys(socketIo.connected).length + " Client(s) connected!");
 });
 
+//http://localhost:3000/background/red
+//http://localhost:3000/background/127
 app.get("/background/:data", function (req, res) {
   let data = req.params.data;
   socketIo.emit("background", data);
   res.status(200).send(data);
 });
 
+//http://localhost:3000/pixel?x=1&y=1&r=255&g=255&b=0
 app.get("/pixel", function (req, res) {
   let x = req.query.x;
   let y = req.query.y;
