@@ -120,5 +120,5 @@ GridzillaTransform.universesPerController = GridzillaTransform.controllerWidth *
 GridzillaTransform.universeWidth = 14;
 GridzillaTransform.universeHeight = 12;
 
-exports.GridzillaTransform = GridzillaTransform;
+module.exports = GridzillaTransform;
 
