@@ -8,7 +8,7 @@ const { Screen } = require("./Screen.js");
 // add one for the green value channel position and two for the blue value
 var universeMap;
 
-const controllerAddresses = ["10.7.87.6","10.7.87.8","10.7.87.10"];
+const controllerAddresses = ["192.168.1.140", "192.168.1.141", "192.168.1.142"];
 
 describe('GridzillaTransfomer tests', function () {
   before(function() {

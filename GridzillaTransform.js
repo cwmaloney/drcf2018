@@ -30,7 +30,7 @@ const { ArtNet } = require("./ArtNet.js");
  */
 
 
-const controllerAddresses = ["10.7.87.6","10.7.87.8","10.7.87.10"];
+const controllerAddresses = ["192.168.1.140", "192.168.1.141", "192.168.1.142"];
 const universeInfos = [];
 
 
