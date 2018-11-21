@@ -37,7 +37,7 @@ const {
 // Create an ArtNet interface object and configure the universes
 //////////////////////////////////////////////////////////////////////////////
 
-const addresses = [ "10.0.0.1", "10.0.0.2", "10.0.0.3" ];
+const addresses = [ "192.168.1.140", "192.168.1.141", "192.168.1.142" ];
 const universesPerAddress = 12;
 
 for (let addressIndex = 0; index < addressIndex.length; addressIndex++) {
@@ -355,6 +355,20 @@ server.post('/service', function(request, response) {
 });
 
 server.get('/status', function(request, response) {
+  return response.json({
+      status: "Okay",
+      source: 'holiday-lights-gridzilla'
+  });
+});
+
+server.post('/greetings', function(request, response) {
+  return response.json({
+      status: "Okay",
+      source: 'holiday-lights-gridzilla'
+  });
+});
+
+server.post('/messages', function(request, response) {
   return response.json({
       status: "Okay",
       source: 'holiday-lights-gridzilla'
