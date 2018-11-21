@@ -1,171 +1,184 @@
 
 //////////////////////////////////////////////////////////////////////////////
-const { MessageQueue } = require("./MessageQueue.js");
-
+const { RequestQueue } = require("./RequestQueue.js");
 const { NameManager } = require("./NameManager.js");
+const { Secrets } = require("secrets.js");
 
+const errorStatus = "Error";
+const okayStatus = "Okay";
 
 const nameManager = new NameManager();
-const messageQueue = new MessageQueue();
+const messageQueue = new RequestQueue();
 
-console.log(`loading names  @${new Date()} ...`);
-nameManager.loadNameLists();
-console.log(`loading names complete  @${new Date()}`);
+class MessageScene {
 
-console.log(`loading message queue  @${new Date()} ...`);
-messageQueue.loadMessages();
-console.log(`loading messages complete  @${new Date()}`);
+  constructor() {}
 
+  initialize() {
+    console.log(`loading names  @${new Date()} ...`);
+    nameManager.loadNameLists();
+    console.log(`loading names complete  @${new Date()}`);
 
-//////////////////////////////////////////////////////////////////////////////
-// addMessage 
-//////////////////////////////////////////////////////////////////////////////
-
-function addMessage(request, response) {
-  let sender = request.parameters.sender;
-  if (sender === undefined || sender == null) {
-    console.error('grizilla::addMessage - missing sender');
-    return;
-  }
- 
-  let recipient = request.parameters.recipient;
-  if (recipient === undefined || recipient == null) {
-    console.error('grizilla::addMessage - missing recipient');
-    return;
-  }
- 
-  let messageType = request.parameters.messageType;
-  if (messageType === undefined || messageType === null) {
-    console.error('grizilla::addMessage - missing messageType');
-    return;
-  }
- 
-  let date = request.parameters.displayDate;
-  let time = request.parameters.displayTime;
- 
-  console.log(`addMessage: From: ${sender} To: ${recipient} Message: ${messageType} On: ${date} At: ${time}`);
-
-  const overUseMessage = messageQueue.checkOverUse(request.sessionId);
-  if (overUseMessage != null && overUseMessage != undefined) {
-    fillResponse(request, response, overUseMessage);
-    return; 
+    console.log(`loading message queue  @${new Date()} ...`);
+    messageQueue.loadMessages();
+    console.log(`loading messages complete  @${new Date()}`);
   }
 
-  // check names
-  let senderOkay = nameManager.isNameValid(sender);
-  if (!senderOkay) {
-    let message = "We do not recognize the sender name";
-    fillResponse(request, response, message);
-    return;
-  }
-  let recipientOkay = nameManager.isNameValid(recipient);
-  if (!recipientOkay) {
-    let message = "We do not recognize the recipient name";
-    fillResponse(request, response, message);
-    return;
-  }
 
-  const message = formatMessage(sender, recipient, messageType);
-  
-  try {
-    const messageObject = messageQueue.addMessage(request.sessionId, message, date, time);
- 
-  // let responseMessage = `*** We are currently testing Valentines so your message NOT be display. Try this in a few days. Watch for your message "${message}".`
-  let responseMessage = `Watch for your message "${message}"`;
-  if (date != null && date != undefined && date.length > 0) {
-    responseMessage += ` on ${messageObject.formattedDate}`;
-  }
-  if (time != null && date != undefined && time.length > 0) {
-    responseMessage += ` at ${messageObject.formattedTime}`;
-  }
-  responseMessage += `. Your message id is ${messageObject.id}.`;
-  fillResponse(request, response, responseMessage);
-  } catch (error) {
-    let message = error.toString();
-    fillResponse(request, response, message);
-    return;
-  }
-}
+  //////////////////////////////////////////////////////////////////////////////
+  // addMessage 
+  //////////////////////////////////////////////////////////////////////////////
 
-function formatMessage(sender, recipient, messageType, date, time) {
-  let message = ''
+   addMessage(request, response) {
+    let sender = request.parameters.sender;
+    if (sender === undefined || sender == null) {
+      console.error('grizilla::addMessage - missing sender');
+      return;
+    }
+   
+    let recipient = request.parameters.recipient;
+    if (recipient === undefined || recipient == null) {
+      console.error('grizilla::addMessage - missing recipient');
+      return;
+    }
+   
+    let messageType = request.parameters.messageType;
+    if (messageType === undefined || messageType === null) {
+      console.error('grizilla::addMessage - missing messageType');
+      return;
+    }
+   
+    let date = request.parameters.displayDate;
+    let time = request.parameters.displayTime;
+   
+    console.log(`addMessage: From: ${sender} To: ${recipient} Message: ${messageType} On: ${date} At: ${time}`);
 
-  if (messageType === "Valentine" || !messageType) {
-    message = `${recipient}, Will you be my Valentine? ${sender}.  `;
-  } else if (messageType === "love") {
-    message = `${recipient}, I love you, ${sender}.  `;
-  } else if (messageType === "like") {
-    message = `${recipient}, I like you, ${sender}.  `;
-  } else if (messageType === "marry") {
-    message = `${recipient}, Will you marry me? ${sender}.  `;
-  } else if (messageType == "friend") {
-    message = `${recipient}, Thank you for being my friend, ${sender}.  `;
-  }
+    const overUseMessage = messageQueue.checkOverUse(request.sessionId);
+    if (overUseMessage != null && overUseMessage != undefined) {
+      this.fillResponse(request, response, errorStatus, overUseMessage);
+      return; 
+    }
 
-  return message;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// checkName 
-//////////////////////////////////////////////////////////////////////////////
-
-function checkName(request, response) {
-  let name = request.parameters.name;
-  if (name === undefined || name == null) {
-    console.error('grizilla::checkName - missing name');
-    return;
-  }
-
-  console.log(`checkName: ${name}`);
-
-  // check name
-  let nameOkay = nameManager.isNameValid(name);
-
-  let responseMessage = '';
-  if (!nameOkay) {
-    responseMessage = `We do not reconginze the name ${name}.`;
-  } else {
-    responseMessage = `The name ${name} is a recongized name.`;
-  }
-
-  fillResponse(request, response, responseMessage);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// addName 
-//////////////////////////////////////////////////////////////////////////////
-
-function addName(request, response) {
-  let name = request.parameters.name;
-  if (name === undefined || name == null) {
-    console.error('grizilla::addName - missing name');
-    return;
-  }
-
-  let responseMessage;
-
-  let nameIsKnow = nameManager.isNameValid(name);
-  if (nameIsKnow) {
-    responseMessage = `The name ${name} is already in the name list`;
-  } else {
-    let password = request.parameters.password;
-    if (password === undefined || password == null) {
-      console.error('grizilla::addName - missing password');
+    // check names
+    let senderOkay = nameManager.isNameValid(sender);
+    if (!senderOkay) {
+      let message = "We do not recognize the sender name - try a common first name.";
+      this.fillResponse(request, response, errorStatus, message);
+      return;
+    }
+    let recipientOkay = nameManager.isNameValid(recipient);
+    if (!recipientOkay) {
+      let message = "We do not recognize the recipient name - try a common first name";
+      this.fillResponse(request, response, errorStatus, message);
       return;
     }
 
-    if (password !== systemPassword) {
-      let message = "You must provide the correct password to add a name.";
-      fillResponse(request, response, message);
-      return;      return;
+    const message = this.formatMessage(sender, recipient, messageType);
+    
+    try {
+      const messageObject = messageQueue.addMessage(request.sessionId, message, date, time);
+   
+    // let responseMessage = `*** We are currently testing Valentines so your message NOT be display. Try this in a few days. Watch for your message "${message}".`
+    let responseMessage = `Watch for your message "${message}"`;
+    if (date != null && date != undefined && date.length > 0) {
+      responseMessage += ` on ${messageObject.formattedDate}`;
     }
-
-    console.log(`addName: ${name}`);
-
-    nameManager.addName(name);
-
-    responseMessage = `Name added: ${name}`;
+    if (time != null && date != undefined && time.length > 0) {
+      responseMessage += ` at ${messageObject.formattedTime}`;
+    }
+    responseMessage += `. Your message id is ${messageObject.id}.`;
+    this.fillResponse(request, response, responseMessage);
+    } catch (error) {
+      let message = error.toString();
+      this.fillResponse(request, response, message);
+      return;
+    }
   }
 
-  fillResponse(request, response, responseMessage);
+  //////////////////////////////////////////////////////////////////////////////
+  
+  formatMessage(sender, recipient, message, date, time) {
+    let formattedMessage = ''
+
+    formattedMessage = `${recipient}, ${message} ${sender}.  `;
+
+    return formattedMessage;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  
+  checkMessage(message) {
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  checkName(request, response) {
+    let name = request.parameters.name;
+    if (name === undefined || name == null) {
+      console.error('grizilla::checkName - missing name');
+      return;
+    }
+
+    console.log(`checkName: ${name}`);
+
+    // check name
+    let nameOkay = nameManager.isNameValid(name);
+
+    let responseMessage = '';
+    if (!nameOkay) {
+      responseMessage = `We do not reconginze the name ${name}.`;
+    } else {
+      responseMessage = `The name ${name} is a recongized name.`;
+    }
+
+    this.fillResponse(request, response, errorStatus, responseMessage);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+ 
+  addName(request, response) {
+    let name = request.parameters.name;
+    if (name === undefined || name == null) {
+      console.error('grizilla::addName - missing name');
+      return;
+    }
+
+    let responseMessage;
+
+    let nameIsKnow = nameManager.isNameValid(name);
+    if (nameIsKnow) {
+      responseMessage = `The name ${name} is already in the name list`;
+    } else {
+      let password = request.parameters.password;
+      if (password === undefined || password == null) {
+        console.error('grizilla::addName - missing password');
+        return;
+      }
+
+      if (password !== Secrets.getSystemPassword()) {
+        let message = "You must provide the correct password to add a name.";
+        this.fillResponse(request, response, errorStatus, message);
+        return;
+      }
+
+      console.log(`addName: ${name}`);
+
+      nameManager.addName(name);
+
+      responseMessage = `Name added: ${name}`;
+    }
+
+    this.fillResponse(request, response, okayStatus, responseMessage);
+  }
+
+  fillResponse(request, response, status, message) {
+    return response.json({
+      status: status,
+      message: message,
+      source: 'MessageScene'
+    });
+  }
 }
+
+module.exports = MessageScene;
