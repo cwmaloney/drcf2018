@@ -1,36 +1,17 @@
 "use strict";
 
-// configuration
-
-// 
-const setStoragePlaceBaseUrl = "http://10.0.0.100/RemoteCommands/SetStorageLeft=";
-const setTickerTextBaseUrl = "http://10.0.0.100/gui_05/index.html?SetTextTicker=";
-
-// for testing
-// const setStoragePlaceBaseUrl = "http://scooterlabs.com/echo?storagePlace=";
-// const setTickerTextBaseUrl = "http://scooterlabs.com/echo?tickerText=";
-
-const storagePlaceRose = "S15P63";
-const storagePlaceHeart = "S15P64";
-
-const messageQueueFileName = 'messageQueue.json';
-const messageDuration = 29000;
-const maxMessagesPerSession = 3;
-
-const defaultMessageDuration = 1000;
-const defaultMessage = "Happy Valentine's Day - go to farmsteadLights.com to display your Valentine here.  ";
-
 // load dependent modules
-
 const fs = require('fs');
-const { HttpUtilities } = require("./HttpUtilities");
 
-class MessageQueue {
+class RequestQueue {
 
-  constructor() {
+  constructor(queueName, maxPendingRequestsPerUser = 3) {
+    this.queueName = queueName;
+    this.maxPendingRequestsPerUser = maxPendingRequestsPerUser;
     this.nextId = 1;
-    this.map = new Map();
-    this.showingDefaultMessage = false;
+    this.requests = new Map();
+    this.showingDefaultRequest = false;
+    this.queueFileName = queueName + "requestQueue.json";
   }
 
   static getNowTimestampObject() {
@@ -41,15 +22,15 @@ class MessageQueue {
   }
 
   static getNowTimestampNumber() {
-    const timestampObject = MessageQueue.getNowTimestampObject();
-    const timestampString = MessageQueue.getTimestampStringFromObject(timestampObject);
-    const timestampNumber = MessageQueue.getTimestampNumber(timestampString);
+    const timestampObject = RequestQueue.getNowTimestampObject();
+    const timestampString = RequestQueue.getTimestampStringFromObject(timestampObject);
+    const timestampNumber = RequestQueue.getTimestampNumber(timestampString);
     return timestampNumber;            
   }
 
   static parseDateAndTime(date, time) {
     // get now - use it for defaults
-    const nowTimestampObject = MessageQueue.getNowTimestampObject();;
+    const nowTimestampObject = RequestQueue.getNowTimestampObject();;
 
     let parsed = Object.assign(nowTimestampObject);
 
@@ -134,7 +115,6 @@ class MessageQueue {
     return parsed;
   }
 
-  
   static getTimestampString(year, month, day, hour, minute) {
     return year.toString().padStart(4,0)
             + month.toString().padStart(2,0)
@@ -144,7 +124,7 @@ class MessageQueue {
   }
 
   static getTimestampStringFromObject(timestampObject) {
-    const timestampString = MessageQueue.getTimestampString(
+    const timestampString = RequestQueue.getTimestampString(
       timestampObject.year, timestampObject.month, timestampObject.day,
       timestampObject.hour, timestampObject.minute);
     return timestampString;
@@ -154,154 +134,156 @@ class MessageQueue {
     return new Number(timeString);
   }
 
-  addMessage(sessionId, message, date, time) {
-    const nowTimestampNumber = MessageQueue.getNowTimestampNumber();
-
-    const timestampObject = MessageQueue.parseDateAndTime(date, time);
-    const timestampString = MessageQueue.getTimestampStringFromObject(timestampObject);
-    const timestampNumber = MessageQueue.getTimestampNumber(timestampString);
-
-    if (timestampNumber < nowTimestampNumber) {
-      throw new Error(`Requested message time is in the past`);
-    }
-
-    let timestampMapObject = this.map.get(timestampString);
-    if (!timestampMapObject) {
-      timestampMapObject = { timestampObject, timestampString, timestampNumber, messages: [] };
-      this.map.set(timestampString, timestampMapObject);
-    }
-    const id = this.nextId++;
-
-    console.log("addMessage:", sessionId, id, message, date, time);
-
-    const messageObject = { sessionId, id, message, displayCount: 0 };
-    if (date) {
-      messageObject.formattedDate
-        = (timestampObject.month).toString().padStart(2,0)
-          + '/' + (timestampObject.day).toString().padStart(2,0);
-    }
-    if (time) {
-      messageObject.formattedTime
-        = (timestampObject.hour).toString().padStart(2,0)
-          + ':' + (timestampObject.minute).toString().padStart(2,0);
-    }
-    timestampMapObject.messages.push(messageObject);
-    this.writeMessages();
-
-    this.displayNextMessage();
-
-    return messageObject;
+  getNextRequestId() {
+    return this.nextId;
   }
 
-  loadMessages(fileName) {
+  // get requests that have request times "in the past"
+  // and have not been processed
+  getActiveRequests() {
+    const activeRequests = [];
+    const currentTimestampNumber = RequestQueue.getNowTimestampNumber();
+    for (const timestampNumber of this.requests.keys()) {
+      if (timestampNumber <= currentTimestampNumber) {
+        const timestampObject = this.requests.get(timestampNumber);
+        for (let index = 0; index < timestampObject.requests.length; index++) {
+          let requestObject = timestampObject.requests[index];
+          if (requestObject.processedCount === undefined || requestObject.processedCount < 1) {      
+            activeRequests.push(requestObject);
+          }
+        }
+      }
+    }
+    return activeRequests;
+  }
+
+  // ----- file storage -----
+
+  loadRequests(fileName) {
     if (!fileName) {
-      fileName = messageQueueFileName;
+      fileName = this.queueFileName;
     }
     if (fs.existsSync(fileName)) {
-      console.log(`loading messages from ${fileName}...`);
+      console.log(`loading requests from ${fileName}...`);
 
       try {
         const temp = JSON.parse(fs.readFileSync(fileName, 'utf8'));
         this.nextId = temp.nextId;
-        this.map = new Map(temp.map);
+        this.requests = new Map(temp.map);
       } catch (error) {
         if (error.code !== "ENOENT") {
           throw error;
         }
       }
 
-      console.log(`loading messages complete nextId=${this.nextId} size=${this.map.size}`);
+      console.log(`loading requests complete nextId=${this.nextId} size=${this.requests.size}`);
     }
   }
 
-  writeMessages(fileName) {
+  writeRequests(fileName) {
     if (!fileName) {
-      fileName = messageQueueFileName;
+      fileName = this.queueFileName;
     }
-    //console.log(`writing messages to ${fileName} nextId=${this.nextId} size=${this.map.size} ...`);
+    //console.log(`writing requests to ${fileName} nextId=${this.nextId} size=${this.requests.size} ...`);
 
-    const temp = { nextId: this.nextId, map: [...this.map] };
+    const temp = { nextId: this.nextId, map: [...this.requests] };
 
     fs.writeFileSync(fileName, JSON.stringify(temp, null, '\t'), 'utf8');
 
-    //console.log(`writing messages complete`);
+    //console.log(`writing requests complete`);
   }
 
-  getNextMessageId() {
-    return this.nextId;
-  }
+  // ----- queue / dequeue ----
 
-  // get messages that have display times "in the past"
-  // and have not been displayed
-  getActiveMessages() {
-    const activeMessages = [];
-    const currentTimestampNumber = MessageQueue.getNowTimestampNumber();
-    for (const timestampNumber of this.map.keys()) {
-      if (timestampNumber <= currentTimestampNumber) {
-        const timestampObject = this.map.get(timestampNumber);
-        for (let index = 0; index < timestampObject.messages.length; index++) {
-          let messageObject = timestampObject.messages[index];
-          if (messageObject.displayCount === undefined || messageObject.displayCount < 1) {      
-            activeMessages.push(messageObject);
-          }
-        }
-      }
+  addRequest(sessionId, request, date, time) {
+    const nowTimestampNumber = RequestQueue.getNowTimestampNumber();
+
+    const timestampObject = RequestQueue.parseDateAndTime(date, time);
+    const timestampString = RequestQueue.getTimestampStringFromObject(timestampObject);
+    const timestampNumber = RequestQueue.getTimestampNumber(timestampString);
+
+    if (timestampNumber < nowTimestampNumber) {
+      throw new Error(`Requested request time is in the past`);
     }
-    return activeMessages;
+
+    let timestampMapObject = this.requests.get(timestampString);
+    if (!timestampMapObject) {
+      timestampMapObject = { timestampObject, timestampString, timestampNumber, requests: [] };
+      this.requests.set(timestampString, timestampMapObject);
+    }
+    const id = this.nextId++;
+
+    console.log("addRequest:", sessionId, id, request, date, time);
+
+    const requestObject = { sessionId, id, request, processedCount: 0 };
+    if (date) {
+      requestObject.formattedDate
+        = (timestampObject.month).toString().padStart(2,0)
+          + '/' + (timestampObject.day).toString().padStart(2,0);
+    }
+    if (time) {
+      requestObject.formattedTime
+        = (timestampObject.hour).toString().padStart(2,0)
+          + ':' + (timestampObject.minute).toString().padStart(2,0);
+    }
+    timestampMapObject.requests.push(requestObject);
+    this.writeRequests();
+
+    return requestObject;
   }
 
-  // get messages that have display times "in the future"
-  getQueuedMessages() {
-    const queuedMessages = [];
-    const currentTimestampNumber = MessageQueue.getNowTimestampNumber();
-    for (const timestampNumber of this.map.keys()) {
+  // get requests that have request times "in the future"
+  getQueuedRequests() {
+    const queuedRequests = [];
+    const currentTimestampNumber = RequestQueue.getNowTimestampNumber();
+    for (const timestampNumber of this.requests.keys()) {
       if (timestampNumber > currentTimestampNumber) {
-        const timestampObject = this.map.get(timestampNumber);
-        for (let index = 0; index < timestampObject.messages.length; index++) {
-          let messageObject = timestampObject.messages[index];
-          if (messageObject.displayCount === undefined || messageObject.displayCount < 1) {      
-            queuedMessages.push(messageObject);
+        const timestampObject = this.requests.get(timestampNumber);
+        for (let index = 0; index < timestampObject.requests.length; index++) {
+          let requestObject = timestampObject.requests[index];
+          if (requestObject.processedCount === undefined || requestObject.processedCount < 1) {      
+            queuedRequests.push(requestObject);
           }
         }
       }
     }
-    return queuedMessages;
+    return queuedRequests;
   }
 
-  getNextMessage() {
-    const activeMessages = this.getActiveMessages();
-    let nextMessage = null;
-    if (activeMessages.length > 0) {
-      nextMessage = activeMessages[0];
-      for (let index = 1; index < activeMessages.length; index++) {
-        const messageObject = activeMessages[index];
-        if (messageObject.id < nextMessage.id) {      
-          nextMessage = messageObject;
+  getNextRequest() {
+    const activeRequests = this.getActiveRequests();
+    let nextRequest = null;
+    if (activeRequests.length > 0) {
+      nextRequest = activeRequests[0];
+      for (let index = 1; index < activeRequests.length; index++) {
+        const requestObject = activeRequests[index];
+        if (requestObject.id < nextRequest.id) {      
+          nextRequest = requestObject;
         }
       }
     }
-    return nextMessage;
+    return nextRequest;
   }
 
   checkOverUse(sessionId) {
-    let message = null;
+    let response = null;
 
-    const count = this.getMessageCountForSession(sessionId);   
-    if (count >= maxMessagesPerSession) {
-      message = `You have too many message in the queue.  Try again after your messages have been displayed.`;
+    const count = this.getRequestCountForSession(sessionId);   
+    if (count >= this.maxPendingRequestsPerUser) {
+      response = `You have too many request in the queue.  Try again after your requests have been processed.`;
     }
   
-    return message;
+    return response;
   }
     
-  getMessageCountForSession(sessionId) {
+  getRequestCountForSession(sessionId) {
     let count = 0;
-    for (const timestampNumber of this.map.keys()) {
-      const timestampObject = this.map.get(timestampNumber);
-      for (let index = 0; index < timestampObject.messages.length; index++) {
-        const messageObject = timestampObject.messages[index];
-        if (messageObject.displayCount === undefined || messageObject.displayCount < 1) {
-          if (messageObject.sessionId === sessionId) {
+    for (const timestampNumber of this.requests.keys()) {
+      const timestampObject = this.requests.get(timestampNumber);
+      for (let index = 0; index < timestampObject.requests.length; index++) {
+        const requestObject = timestampObject.requests[index];
+        if (requestObject.processedCount === undefined || requestObject.processedCount < 1) {
+          if (requestObject.sessionId === sessionId) {
             count++;
           } 
         }
@@ -310,129 +292,68 @@ class MessageQueue {
     return count;
   }
 
-  findMessageById(messageId) {
-    for (const timestampNumber of map.keys()) {
-     const messageObject = map.get(timestampNumber);
-      if (messageObject.id == messageId) {}
-        return messageObject;
+  findRequestById(requestId) {
+    for (const timestampNumber of this.requests.keys()) {
+     const requestObject = this.requests.get(timestampNumber);
+      if (requestObject.id == requestId) {}
+        return requestObject;
     }
     return null;
   }
-  
-  displayNextMessage() {
-    if (this.timerId === undefined || this.timerId === null) {
-      let messageObject = this.getNextMessage();
-      if (messageObject != undefined && messageObject != null) {
-        this.displayMessage(messageObject, messageObject.message);
-        this.timerId = setTimeout(this.onTimeout.bind(this), messageDuration);
-      } else {
-        if (!this.showingDefaultMessage) {
-          this.displayMessage(null, defaultMessage);
-        }
-        this.timerId = setTimeout(this.onTimeout.bind(this), defaultMessageDuration);
-      }
-    }
-  }
-  
-  onTimeout(ignore) {
-    this.timerId = null;
-    this.displayNextMessage();
-  }
-
-  displayMessage(messageObject, message) {
-
-    console.log(`displayMessage: "${message}"`);
-    const uriEncodedMessage = encodeURIComponent(message);
-    
-    const clearTickerTextUrl = `${setTickerTextBaseUrl}...`;
-    const setTickerTextUrl = `${setTickerTextBaseUrl}${uriEncodedMessage}`;
-
-    if (messageObject != null && messageObject !== undefined) {
-      const setStoragePlaceUrl = `${setStoragePlaceBaseUrl}${storagePlaceHeart}`;
-
-      HttpUtilities.get(setStoragePlaceUrl, 2000)
-      .then((html) => {
-        this.showingDefaultMessage = false;
-
-        return HttpUtilities.get(clearTickerTextUrl, 2000);
-      })
-      .then((html) => {
-        return HttpUtilities.get(setTickerTextUrl, 2000);
-      })
-      .then((html) => {
-          messageObject.displayCount += 1;
-          this.writeMessages();
-      })
-      .catch((error) => console.error(error));
-    } else {
-       const setStoragePlaceUrl = `${setStoragePlaceBaseUrl}${storagePlaceRose}`
-
-      HttpUtilities.get(setStoragePlaceUrl, 2000)
-      .then((html) => {
-        this.showingDefaultMessage = true;
-
-        return HttpUtilities.get(clearTickerTextUrl, 2000);
-      })
-      .then((html) => {
-        return HttpUtilities.get(setTickerTextUrl, 2000);
-      })
-      .then((html) => {
-       })
-      .catch((error) => console.error(error));
-    }
-  }
 }
 
-module.exports = { MessageQueue };
 
 
-function getFutureTime(minutes) {
-  let temp = new Date();
-  temp = new Date(temp.getTime() + minutes*60*1000);
-  const result = temp.getFullYear().toString().padStart(4,0)
-                + '-' + (temp.getMonth() + 1).toString().padStart(2,0)
-                + '-' + (temp.getDate()).toString().padStart(2,0)
-                + 'T' + (temp.getHours()).toString().padStart(2,0)
-                + ':' + (temp.getMinutes()).toString().padStart(2,0)
-                + ':' + (temp.getSeconds()).toString().padStart(2,0)
-                + '-0600';
-  return result;
-}
+module.exports = { RequestQueue };
+
+
+// function getFutureTime(minutes) {
+//   let temp = new Date();
+//   temp = new Date(temp.getTime() + minutes*60*1000);
+//   const result = temp.getFullYear().toString().padStart(4,0)
+//                 + '-' + (temp.getMonth() + 1).toString().padStart(2,0)
+//                 + '-' + (temp.getDate()).toString().padStart(2,0)
+//                 + 'T' + (temp.getHours()).toString().padStart(2,0)
+//                 + ':' + (temp.getMinutes()).toString().padStart(2,0)
+//                 + ':' + (temp.getSeconds()).toString().padStart(2,0)
+//                 + '-0600';
+//   return result;
+// }
 
 // make test safe to run on "production" computer
 
 // function test() {
-//   const queue = new MessageQueue();
+//   const queue = new RequestQueue();
 
-//   // queue.loadMessages("noFile");
+//   // queue.loadRequests("noFile");
 
-//   // queue.addMessage('1', "Amy, I love you, Sheldon");
-//   // queue.addMessage('2', "Cinnamon, I love you, Raj", null, "15:01");
-//   // queue.addMessage('1', "Penny, Will you be my Valentine?, Leonard", null, "15:01");
-//   // queue.addMessage('3', "Bernadette, Will you marry me? Howard", "2-14", "20:00");
+//   // queue.addRequest('1', "Amy, I love you, Sheldon");
+//   // queue.addRequest('2', "Cinnamon, I love you, Raj", null, "15:01");
+//   // queue.addRequest('1', "Penny, Will you be my Valentine?, Leonard", null, "15:01");
+//   // queue.addRequest('3', "Bernadette, Will you marry me? Howard", "2-14", "20:00");
 
-//   // queue.writeMessages("testMessageQueue.json");
-//   // queue.loadMessages("testMessageQueue.json");
-//   // queue.writeMessages("testMessageQueue.json");
+//   // queue.writeRequests("testRequestQueue.json");
+//   // queue.loadRequests("testRequestQueue.json");
+//   // queue.writeRequests("testRequestQueue.json");
 
-//   queue.displayNextMessage();
+//   queue.displayNextRequest();
 
 //   function addList1() {
 //     const soon = getFutureTime(2);
-//     queue.addMessage('1', "Sue, I love you, Billy.  ");
-//     queue.addMessage('2', "Bernadette, Will you be my Valentine? Howard.  ", null, soon);
-//     queue.addMessage('3', "Sally, Will you marry me? Harry.  ", null, soon);
+//     queue.addRequest('1', "Sue, I love you, Billy.  ");
+//     queue.addRequest('2', "Bernadette, Will you be my Valentine? Howard.  ", null, soon);
+//     queue.addRequest('3', "Sally, Will you marry me? Harry.  ", null, soon);
 //   }
 
 //   function noop() {
 //   }
 
 //   function addList2() {
-//     queue.addMessage('1', "Amy, I love you, Sheldon.  ");
+//     queue.addRequest('1', "Amy, I love you, Sheldon.  ");
 //     const soon = getFutureTime(2);
-//     queue.addMessage('2', "Cinnamon, Will you be my Valentine? Raj  ", null, soon);
-//     queue.addMessage('1', "Penny, Will you be my Valentine? Leonard.  ", null, soon);
-//     queue.addMessage('3', "Luci, Will you marry me? Desi.  ", "2018-02-14T19:07:00-0600", "2018-02-14T19:07:00-0600");
+//     queue.addRequest('2', "Cinnamon, Will you be my Valentine? Raj  ", null, soon);
+//     queue.addRequest('1', "Penny, Will you be my Valentine? Leonard.  ", null, soon);
+//     queue.addRequest('3', "Luci, Will you marry me? Desi.  ", "2018-02-14T19:07:00-0600", "2018-02-14T19:07:00-0600");
 //   }
 
 //   addList1();
