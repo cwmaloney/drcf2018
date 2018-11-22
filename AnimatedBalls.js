@@ -11,8 +11,7 @@ var frame = new FrameBuffer(168, 36);
 setInterval(animate, 2000);
 
 function drawBall(frame, x, y, color){
-
-    frame.fillRect(x - 2, y + 8, 5, 4, new Color(255, 255, 0));
+    frame.fillRect(x - 2, y - 11, 5, 3, new Color(255, 255, 0));
     hackyCircle(frame, x,y, 10, color);
 }
 
