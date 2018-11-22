@@ -1,6 +1,6 @@
 
 class Secrets {
-  getSystemPassword() { return "must be changed" }
+  getSystemPassword() { return "this must be changed" }
 }
 
 module.exports = { Secrets };

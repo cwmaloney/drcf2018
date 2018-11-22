@@ -3,7 +3,7 @@
 // colors
 //////////////////////////////////////////////////////////////////////////////
 
-const colorNameToChannelDataMap = {
+const colorNameToRgb = {
   on: [ 255, 255, 255 ],
   white: [ 255, 255, 255 ],
   snow: [ 225, 225, 225 ],
@@ -74,6 +74,4 @@ const colorNameToChannelDataMap = {
   off:  [ 0, 0, 0 ]
 };
 
-module.exports = {
-  colorNameToChannelDataMap,
-  };
+module.exports = { colorNameToRgb };

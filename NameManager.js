@@ -3,6 +3,7 @@
 const fs = require('fs');
 
 const { FileUtilities } = require("./FileUtilities.js");
+const { Secrets } = require("secrets.js");
 
 const censusNamesFileName = 'censusNames.txt';
 const additionalNamesFileName = 'additionalNames.txt';
@@ -19,7 +20,7 @@ class NameManager {
             || (this.censusNames.get(name) !== undefined);
   }
 
-  addName(name) {
+  addNameToAdditionalNames(name) {
     if (this.isNameValid(name) === false) {
       this.additionalNames.set(name, this.additionalNames.size);
       this.writeAdditionalNames();
@@ -69,6 +70,71 @@ class NameManager {
     fs.closeSync(fd);
   
     console.log(`writing additional names complete`);
+  }
+ 
+  addName(request, response) {
+    let name = request.parameters.name;
+    if (name === undefined || name == null) {
+      console.error('NameManager::addName - missing name');
+      return;
+    }
+
+    let responseMessage;
+
+    let nameIsKnow = this.isNameValid(name);
+    if (nameIsKnow) {
+      responseMessage = `The name ${name} is already in the name list`;
+    } else {
+      let password = request.parameters.password;
+      if (password === undefined || password == null) {
+        console.error('NameManager::addName - missing password');
+        return;
+      }
+
+      if (password !== Secrets.getSystemPassword()) {
+        let message = "You must provide the correct password to add a name.";
+        this.fillResponse(request, response, "Error", message);
+        return;
+      }
+
+      console.log(`addName: ${name}`);
+
+      this.addNameToAdditionalNames(name);
+
+      responseMessage = `Name added: ${name}`;
+    }
+
+    this.fillResponse(request, response, "Error", responseMessage);
+  }
+
+  checkName(request, response) {
+    let name = request.parameters.name;
+    if (name === undefined || name == null) {
+      console.error('grizilla::checkName - missing name');
+      return;
+    }
+
+    console.log(`checkName: ${name}`);
+
+    // check name
+    let nameOkay = this.isNameValid(name);
+
+    let responseMessage = '';
+    if (!nameOkay) {
+      responseMessage = `We do not reconginze the name ${name}.`;
+    } else {
+      responseMessage = `The name ${name} is a recongized name.`;
+    }
+
+    this.fillResponse(request, response, "Error", responseMessage);
+  }
+
+  fillResponse(request, response, status, message) {
+    return response.json({
+      status: status,
+      message: message,
+      source: 'NameManager'
+    });
   }
 
 }
