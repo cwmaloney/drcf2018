@@ -48,7 +48,7 @@ function testPrint3Lines() {
     transform.transformScreen(bmpBuff);
 }
 
-function testPrint3Lines() {
+function testPrint2Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     bmpBuff.print2Lines("Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16);//.then( () => transform.transformScreen(bmpBuff));
     transform.transformScreen(bmpBuff);
@@ -60,4 +60,5 @@ BitmapBuffer.initializeFonts().then( () => {
     //testBmpFile();
     //testDrawing();
     testPrint3Lines();
+    //testPrint2Lines();
 });

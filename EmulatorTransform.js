@@ -11,8 +11,12 @@ const FrameBuffer = require('./FrameBuffer.js');
 
 class EmulatorTransform {
 
-    static width = 168;
-    static height = 36;
+    static get width() {
+        return 168;
+    }
+    static get height() {
+        return 36;
+    }
 
     constructor() {
     }
@@ -23,11 +27,10 @@ class EmulatorTransform {
             buffer = screen.buffer;
         }
         else {
-            //TODO: remove hard coded sizes
-            buffer = new Uint8Array(width * height * 3);
+            buffer = new Uint8Array(EmulatorTransform.width * EmulatorTransform.height * 3);
             let index = 0;
-            for (let y = 0; y < height; ++y){
-                for (let x = 0; x < width; ++x){
+            for (let y = 0; y < EmulatorTransform.height; ++y){
+                for (let x = 0; x < EmulatorTransform.width; ++x){
                     let c = screen.getPixelColors(x, y);
                     buffer[index++] = c[0];
                     buffer[index++] = c[1];

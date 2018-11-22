@@ -11,18 +11,6 @@ const Jimp = require('jimp');
 
 class BitmapBuffer {
 
-    // static LITTERA_BLACK_11 = null;
-    // static LITTERA_BLACK_16 = null;
-    // static LITTERA_WHITE_11 = null;
-    // static LITTERA_WHITE_16 = null;
-    // static LITTERA_RED_11 = null;
-    // static LITTERA_RED_16 = null;
-    // static LITTERA_BLUE_11 = null;
-    // static LITTERA_BLUE_16 = null;
-    // static LITTERA_GREEN_11 = null;
-    // static LITTERA_GREEN_16 = null;
-    // static JIMP_WHITE_16 = null;
-
     constructor() {
     }
 
