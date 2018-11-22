@@ -19,6 +19,12 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Bmp Test",
+      "program": "${workspaceFolder}/test/BmpTest.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Emulator Server",
       "program": "${workspaceFolder}/displayEmulatorServer.js"
     },
