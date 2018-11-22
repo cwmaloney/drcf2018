@@ -44,21 +44,36 @@ function testDrawing() {
 
 function testPrint3Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    bmpBuff.print3Lines("Welcome to", "Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_11);//.then( () => transform.transformScreen(bmpBuff));
+    bmpBuff.print3Lines("Welcome to", "Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_11, BitmapBuffer.LITTERA_RED_11);
     transform.transformScreen(bmpBuff);
 }
 
 function testPrint2Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    bmpBuff.print2Lines("Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16);//.then( () => transform.transformScreen(bmpBuff));
+    bmpBuff.print2Lines("Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16);
     transform.transformScreen(bmpBuff);
 }
 
 BitmapBuffer.initializeFonts().then( () => {
+    var test = "print3Lines";
+    if (process.argv.length > 2){
+        test = process.argv[2];
+    }
+    console.log("TEST: " + test);
 
-
-    //testBmpFile();
-    //testDrawing();
-    testPrint3Lines();
-    //testPrint2Lines();
+    switch (test) {
+        default:
+        case "print3Lines":
+            testPrint3Lines();
+            break;
+        case "print2Lines":
+            testPrint2Lines();
+            break;
+        case "bmpFile":
+            testBmpFile();
+            break;
+        case "drawing":
+            testDrawing();
+            break;
+    }
 });
