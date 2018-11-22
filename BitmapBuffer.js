@@ -161,23 +161,24 @@ class BitmapBuffer {
         }
     }
 
-    print3Lines(text1, text2, text3, font) {
-        //        var promise = Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
-        // var promise = Jimp.loadFont("fonts/litteraYellow11.fnt");
-
-        // promise.then(font => {
-        this.image.print(font, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12)
-            .print(font, 0, 12, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12)
-            .print(font, 0, 24, { text: text3, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12);
-        // }
-        // );
-
-        // return promise;
+    print3Lines(text1, text2, text3, font1, font2, font3) {
+        if (font2 == null) {
+            font2 = font1;
+        }
+        if (font3 == null) {
+            font3 = font1;
+        }
+        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12)
+            .print(font2, 0, 12, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12)
+            .print(font3, 0, 24, { text: text3, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12);
     }
 
-    print2Lines(text1, text2, font) {
-        this.image.print(font, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 18)
-            .print(font, 0, 18, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 18);
+    print2Lines(text1, text2, font1, font2) {
+        if (font2 == null) {
+            font2 = font1;
+        }
+        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 18)
+            .print(font2, 0, 18, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 18);
     }
 
     print1Line(text1, font) {
@@ -188,7 +189,11 @@ class BitmapBuffer {
         var promises = [Jimp.loadFont("fonts/litteraBlack11.fnt"), Jimp.loadFont("fonts/litteraBlack16.fnt"), Jimp.loadFont("fonts/litteraWhite11.fnt"),
                 Jimp.loadFont("fonts/litteraWhite16.fnt"), Jimp.loadFont("fonts/litteraRed11.fnt"), Jimp.loadFont("fonts/litteraRed16.fnt"),
                 Jimp.loadFont("fonts/litteraBlue11.fnt"), Jimp.loadFont("fonts/litteraBlue16.fnt"), Jimp.loadFont("fonts/litteraGreen11.fnt"),
-                Jimp.loadFont("fonts/litteraGreen16.fnt"), Jimp.loadFont("fonts/litteraYellow11.fnt"), Jimp.loadFont("fonts/litteraYellow16.fnt")];
+                Jimp.loadFont("fonts/litteraGreen16.fnt"), Jimp.loadFont("fonts/litteraYellow11.fnt"), Jimp.loadFont("fonts/litteraYellow16.fnt"),
+
+                Jimp.loadFont("fonts/litteraPink11.fnt"), Jimp.loadFont("fonts/litteraPink16.fnt"), Jimp.loadFont("fonts/litteraPurple11.fnt"),
+                Jimp.loadFont("fonts/litteraPurple16.fnt"), Jimp.loadFont("fonts/litteraTeal11.fnt"), Jimp.loadFont("fonts/litteraTeal16.fnt"),
+                Jimp.loadFont("fonts/litteraOrange11.fnt"), Jimp.loadFont("fonts/litteraOrange16.fnt")];
 
         var resultPromise = Promise.all(promises);
         resultPromise.then( (results) => {
@@ -204,6 +209,14 @@ class BitmapBuffer {
             BitmapBuffer.LITTERA_GREEN_16 = results[9];
             BitmapBuffer.LITTERA_YELLOW_11 = results[10];
             BitmapBuffer.LITTERA_YELLOW_16 = results[11];
+            BitmapBuffer.LITTERA_PINK_11 = results[12];
+            BitmapBuffer.LITTERA_PINK_16 = results[13];
+            BitmapBuffer.LITTERA_PURPLE_11 = results[14];
+            BitmapBuffer.LITTERA_PURPLE_16 = results[15];
+            BitmapBuffer.LITTERA_TEAL_11 = results[16];
+            BitmapBuffer.LITTERA_TEAL_16 = results[17];
+            BitmapBuffer.LITTERA_ORANGE_11 = results[18];
+            BitmapBuffer.LITTERA_ORANGE_16 = results[19];
         });
 
         return resultPromise;
