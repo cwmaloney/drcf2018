@@ -45,7 +45,7 @@
       function drawPixel(x, y, r, g, b) {
         //console.log("drawPixel: ", x, ",", y, "-", r, ",", g, ",", b);
         fill(r, g, b);
-        rect(x * pixelSize, rows * pixelSize - y * pixelSize - pixelSize, pixelSize, pixelSize);
+        rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
       }
       
       function draw() {

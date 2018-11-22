@@ -94,16 +94,19 @@ class GridzillaTransform {
             //up or down the height
             if (up) {
                 for (var y = 0; y < GridzillaTransform.universeHeight; ++y) {
-                    //get the RGB color
-                    this.artnet.setChannelData(address, universe, channelIndex, screen.getPixelColors(xOffset + x, yOffset + y));
+                    //get the RGB color, invert the y axis, gridzilla coordinates start in the lower left, the screen starts in the upper left
+                    this.artnet.setChannelData(address, universe, channelIndex, screen.getPixelColors(
+                        xOffset + x, 
+                        GridzillaTransform.height - (yOffset + y) - 1));
                     channelIndex += 3;
                 }
                 up = false;
             }
             else {
                 for (var y = GridzillaTransform.universeHeight - 1; y >= 0; --y) {
-                    //get the RGB color
-                    this.artnet.setChannelData(address, universe, channelIndex, screen.getPixelColors(xOffset + x, yOffset + y));
+                    //get the RGB color, invert the y axis, gridzilla coordinates start in the lower left, the screen starts in the upper left
+                    this.artnet.setChannelData(address, universe, channelIndex, screen.getPixelColors(xOffset + x, 
+                        GridzillaTransform.height - (yOffset + y) - 1));
                     channelIndex += 3;
                 }
                 up = true;
@@ -119,6 +122,8 @@ GridzillaTransform.universesPerController = GridzillaTransform.controllerWidth *
 //Hom many pixels are in a universe
 GridzillaTransform.universeWidth = 14;
 GridzillaTransform.universeHeight = 12;
+GridzillaTransform.width = 168;
+GridzillaTransform.height = 36;
 
 module.exports = GridzillaTransform;
 

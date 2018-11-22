@@ -15,7 +15,7 @@ const server = app.listen(port, function () {
 });
 
 // accept JSON and URL encodded parameters
-app.use(BodyParser.json({limit: '200kb', extended: true}));
+app.use(BodyParser.json({limit: '300kb', extended: true}));
 app.use(BodyParser.urlencoded({extended: true}));
 
 
