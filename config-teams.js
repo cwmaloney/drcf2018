@@ -46,7 +46,7 @@ const teamNameToColorsMap = {
              "darkBrown", "darkBrown", "darkBrown", "red", "black"],
   Santa: [ "red", "white", "red", "white", "red", "white", "red", "white", "red", "white"],
   Snow: [ "snow", "snow", "snow", "snow", "snow", "snow", "snow", "snow", "snow", "snow"],
-  Sporting: [ "darkIndigo", "darkIndigo", "sportingBlue", "sportingBlue", "darkIndigo", 
+  "Sporting KC": [ "darkIndigo", "darkIndigo", "sportingBlue", "sportingBlue", "darkIndigo", 
               "darkIndigo", "sportingBlue", "sportingBlue", "darkIndigo", "darkIndigo"],
   "STA Saints": [ "blue", "blue", "gold","gold", "blue", "blue", "gold","gold","blue", "blue" ],
   "Texas Christian": [ "hornedFrogPurple", "hornedFrogPurple", "white", "white", "hornedFrogPurple",
