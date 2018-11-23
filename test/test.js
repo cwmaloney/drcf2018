@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { GridzillaTransform } = require("../GridzillaTransform.js");
+const GridzillaTransform  = require("../GridzillaTransform.js");
 const { Screen } = require("./Screen.js");
 
 //run with: >npm test or IDE run config 
@@ -15,24 +15,6 @@ describe('GridzillaTransfomer tests', function () {
     initializeUniverseMap();
   });
 
-  describe('Universe tests', function () {
-
-    it('diagonal line', function () {
-
-      var screen = new Screen(14,12);
-      screen.diagonalLine(0, 0, 12);
-      
-      //transform
-      var transformer = new GridzillaTransform();
-      transformer.transformUniverse(screen, 0, 0, controllerAddresses[0], 1);
-
-      //check the result
-      //universe cells 1,23,27,45,53,67,79,89,105,111,131,133
-      var channelData = transformer.artnet.getUniverseInfo(controllerAddresses[0], 1).channelData;
-      checkDiagonalLine(channelData, 0, 0, 12);
-    });
-  });
-
   describe('Screen tests', function () {
 
     it('diagonal line', function () {
@@ -44,11 +26,11 @@ describe('GridzillaTransfomer tests', function () {
       transformer.transformScreen(screen);
 
       //check the result
-      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 8).channelData, 0, 0, 12);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 0).channelData, 0, 0, 12);
       checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 4).channelData, 12, 0, 2);
       checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 5).channelData, 0, 2, 10);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 1).channelData, 10, 0, 4);
-      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 2).channelData, 0, 4, 8);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 9).channelData, 10, 0, 4);
+      checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 10).channelData, 0, 4, 8);
     });
     
     it('horizontal line', function () {
@@ -106,7 +88,7 @@ function getUniverseOffset(x, y)
 function initializeUniverseMap(){
   universeMap =  [];
   var channelIndex = 0;
-  var up = true;
+  var up = false;
   for (var x = 0; x < GridzillaTransform.universeWidth; ++x){
     let column = [];
     universeMap[x] = column;
