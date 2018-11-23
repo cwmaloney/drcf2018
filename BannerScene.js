@@ -5,8 +5,8 @@ const colorNameToRgb = require("./config-colors.js");
 
 class BannerScene {
 
-  constructor(grizilla, onPaused, configuration) {
-    this.grizilla = grizilla;
+  constructor(gridzilla, onPaused, configuration) {
+    this.gridzilla = gridzilla;
     this.onPaused = onPaused;
     this.configure(configuration);
   
@@ -15,7 +15,7 @@ class BannerScene {
 
   configure(configuration) {
     const {
-      period = 4000,
+      period = 3000,
 
       line1 = null,
       line2 = null,
@@ -40,7 +40,7 @@ class BannerScene {
   run() {
     this.paused = false;
     this.startTime = new Date();
-    this.onTimer();
+    onTimer(this);
   }
 
   pause() {
@@ -54,31 +54,32 @@ class BannerScene {
     this.onPaused();
   }
 
-  onTimer() {
-    const nowTime = new Date()
-    if (this.startTime + this.period > nowTime) {
-      this.pause();
-      this.onPaused();
-    }
+}
 
-    if (this.line3) {
-      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      frameBuffer.print3Lines(this.line1, this.line2, this.line3,
-        BitmapBuffer.LITTERA_WHITE_11, BitmapBuffer.LITTERA_WHITE_11, BitmapBuffer.LITTERA_WHITE_11);
-      this.gridzilla.transformScreen(frameBuffer);
-    } else if (this.line2) {
-      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      frameBuffer.print2Lines("Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_WHITE_16, BitmapBuffer.LITTERA_WHITE_16);
-      this.gridzilla.transformScreen(frameBuffer);
-    } else if (this.line1) {
-      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      frameBuffer.print1Line("Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_WHITE_16);
-      this.gridzilla.transformScreen(frameBuffer);
-    }
 
-    this.runningTimer = setTimeout(this.onTimer, 1000); 
+function onTimer(scene) {
+  const nowTime = new Date()
+  if (scene.startTime + scene.period > nowTime) {
+    scene.pause();
+    scene.onPaused();
   }
 
+  if (scene.line3) {
+    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    frameBuffer.print3Lines(scene.line1, scene.line2, scene.line3,
+      BitmapBuffer.LITTERA_RED_11);
+      scene.gridzilla.transformScreen(frameBuffer);
+  } else if (scene.line2) {
+    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    frameBuffer.print2Lines(scene.line1, scene.line2, BitmapBuffer.LITTERA_RED_16);
+    scene.gridzilla.transformScreen(frameBuffer);
+  } else if (scene.line1) {
+    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    frameBuffer.print1Line(scene.line1, BitmapBuffer.LITTERA_RED_16);
+    scene.gridzilla.transformScreen(frameBuffer);
+  }
+
+  scene.runningTimer = setTimeout(onTimer, 1000, this); 
 }
 
 module.exports = BannerScene;

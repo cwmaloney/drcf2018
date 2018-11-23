@@ -20,12 +20,14 @@ const bodyParser = require("body-parser");
 
 //////////////////////////////////////////////////////////////////////////////
 // const GridzillaTransform = require("./GridzillaTransform.js");
-const GridzillaTransform = require("./EmulatorTransform.js"); // for debugging
+// const GridzillaTransform = require("./EmulatorTransform.js"); // for debugging
 
 const gridzilla = new GridzillaTransform();
 
 // const FrameBuffer = require("./FrameBuffer.js");
 // var frame = new FrameBuffer(168, 36);
+
+const BitmapBuffer = require("./BitmapBuffer.js");
 
 //////////////////////////////////////////////////////////////////////////////
 // Scenes
@@ -57,8 +59,8 @@ let sceneIndex = -1;
 let pauseTimer = null;
 let forcePauseTimer = null;
 
-const scenePeriod = 90000;
-const pauseWaitPeriod = 15000;
+const scenePeriod = 10000;
+const pauseWaitPeriod = 5000;
 
 function onPaused()
 {
@@ -73,19 +75,19 @@ function onPaused()
   startNextScene();
 }
 
-function forceScenePause() {
-  scenes[sceneIndex].forceScenePause();
+function forcePause() {
+  scenes[sceneIndex].forcePause();
 }
 
 function pauseScene() {
   scenes[sceneIndex].pause();
 
-  forcePauseTimer = setTimeout(forceScenePause, pauseWaitPeriod);
+  forcePauseTimer = setTimeout(forcePause, pauseWaitPeriod);
 }
 
 function startNextScene() {
 
-  if (++sceneIndex > 0) sceneIndex = 0;
+  if (++sceneIndex >= scenes.length) sceneIndex = 0;
 
   scenes[sceneIndex].run();
 
@@ -93,18 +95,19 @@ function startNextScene() {
 }
 
 // create scenes
-const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to", line2: "Deanna Rose", line3: "Children's Farmstead", period: 3000} );
-const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "for synchronized", line3: "music"} );
-const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "Vist", line2: "farmsteadlights.com", line3: "to play games here"} );
+const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane", period: 3000} );
+const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music", line3: "More songs coming soon"} );
+const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "(coming soon)", line2: "Visit farmsteadlights.com", line3: "to play games on Gridizilla" } );
+//const instructions3Banner = new BannerScene(gridzilla, onPaused, { line1: "More songs coming soon" } );
 const messageScene = new MessageScene(gridzilla, onPaused, nameManager);
 
 const scenes = [
   welcomeBanner,
 
   instructionsBanner,
-  instructions2Banner,
-  
-  messageScene
+  instructions2Banner
+  //instructions3Banner,
+  //messageScene
 ];
 
 //////////////////////////////////////////////////////////////////////////////
@@ -212,12 +215,12 @@ function fillResponse(request, response, status, message) {
 
 const port = process.env.PORT || 8000;
 
+BitmapBuffer.initializeFonts().then( () =>  {
+  
+  startNextScene();
+
+});
+
 server.listen(port, function() {
   console.log("gridzilla server starting; listening on port " + port);
 });
-
-BitmapBuffer.initializeFonts().then( () =>  {
-  
-startNextScene();
-
-}
