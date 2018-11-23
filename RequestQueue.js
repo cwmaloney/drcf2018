@@ -304,7 +304,7 @@ class RequestQueue {
 
 
 
-module.exports = { RequestQueue };
+module.exports = RequestQueue;
 
 
 // function getFutureTime(minutes) {

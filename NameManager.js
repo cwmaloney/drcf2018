@@ -3,7 +3,7 @@
 const fs = require('fs');
 
 const { FileUtilities } = require("./FileUtilities.js");
-const { Secrets } = require("secrets.js");
+const { Secrets } = require("./secrets.js");
 
 const censusNamesFileName = 'censusNames.txt';
 const additionalNamesFileName = 'additionalNames.txt';
@@ -139,7 +139,7 @@ class NameManager {
 
 }
 
-module.exports = { NameManager };
+module.exports = NameManager;
 
 // function test() {
 

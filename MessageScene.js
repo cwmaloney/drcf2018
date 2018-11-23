@@ -1,28 +1,50 @@
 
 //////////////////////////////////////////////////////////////////////////////
-const { RequestQueue } = require("./RequestQueue.js");
-const { NameManager } = require("./NameManager.js");
+const RequestQueue = require("./RequestQueue.js");
 //const { Secrets } = require("secrets.js");
 
 // const "Error" = "Error";
 // const okayStatus = "Okay";
 
-const nameManager = new NameManager();
-const messageQueue = new RequestQueue();
-
 class MessageScene {
 
-  constructor() {}
-
-  initialize() {
-    console.log(`loading names  @${new Date()} ...`);
-    nameManager.loadNameLists();
-    console.log(`loading names complete  @${new Date()}`);
-
+  constructor(gridzilla, onPaused, nameManager) {
     console.log(`loading message queue  @${new Date()} ...`);
-    messageQueue.loadMessages();
+    this.requestQueue = new RequestQueue();
+    this.requestQueue.loadRequests();
     console.log(`loading messages complete  @${new Date()}`);
+
+    this.pause = true;
+    this.onPaused = onPaused;
   }
+
+  getRequestCount() {
+    return this.requestQueue.nextId;
+  }
+  
+  getActiveMessagesCount() {
+    return this.requestQueue.getActiveMessagesCount();
+  }
+
+  getQueuedMessagesCount() {
+    return this.requestQueue.getQueuedMessagesCount();
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Scene control 
+  //////////////////////////////////////////////////////////////////////////////
+
+  run() {
+    this.pause = false;
+  }
+
+  pause() {
+    this.pause = true;
+  }
+
+  abort() {}
+
 
   //////////////////////////////////////////////////////////////////////////////
   // addMessage 
