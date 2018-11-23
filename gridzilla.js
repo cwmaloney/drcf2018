@@ -107,8 +107,6 @@ const scenes = [
   messageScene
 ];
 
-startNextScene();
-
 //////////////////////////////////////////////////////////////////////////////
 // the HTTP server
 //////////////////////////////////////////////////////////////////////////////
@@ -217,3 +215,9 @@ const port = process.env.PORT || 8000;
 server.listen(port, function() {
   console.log("gridzilla server starting; listening on port " + port);
 });
+
+BitmapBuffer.initializeFonts().then( () =>  {
+  
+startNextScene();
+
+}
