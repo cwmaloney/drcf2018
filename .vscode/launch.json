@@ -7,6 +7,12 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Gridzilla",
+      "program": "${workspaceFolder}/Gridzilla.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "FrameBuffer Test",
       "program": "${workspaceFolder}/testFrameBuffer.js"
     },
