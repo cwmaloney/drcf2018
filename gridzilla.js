@@ -27,6 +27,8 @@ const gridzilla = new GridzillaTransform();
 // const FrameBuffer = require("./FrameBuffer.js");
 // var frame = new FrameBuffer(168, 36);
 
+const BitmapBuffer = require("./BitmapBuffer.js");
+
 //////////////////////////////////////////////////////////////////////////////
 // Scenes
 //////////////////////////////////////////////////////////////////////////////
@@ -39,14 +41,13 @@ const BannerScene = require("./BannerScene.js");
 //////////////////////////////////////////////////////////////////////////////
 
 const NameManager = require("./NameManager.js");
-//const SuggestionBox = require("./SuggestionBox.js");
 
 const nameManager = new NameManager();
-
 console.log(`loading names  @${new Date()} ...`);
 nameManager.loadNameLists();
 console.log(`loading names complete  @${new Date()}`);
 
+//const SuggestionBox = require("./SuggestionBox.js");
 //const suggestionBox = new SuggestionBox();
 
 //////////////////////////////////////////////////////////////////////////////
@@ -57,8 +58,8 @@ let sceneIndex = -1;
 let pauseTimer = null;
 let forcePauseTimer = null;
 
-const scenePeriod = 90000;
-const pauseWaitPeriod = 15000;
+const scenePeriod = 60000;
+const pauseWaitPeriod = 11000;
 
 function onPaused()
 {
@@ -73,41 +74,41 @@ function onPaused()
   startNextScene();
 }
 
-function forceScenePause() {
-  scenes[sceneIndex].forceScenePause();
+function forcePause() {
+  scenes[sceneIndex].forcePause();
 }
 
 function pauseScene() {
   scenes[sceneIndex].pause();
 
-  forcePauseTimer = setTimeout(forceScenePause, pauseWaitPeriod);
+  forcePauseTimer = setTimeout(forcePause, pauseWaitPeriod);
 }
 
 function startNextScene() {
 
-  if (++sceneIndex > 0) sceneIndex = 0;
+  if (++sceneIndex >= scenes.length) sceneIndex = 0;
 
+  console.log("running scene "+ sceneIndex);
   scenes[sceneIndex].run();
 
   pauseTimer = setTimeout(pauseScene, scenePeriod);
 }
 
 // create scenes
-const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to", line2: "Deanna Rose", line3: "Children's Farmstead", period: 3000} );
-const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "for synchronized", line3: "music"} );
-const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "Vist", line2: "farmsteadlights.com", line3: "to play games here"} );
-const messageScene = new MessageScene(gridzilla, onPaused, nameManager);
+const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane"} );
+const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music", line3: "More songs coming soon"} );
+const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "(coming soon)", line2: "Visit farmsteadlights.com", line3: "to play games on Gridzilla" } );
+//const instructions3Banner = new BannerScene(gridzilla, onPaused, { line1: "More songs coming soon" } );
+const messageScene = new MessageScene(gridzilla, onPaused, nameManager, {});
 
 const scenes = [
   welcomeBanner,
 
   instructionsBanner,
   instructions2Banner,
-  
+  // instructions3Banner,
   messageScene
 ];
-
-startNextScene();
 
 //////////////////////////////////////////////////////////////////////////////
 // the HTTP server
@@ -126,13 +127,13 @@ server.use(bodyParser.json());
 server.get("/status", function(request, response) {
   try {
     const messageCount = messageScene.getRequestCount();
-    const activeCount = messageScene.getActiveMessagesCount();
-    const queuedCount = messageScene.getQueuedMessagesCount();
+    const activeCount = messageScene.getActiveMessageCount();
+    const queuedCount = messageScene.getQueuedMessageCount();
     let message = `messages: requests=${messageCount} ready=${activeCount} future=${queuedCount}\n`;
     return fillResponse(request, response, "Okay", message);
   } catch (error) {
     let message = error.toString();
-    return this.fillResponse(request, response, "Error", message);
+    return fillResponse(request, response, "Error", message);
   }
 });
 
@@ -213,6 +214,12 @@ function fillResponse(request, response, status, message) {
 //////////////////////////////////////////////////////////////////////////////
 
 const port = process.env.PORT || 8000;
+
+BitmapBuffer.initializeFonts().then( () =>  {
+  
+  startNextScene();
+
+});
 
 server.listen(port, function() {
   console.log("gridzilla server starting; listening on port " + port);

@@ -10,8 +10,7 @@ class RequestQueue {
     this.maxPendingRequestsPerUser = maxPendingRequestsPerUser;
     this.nextId = 1;
     this.requests = new Map();
-    this.showingDefaultRequest = false;
-    this.queueFileName = queueName + "requestQueue.json";
+    this.queueFileName = queueName + "Queue.json";
   }
 
   static getNowTimestampObject() {
@@ -30,7 +29,7 @@ class RequestQueue {
 
   static parseDateAndTime(date, time) {
     // get now - use it for defaults
-    const nowTimestampObject = RequestQueue.getNowTimestampObject();;
+    const nowTimestampObject = RequestQueue.getNowTimestampObject();
 
     let parsed = Object.assign(nowTimestampObject);
 
@@ -59,7 +58,7 @@ class RequestQueue {
         parsed.day = Number.parseInt(dateParts[0]);
       }
       if (parsed.year > nowTimestampObject.year) {
-        throw new Error(`Invalid date ${date} - Year must be ${now.year}`);
+        throw new Error(`Invalid date ${date} - Year must be ${nowTimestampObject.year}`);
       }
       if (parsed.month != 2) {
         throw new Error(`Invalid date ${date} - Month must be February`);
@@ -148,7 +147,7 @@ class RequestQueue {
         const timestampObject = this.requests.get(timestampNumber);
         for (let index = 0; index < timestampObject.requests.length; index++) {
           let requestObject = timestampObject.requests[index];
-          if (requestObject.processedCount === undefined || requestObject.processedCount < 1) {      
+          if (!requestObject.processedTimestamp) {      
             activeRequests.push(requestObject);
           }
         }
@@ -193,7 +192,7 @@ class RequestQueue {
     //console.log(`writing requests complete`);
   }
 
-  // ----- queue / dequeue ----
+  // ----- queue request ----
 
   addRequest(sessionId, request, date, time) {
     const nowTimestampNumber = RequestQueue.getNowTimestampNumber();
@@ -215,7 +214,7 @@ class RequestQueue {
 
     console.log("addRequest:", sessionId, id, request, date, time);
 
-    const requestObject = { sessionId, id, request, processedCount: 0 };
+    const requestObject = { sessionId, id, request, processedTimestamp: undefined };
     if (date) {
       requestObject.formattedDate
         = (timestampObject.month).toString().padStart(2,0)
@@ -241,7 +240,7 @@ class RequestQueue {
         const timestampObject = this.requests.get(timestampNumber);
         for (let index = 0; index < timestampObject.requests.length; index++) {
           let requestObject = timestampObject.requests[index];
-          if (requestObject.processedCount === undefined || requestObject.processedCount < 1) {      
+          if (!requestObject.processedTimestamp) {      
             queuedRequests.push(requestObject);
           }
         }
@@ -282,7 +281,7 @@ class RequestQueue {
       const timestampObject = this.requests.get(timestampNumber);
       for (let index = 0; index < timestampObject.requests.length; index++) {
         const requestObject = timestampObject.requests[index];
-        if (requestObject.processedCount === undefined || requestObject.processedCount < 1) {
+        if (!requestObject.processedTimestamp) {
           if (requestObject.sessionId === sessionId) {
             count++;
           } 
@@ -295,8 +294,9 @@ class RequestQueue {
   findRequestById(requestId) {
     for (const timestampNumber of this.requests.keys()) {
      const requestObject = this.requests.get(timestampNumber);
-      if (requestObject.id == requestId) {}
+      if (requestObject.id == requestId) {
         return requestObject;
+      }
     }
     return null;
   }
