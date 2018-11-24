@@ -10,7 +10,7 @@ class RequestQueue {
     this.maxPendingRequestsPerUser = maxPendingRequestsPerUser;
     this.nextId = 1;
     this.requests = new Map();
-    this.queueFileName = queueName + "RequestQueue.json";
+    this.queueFileName = queueName + "Queue.json";
   }
 
   static getNowTimestampObject() {
@@ -29,7 +29,7 @@ class RequestQueue {
 
   static parseDateAndTime(date, time) {
     // get now - use it for defaults
-    const nowTimestampObject = RequestQueue.getNowTimestampObject();;
+    const nowTimestampObject = RequestQueue.getNowTimestampObject();
 
     let parsed = Object.assign(nowTimestampObject);
 
@@ -58,7 +58,7 @@ class RequestQueue {
         parsed.day = Number.parseInt(dateParts[0]);
       }
       if (parsed.year > nowTimestampObject.year) {
-        throw new Error(`Invalid date ${date} - Year must be ${now.year}`);
+        throw new Error(`Invalid date ${date} - Year must be ${nowTimestampObject.year}`);
       }
       if (parsed.month != 2) {
         throw new Error(`Invalid date ${date} - Month must be February`);

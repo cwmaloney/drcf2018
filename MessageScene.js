@@ -17,17 +17,16 @@ class MessageScene {
     this.configure(configuration);
   
     console.log(`loading message queue  @${new Date()} ...`);
-    this.messageQueue = new RequestQueue();
+    this.messageQueue = new RequestQueue("Message");
     this.messageQueue.loadRequests();
     console.log(`loading messages complete  @${new Date()}`);
 
     this.paused = true;
-    this.onPaused = onPaused;
   }
 
   configure(configuration) {
     const {
-      perMesssagePeriod = 5000,
+      perMesssagePeriod = 8000,
       period = 60000,
     } = configuration;
 
@@ -52,22 +51,71 @@ class MessageScene {
   //////////////////////////////////////////////////////////////////////////////
   
   run() {
-    console.log("messageScene run");
+    console.log("MessageScene run");
     this.paused = false;
     this.startTime = Date.now();
-    onTimer(this);
+    this.onTimer();
   }
 
   pause() {
-    console.log("messageScene pause");
+    console.log("MessageScene pause");
     clearTimeout(this.runningTimer);
+    if (this.currentMessage) {
+      // message did not finish so we will restart the message
+      // when the scene restarts
+      this.currentMessage.startTime = undefined;
+    }
     this.paused = true;
     this.onPaused();
   }
 
   forcePause() {
-    console.log("messageScene forcePause");
+    console.log("MessageScene forcePause");
     this.pause();
+  }
+
+  onTimer() {
+    const nowTime = Date.now();
+    if (this.startTime + this.period <= nowTime) {
+      this.pause();
+      return;
+    }
+
+    // if (this.getActiveMessageCount() < 1) {
+    //   this.pause();
+    //   return;
+    // }
+   
+    // console.log("MessageScene onTimer");
+
+    if (this.currentMessage) {
+      if (this.currentMessage.startTime + this.perMesssagePeriod <= nowTime) {
+        this.currentMessage.endTime = nowTime;
+        this.currentMessage.processedCount += 1;
+        this.currentMessage = null;
+      }
+    }
+    if (!this.currentMessage) {
+      this.currentMessage = this.messageQueue.getNextRequest();
+      if (this.currentMessage == null) {
+        this.pause();
+        return;
+      }
+    }
+    if (!this.currentMessage.startTime) {
+      console.log("MessageScene message: " + this.formatMessage(this.currentMessage));
+      this.currentMessage.startTime = nowTime;
+    }
+
+    // redraw every time to be safe
+    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    frameBuffer.print3Lines("To:" + this.currentMessage.recipient,
+                            this.currentMessage.message,
+                            "From:" + this.currentMessage.sender,
+                            BitmapBuffer.LITTERA_WHITE_11);
+    this.gridzilla.transformScreen(frameBuffer);
+
+    this.runningTimer = setTimeout(this.onTimer.bind(this), 1000);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -123,13 +171,13 @@ class MessageScene {
       return this.fillResponse(request, response, "Error", responseMessage);
     }
 
-    const formattedMessage = this.formatMessage(sender, recipient, message);
+    const requestObject = {sender, recipient, message};
     
     try {
-      const messageObject = this.messageQueue.adddRequest(request.sessionId, {sender, recipient, message}, date, time);
+      const messageObject = this.messageQueue.adddRequest(request.sessionId, requestObject, date, time);
    
       // let responseMessage = `*** We are currently testing messages so your message will NOT be display. Try this in a few days. Watch for your message "${message}".`
-      let responseMessage = `Watch for your message "${formattedMessage}"`;
+      let responseMessage = `Watch for your message "${this.formatMessage(requestObject)}"`;
       if (date != null && date != undefined && date.length > 0) {
         responseMessage += ` on ${messageObject.formattedDate}`;
       }
@@ -147,23 +195,20 @@ class MessageScene {
 
   //////////////////////////////////////////////////////////////////////////////
   
-  formatMessage(sender, recipient, message, date, time) {
+  formatMessage(requestObject) {
     let formattedMessage = ''
 
-    formattedMessage = `${recipient}, ${message} ${sender}.  `;
+    formattedMessage = `${requestObject.recipient}, ${requestObject.message}, ${requestObject.sender}.  `;
 
     return formattedMessage;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // we should check the message to prevent hackers from displaying
+   // we should check the message to prevent hackers from displaying
   // "unauthoriized" messages
   
   checkMessage(message) {
     // to do
   }
-
-  //////////////////////////////////////////////////////////////////////////////
 
   fillResponse(request, response, status, message) {
     return response.json({
@@ -173,36 +218,6 @@ class MessageScene {
     });
   }
 
-}
-
-//////////////////////////////////////////////////////////////////////////////
-
-function onTimer(scene) {
-  const nowTime = Date.now();
-  if (scene.startTime + scene.period <= nowTime) {
-    scene.pause();
-    return;
-  }
-
-  if (scene.getActiveMessageCount() < 1) {
-    scene.pause();
-    return;
-  }
- 
-  console.log("messageScene onTimer");
-
-  const messageObject = scene.messageQueue.getNextRequest();
-  if (messageObject == null) {
-    scene.pause();
-    return;
-  }
-
-  // redraw every time to be safe
-  let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-  frameBuffer.print3Lines("To:" + messageObject.recipient, messageObject.message, "From:" + messageObject.sender, BitmapBuffer.LITTERA_WHITE_16);
-  scene.gridzilla.transformScreen(frameBuffer);
-
-  scene.runningTimer = setTimeout(onTimer, 1000, scene); 
 }
 
 module.exports = MessageScene;

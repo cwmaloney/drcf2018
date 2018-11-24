@@ -42,14 +42,14 @@ class BannerScene {
   //////////////////////////////////////////////////////////////////////////////
 
   pause() {
-    console.log("bannerScene pause: " + this.line1 + this.line2 + this.line3)
+    // console.log("bannerScene pause: " + this.formatMessage())
     clearTimeout(this.runningTimer);
     this.paused = true;
     this.onPaused();
   }
 
   forcePause() {
-    console.log("bannerScene forcePause: " + this.line1 + this.line2 + this.line3)
+    console.log("bannerScene forcePause: " + this.formatMessage())
     this.pause();
   }
 
@@ -60,7 +60,7 @@ class BannerScene {
       return;
     }
   
-    console.log("bannerScene onTimer: " + this.line1 + this.line2 + this.line3)
+    // console.log("bannerScene onTimer: " + this.formatMessage())
   
     if (this.line3) {
       let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
@@ -81,10 +81,18 @@ class BannerScene {
   }
 
   run() {
-    console.log("bannerScene run: " + this.line1 + this.line2 + this.line3)
+    console.log("BannerScene run: " + this.formatMessage())
     this.paused = false;
     this.startTime = Date.now();
     this.onTimer();
+  }
+ 
+  formatMessage() {
+    let formattedMessage = ''
+
+    formattedMessage = `${this.line1}, ${this.line2}, ${this.line3}`;
+
+    return formattedMessage;
   }
    
 }

@@ -58,8 +58,8 @@ let sceneIndex = -1;
 let pauseTimer = null;
 let forcePauseTimer = null;
 
-const scenePeriod = 10000;
-const pauseWaitPeriod = 5000;
+const scenePeriod = 60000;
+const pauseWaitPeriod = 11000;
 
 function onPaused()
 {
