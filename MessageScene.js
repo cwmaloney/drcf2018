@@ -2,6 +2,7 @@ const BitmapBuffer = require("./BitmapBuffer.js");
 //const Font = require("./Font.js");
 const Color = require("./Color.js");
 //const colorNameToRgb = require("./config-colors.js");
+const TimestampUtilities = require("./TimestampUtilities.js");
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -91,7 +92,7 @@ class MessageScene {
     if (this.currentMessage) {
       if (this.currentMessage.startTime + this.perMesssagePeriod <= nowTime) {
         this.currentMessage.endTime = nowTime;
-        this.currentMessage.processedTimestamp = RequestQueue.getNowTimestampNumber();
+        this.currentMessage.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
         this.messageQueue.writeRequests();
         this.currentMessage = null;
       }
