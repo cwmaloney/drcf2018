@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Gridzilla",
-      "program": "${workspaceFolder}/Gridzilla.js"
+      "program": "${workspaceFolder}/gridzilla.js"
     },
     {
       "type": "node",
