@@ -19,8 +19,8 @@ const bodyParser = require("body-parser");
 // } = require("./config.js");
 
 //////////////////////////////////////////////////////////////////////////////
-const GridzillaTransform = require("./GridzillaTransform.js");
-// const GridzillaTransform = require("./EmulatorTransform.js"); // for debugging
+// const GridzillaTransform = require("./GridzillaTransform.js");
+const GridzillaTransform = require("./EmulatorTransform.js"); // for debugging
 
 const gridzilla = new GridzillaTransform();
 
@@ -41,14 +41,13 @@ const BannerScene = require("./BannerScene.js");
 //////////////////////////////////////////////////////////////////////////////
 
 const NameManager = require("./NameManager.js");
-//const SuggestionBox = require("./SuggestionBox.js");
 
 const nameManager = new NameManager();
-
 console.log(`loading names  @${new Date()} ...`);
 nameManager.loadNameLists();
 console.log(`loading names complete  @${new Date()}`);
 
+//const SuggestionBox = require("./SuggestionBox.js");
 //const suggestionBox = new SuggestionBox();
 
 //////////////////////////////////////////////////////////////////////////////
@@ -89,25 +88,26 @@ function startNextScene() {
 
   if (++sceneIndex >= scenes.length) sceneIndex = 0;
 
+  console.log("running scene "+ sceneIndex);
   scenes[sceneIndex].run();
 
   pauseTimer = setTimeout(pauseScene, scenePeriod);
 }
 
 // create scenes
-const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane", period: 3000} );
+const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane"} );
 const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music", line3: "More songs coming soon"} );
 const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "(coming soon)", line2: "Visit farmsteadlights.com", line3: "to play games on Gridzilla" } );
 //const instructions3Banner = new BannerScene(gridzilla, onPaused, { line1: "More songs coming soon" } );
-const messageScene = new MessageScene(gridzilla, onPaused, nameManager);
+const messageScene = new MessageScene(gridzilla, onPaused, nameManager, {});
 
 const scenes = [
   welcomeBanner,
 
   instructionsBanner,
-  instructions2Banner
-  //instructions3Banner,
-  //messageScene
+  instructions2Banner,
+  // instructions3Banner,
+  messageScene
 ];
 
 //////////////////////////////////////////////////////////////////////////////
@@ -127,13 +127,13 @@ server.use(bodyParser.json());
 server.get("/status", function(request, response) {
   try {
     const messageCount = messageScene.getRequestCount();
-    const activeCount = messageScene.getActiveMessagesCount();
-    const queuedCount = messageScene.getQueuedMessagesCount();
+    const activeCount = messageScene.getActiveMessageCount();
+    const queuedCount = messageScene.getQueuedMessageCount();
     let message = `messages: requests=${messageCount} ready=${activeCount} future=${queuedCount}\n`;
     return fillResponse(request, response, "Okay", message);
   } catch (error) {
     let message = error.toString();
-    return this.fillResponse(request, response, "Error", message);
+    return fillResponse(request, response, "Error", message);
   }
 });
 
