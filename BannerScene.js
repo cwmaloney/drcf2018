@@ -37,32 +37,44 @@ class BannerScene {
     this.font3 = font3;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Scene control 
+  //////////////////////////////////////////////////////////////////////////////
+  
+
   run() {
+    console.log("bannerScene run: " + this.line1)
     this.paused = false;
-    this.startTime = new Date();
+    this.startTime = Date.now();
     onTimer(this);
   }
 
   pause() {
+    console.log("bannerScene pause: " + this.line1)
     clearTimeout(this.runningTimer);
     this.paused = true;
     this.onPaused();
   }
 
   forcePause() {
-    this.paused = true;
-    this.onPaused();
+    console.log("bannerScene forcePause: " + this.line1)
+    this.pause();
   }
-
+ 
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// onTimer 
+//////////////////////////////////////////////////////////////////////////////
 
 function onTimer(scene) {
-  const nowTime = new Date()
-  if (scene.startTime + scene.period > nowTime) {
+  const nowTime = Date.now();
+  if (scene.startTime + scene.period <= nowTime) {
     scene.pause();
-    scene.onPaused();
+    return;
   }
+
+  console.log("bannerScene onTimer: " + scene.line1)
 
   if (scene.line3) {
     let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
@@ -79,7 +91,7 @@ function onTimer(scene) {
     scene.gridzilla.transformScreen(frameBuffer);
   }
 
-  scene.runningTimer = setTimeout(onTimer, 1000, this); 
+  scene.runningTimer = setTimeout(onTimer, 1000, scene); 
 }
 
 module.exports = BannerScene;
