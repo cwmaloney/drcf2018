@@ -40,58 +40,53 @@ class BannerScene {
   //////////////////////////////////////////////////////////////////////////////
   // Scene control 
   //////////////////////////////////////////////////////////////////////////////
-  
-
-  run() {
-    console.log("bannerScene run: " + this.line1)
-    this.paused = false;
-    this.startTime = Date.now();
-    onTimer(this);
-  }
 
   pause() {
-    console.log("bannerScene pause: " + this.line1)
+    console.log("bannerScene pause: " + this.line1 + this.line2 + this.line3)
     clearTimeout(this.runningTimer);
     this.paused = true;
     this.onPaused();
   }
 
   forcePause() {
-    console.log("bannerScene forcePause: " + this.line1)
+    console.log("bannerScene forcePause: " + this.line1 + this.line2 + this.line3)
     this.pause();
   }
- 
-}
 
-//////////////////////////////////////////////////////////////////////////////
-// onTimer 
-//////////////////////////////////////////////////////////////////////////////
-
-function onTimer(scene) {
-  const nowTime = Date.now();
-  if (scene.startTime + scene.period <= nowTime) {
-    scene.pause();
-    return;
+  onTimer() {
+    const nowTime = Date.now();
+    if (this.startTime + this.period <= nowTime) {
+      this.pause();
+      return;
+    }
+  
+    console.log("bannerScene onTimer: " + this.line1 + this.line2 + this.line3)
+  
+    if (this.line3) {
+      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+      frameBuffer.print3Lines(this.line1, this.line2, this.line3,
+        BitmapBuffer.LITTERA_RED_11);
+        this.gridzilla.transformScreen(frameBuffer);
+    } else if (this.line2) {
+      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+      frameBuffer.print2Lines(this.line1, this.line2, BitmapBuffer.LITTERA_RED_16);
+      this.gridzilla.transformScreen(frameBuffer);
+    } else if (this.line1) {
+      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+      frameBuffer.print1Line(this.line1, BitmapBuffer.LITTERA_RED_16);
+      this.gridzilla.transformScreen(frameBuffer);
+    }
+  
+    this.runningTimer = setTimeout(this.onTimer.bind(this), 1000); 
   }
 
-  console.log("bannerScene onTimer: " + scene.line1)
-
-  if (scene.line3) {
-    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    frameBuffer.print3Lines(scene.line1, scene.line2, scene.line3,
-      BitmapBuffer.LITTERA_RED_11);
-      scene.gridzilla.transformScreen(frameBuffer);
-  } else if (scene.line2) {
-    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    frameBuffer.print2Lines(scene.line1, scene.line2, BitmapBuffer.LITTERA_RED_16);
-    scene.gridzilla.transformScreen(frameBuffer);
-  } else if (scene.line1) {
-    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    frameBuffer.print1Line(scene.line1, BitmapBuffer.LITTERA_RED_16);
-    scene.gridzilla.transformScreen(frameBuffer);
+  run() {
+    console.log("bannerScene run: " + this.line1 + this.line2 + this.line3)
+    this.paused = false;
+    this.startTime = Date.now();
+    this.onTimer();
   }
-
-  scene.runningTimer = setTimeout(onTimer, 1000, scene); 
+   
 }
 
 module.exports = BannerScene;
