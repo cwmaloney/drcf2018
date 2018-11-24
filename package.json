@@ -12,7 +12,7 @@
     "lint": "eslint \"**/*.js\"",
     "lintAndFix": "eslint --fix \"**/*.js\"",
     "beamTest": "node beamTest.js",
-    "test": "mocha"
+    "test": "mocha ./mochaTests/**/*.js"
   },
   "dependencies": {
     "axios": "^0.18.0",

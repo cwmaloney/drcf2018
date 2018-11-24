@@ -4,6 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
+
     {
       "type": "node",
       "request": "launch",
@@ -26,7 +27,10 @@
       "type": "node",
       "request": "launch",
       "name": "Bmp Test",
-      "program": "${workspaceFolder}/test/BmpTest.js"
+      "program": "${workspaceFolder}/test/BmpTest.js",
+      "args": [
+        "print1LineScroll"
+      ]
     },
     {
       "type": "node",
@@ -45,7 +49,7 @@
           "--timeout",
           "999999",
           "--colors",
-          "${workspaceFolder}/test"
+          "${workspaceFolder}/mochaTests"
       ],
       "internalConsoleOptions": "openOnSessionStart"
   }
