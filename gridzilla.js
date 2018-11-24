@@ -19,7 +19,7 @@ const bodyParser = require("body-parser");
 // } = require("./config.js");
 
 //////////////////////////////////////////////////////////////////////////////
-// const GridzillaTransform = require("./GridzillaTransform.js");
+const GridzillaTransform = require("./GridzillaTransform.js");
 // const GridzillaTransform = require("./EmulatorTransform.js"); // for debugging
 
 const gridzilla = new GridzillaTransform();
@@ -97,7 +97,7 @@ function startNextScene() {
 // create scenes
 const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane", period: 3000} );
 const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music", line3: "More songs coming soon"} );
-const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "(coming soon)", line2: "Visit farmsteadlights.com", line3: "to play games on Gridizilla" } );
+const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "(coming soon)", line2: "Visit farmsteadlights.com", line3: "to play games on Gridzilla" } );
 //const instructions3Banner = new BannerScene(gridzilla, onPaused, { line1: "More songs coming soon" } );
 const messageScene = new MessageScene(gridzilla, onPaused, nameManager);
 

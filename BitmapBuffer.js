@@ -224,6 +224,5 @@ class BitmapBuffer {
 }
 
 
-
 module.exports = BitmapBuffer;
 
