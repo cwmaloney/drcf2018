@@ -91,7 +91,8 @@ class MessageScene {
     if (this.currentMessage) {
       if (this.currentMessage.startTime + this.perMesssagePeriod <= nowTime) {
         this.currentMessage.endTime = nowTime;
-        this.currentMessage.processedCount += 1;
+        this.currentMessage.processedTimestamp = RequestQueue.getNowTimestampNumber();
+        this.messageQueue.writeRequests();
         this.currentMessage = null;
       }
     }
