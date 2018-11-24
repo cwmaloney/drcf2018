@@ -2,6 +2,7 @@
 
 const EmulatorTransform = require("../EmulatorTransform.js");
 const BitmapBuffer = require("../BitmapBuffer.js");
+const HorizontalScroller = require("../HorizontalScroller.js");
 const Color = require("../Color.js");
 
 const Jimp = require('jimp');
@@ -64,9 +65,30 @@ function testPrint1Line() {
     transform.close();
 }
 
-async function testPrint1LineScroll() {
+async function testHorizontalScrollText(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    await bmpBuff.print1LineScroll("Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, transform, 30, 10000);
+    let scroller1 = new HorizontalScroller(0, 0, 168, bmpBuff, transform);
+    let scroller2 = new HorizontalScroller(0, 18, 168, bmpBuff, transform);
+    scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, 30000);
+    await scroller2.scrollText("Home of the Holiday Lights at Farmstead Lane", BitmapBuffer.LITTERA_RED_16, 30, 30000);
+    transform.close();
+}
+
+async function testScrollStop(){
+    let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    let scroller1 = new HorizontalScroller(0, 0, 168, bmpBuff, transform);
+    let promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, 30000);
+    setTimeout(() => {
+        promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_YELLOW_16, 30, 10000);
+    }, 10000);
+    promise.then(() => {transform.close()});
+    
+}
+
+function testPrint(){
+    let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    bmpBuff.print("Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 50, 5);
+    transform.transformScreen(bmpBuff);
     transform.close();
 }
 
@@ -94,8 +116,16 @@ BitmapBuffer.initializeFonts().then( () => {
         case "print1Line":
             testPrint1Line();
             break;
-        case "print1LineScroll":
-            testPrint1LineScroll();
+        case "horizontalScrollText":
+            testHorizontalScrollText();
+            break;
+        case "print":
+            console.log("Text should be cropped")
+            testPrint();
+            break;
+        case "scrollStop":
+            console.log("Text should change color after 10 seconds")
+            testScrollStop();
             break;
     }
 });

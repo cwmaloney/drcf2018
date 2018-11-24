@@ -26,13 +26,7 @@ class BitmapBuffer {
         return instance;
     }
 
-    static fromBitmapBuffer(buffer) {
-        var instance = new BitmapBuffer();
-        instance.image = buffer.image.clone();
-        return instance;
-    }
-
-    //TODO: fromPath take a path to an image and open the file and read it
+    //TODO: fromPath take a path to an image and open the file and read it, that would have to be async
 
     /**
      * Retuns the RGB values in a 3 element array.  This is the method used by transforms.
@@ -196,51 +190,22 @@ class BitmapBuffer {
                 this.image.bitmap.width, this.image.bitmap.height);
     }
 
-    //TODO: return a promise or take a callback or use async/await
-    //  make it cancellable
-    //  add support for 1 or 2 fixed lines
-    //  add support for multiple lines scrolling?
-    //  logic to detect if the line even needs scrolling
-    //  break the scrolling logic out and make it reusable
-    async print1LineScroll(text1, font1, transform,  speed, maxTime){
-        if (maxTime == null) {
-            maxTime = 600000; //10 minutes
+    print(text1, font1, x, y) {
+        var text1Width = Jimp.measureText(font1, text1);
+        var text1Height = Jimp.measureTextHeight(font1, text1);
+
+        if (x == null) {
+            x = 0;
         }
-        if (speed == null) {
-            speed = 30;
+        if (y == null) {
+            y = 0;
         }
-        var textWidth = Jimp.measureText(font1, text1) + 4;
-        var textHeight = Jimp.measureTextHeight(font1, text1) + 2;
-        var textImage = new Jimp(textWidth, textHeight, Jimp.rgbaToInt(0, 0, 0, 255));
-        textImage.print(font1, 2, 1, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });
+        //If you tell Jimp to print with the exact width, it will wrap, maybe there is an error in their lenght calculation
+        //Addint 4 seems to be enough to get the correct behavior
+        var width = text1Width + 4;
         
-        var gzx = 0;
-        var gzy = (this.image.bitmap.height / 2) - (textHeight / 2);
-        var tix = 0;
-        var tiy = 0;
-        var b1width = Math.min(this.image.bitmap.width, textWidth - tix);
-        var b2width = this.image.bitmap.width - b1width;
-        this.image.blit(textImage, gzx, gzy, tix++, tiy, b1width, textHeight);
-        transform.transformScreen(this);
-
-        var interval = setInterval(() => {
-            maxTime -= speed;
-            if (maxTime < 0){
-                clearInterval(interval)
-            }
-            b1width = Math.min(this.image.bitmap.width, textWidth - tix);
-            b2width = this.image.bitmap.width - b1width;
-            this.image.blit(textImage, gzx, gzy, tix++, tiy, b1width, textHeight);
-            if (b2width > 0){
-                this.image.blit(textImage, b1width, gzy, 0, tiy, b2width, textHeight);
-            }
-            
-            transform.transformScreen(this);
-
-            if (tix > textWidth) {
-                tix = 0;
-            }
-        }, speed);
+        this.image.print(font1, x, y, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP },
+                width, text1Height);
     }
 
     static initializeFonts(){
