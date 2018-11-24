@@ -30,6 +30,7 @@ function testDrawing() {
 
     bmpBuff.drawCircle(75, 18, 10, new Color(255, 0, 255));
     transform.transformScreen(bmpBuff);
+    transform.close();
 
     // var image = new Jimp(168, 36, Jimp.rgbaToInt(255, 255, 255, 255), (err, image) => {
     //     image.setPixelColor(Jimp.rgbaToInt(255, 0, 0, 255), 0, 0);
@@ -46,12 +47,27 @@ function testPrint3Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     bmpBuff.print3Lines("Welcome to", "Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_11, BitmapBuffer.LITTERA_RED_11);
     transform.transformScreen(bmpBuff);
+    transform.close();
 }
 
 function testPrint2Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     bmpBuff.print2Lines("Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16);
     transform.transformScreen(bmpBuff);
+    transform.close();
+}
+
+function testPrint1Line() {
+    let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    bmpBuff.print1Line("Deanna Rose", BitmapBuffer.LITTERA_GREEN_16);
+    transform.transformScreen(bmpBuff);
+    transform.close();
+}
+
+async function testPrint1LineScroll() {
+    let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    await bmpBuff.print1LineScroll("Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, transform, 30, 10000);
+    transform.close();
 }
 
 BitmapBuffer.initializeFonts().then( () => {
@@ -74,6 +90,12 @@ BitmapBuffer.initializeFonts().then( () => {
             break;
         case "drawing":
             testDrawing();
+            break;
+        case "print1Line":
+            testPrint1Line();
+            break;
+        case "print1LineScroll":
+            testPrint1LineScroll();
             break;
     }
 });

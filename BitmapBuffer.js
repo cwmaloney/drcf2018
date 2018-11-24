@@ -26,6 +26,12 @@ class BitmapBuffer {
         return instance;
     }
 
+    static fromBitmapBuffer(buffer) {
+        var instance = new BitmapBuffer();
+        instance.image = buffer.image.clone();
+        return instance;
+    }
+
     //TODO: fromPath take a path to an image and open the file and read it
 
     /**
@@ -85,7 +91,6 @@ class BitmapBuffer {
         }
 
     }
-
 
     // draw a rectangle outline
     drawRect(x, y, width, height, color) {
@@ -168,21 +173,74 @@ class BitmapBuffer {
         if (font3 == null) {
             font3 = font1;
         }
-        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12)
-            .print(font2, 0, 12, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12)
-            .print(font3, 0, 24, { text: text3, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12);
+        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+                    this.image.bitmap.width, this.image.bitmap.height / 3)
+            .print(font2, 0, 12, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
+                    this.image.bitmap.width, this.image.bitmap.height / 3)
+            .print(font3, 0, 24, { text: text3, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
+                    this.image.bitmap.width, this.image.bitmap.height / 3);
     }
 
     print2Lines(text1, text2, font1, font2) {
         if (font2 == null) {
             font2 = font1;
         }
-        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 18)
-            .print(font2, 0, 18, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 18);
+        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
+                    this.image.bitmap.width, this.image.bitmap.height / 2)
+            .print(font2, 0, this.image.bitmap.height / 2, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+                    this.image.bitmap.width, this.image.bitmap.height / 2);
     }
 
-    print1Line(text1, font) {
-        this.image.print(font, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 36);
+    print1Line(text1, font1) {
+        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+                this.image.bitmap.width, this.image.bitmap.height);
+    }
+
+    //TODO: return a promise or take a callback or use async/await
+    //  make it cancellable
+    //  add support for 1 or 2 fixed lines
+    //  add support for multiple lines scrolling?
+    //  logic to detect if the line even needs scrolling
+    //  break the scrolling logic out and make it reusable
+    async print1LineScroll(text1, font1, transform,  speed, maxTime){
+        if (maxTime == null) {
+            maxTime = 600000; //10 minutes
+        }
+        if (speed == null) {
+            speed = 30;
+        }
+        var textWidth = Jimp.measureText(font1, text1) + 4;
+        var textHeight = Jimp.measureTextHeight(font1, text1) + 2;
+        var textImage = new Jimp(textWidth, textHeight, Jimp.rgbaToInt(0, 0, 0, 255));
+        textImage.print(font1, 2, 1, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });
+        
+        var gzx = 0;
+        var gzy = (this.image.bitmap.height / 2) - (textHeight / 2);
+        var tix = 0;
+        var tiy = 0;
+        var b1width = Math.min(this.image.bitmap.width, textWidth - tix);
+        var b2width = this.image.bitmap.width - b1width;
+        this.image.blit(textImage, gzx, gzy, tix++, tiy, b1width, textHeight);
+        transform.transformScreen(this);
+
+        var interval = setInterval(() => {
+            maxTime -= speed;
+            if (maxTime < 0){
+                clearInterval(interval)
+            }
+            b1width = Math.min(this.image.bitmap.width, textWidth - tix);
+            b2width = this.image.bitmap.width - b1width;
+            this.image.blit(textImage, gzx, gzy, tix++, tiy, b1width, textHeight);
+            if (b2width > 0){
+                this.image.blit(textImage, b1width, gzy, 0, tiy, b2width, textHeight);
+            }
+            
+            transform.transformScreen(this);
+
+            if (tix > textWidth) {
+                tix = 0;
+            }
+        }, speed);
     }
 
     static initializeFonts(){

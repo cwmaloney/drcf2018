@@ -21,15 +21,15 @@
       "type": "node",
       "request": "launch",
       "name": "EmulatorTransform Test",
-      "program": "${workspaceFolder}/test/EmulatorTransformTest.js"
+      "program": "${workspaceFolder}/tests/EmulatorTransformTest.js"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Bmp Test",
-      "program": "${workspaceFolder}/test/BmpTest.js",
+      "program": "${workspaceFolder}/tests/BmpTest.js",
       "args": [
-        "print1LineScroll"
+        "print3Lines"
       ]
     },
     {
