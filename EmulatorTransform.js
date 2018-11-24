@@ -21,6 +21,8 @@ class EmulatorTransform {
     constructor() {
     }
 
+    close(){}
+
     transformScreen(screen){
         var buffer;
         if (screen instanceof FrameBuffer){
@@ -43,7 +45,7 @@ class EmulatorTransform {
             data: buffer
         })
         .then((res) => {
-            console.log(`status: ${res.status}`)
+            //console.log(`status: ${res.status}`)
         })
         .catch((error) => {
             console.error(error)
