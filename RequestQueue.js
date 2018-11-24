@@ -10,8 +10,7 @@ class RequestQueue {
     this.maxPendingRequestsPerUser = maxPendingRequestsPerUser;
     this.nextId = 1;
     this.requests = new Map();
-    this.showingDefaultRequest = false;
-    this.queueFileName = queueName + "requestQueue.json";
+    this.queueFileName = queueName + ".json";
   }
 
   static getNowTimestampObject() {
@@ -295,8 +294,9 @@ class RequestQueue {
   findRequestById(requestId) {
     for (const timestampNumber of this.requests.keys()) {
      const requestObject = this.requests.get(timestampNumber);
-      if (requestObject.id == requestId) {}
+      if (requestObject.id == requestId) {
         return requestObject;
+      }
     }
     return null;
   }
