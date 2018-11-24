@@ -13,7 +13,7 @@
 				},
 				"timestampString": "201802040956",
 				"timestampNumber": 201802040956,
-				"messages": [
+				"requests": [
 					{
             "id": 1,
             "sender": "Sheldon",
@@ -35,7 +35,7 @@
 				},
 				"timestampString": "201802041501",
 				"timestampNumber": 201802041501,
-				"messages": [
+				"requests": [
 					{
 						"id": 2,
 						"sender": "Raj",
@@ -63,7 +63,7 @@
 				},
 				"timestampString": "201802142000",
 				"timestampNumber": 201802142000,
-				"messages": [
+				"requests": [
 					{
 						"id": 4,
 						"sender": "Howard",
