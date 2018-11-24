@@ -206,6 +206,8 @@ class BitmapBuffer {
         
         this.image.print(font1, x, y, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP },
                 width, text1Height);
+
+        return [width, text1Height];
     }
 
     static initializeFonts(){
