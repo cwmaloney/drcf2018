@@ -43,10 +43,12 @@ class EmulatorTransform {
             data: buffer
         })
         .then((res) => {
-            console.log(`status: ${res.status}`)
+          if (res.status != 200) {
+            console.log(`status: ${res.status}`);
+          }
         })
         .catch((error) => {
-            console.error(error)
+            console.error(error);
         });
 
     }
