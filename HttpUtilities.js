@@ -31,22 +31,22 @@ class HttpUtilities {
         });
       }
     })
-  };
+  }
   
 }
 
 module.exports = { HttpUtilities };
 
-function test() {
-  HttpUtilities.get('http://scooterlabs.com/echo?x=1&y=2', 1000)
-  .then((html) => {
-    console.log(html);
-    return HttpUtilities.get('http://scooterlabs.com/echo?x=3&y=4', 1000);
-  })
-  .then((html) => { 
-    console.log(html);
-  })
-  .catch((error) => console.error(error));
-}
+// function test() {
+//   HttpUtilities.get('http://scooterlabs.com/echo?x=1&y=2', 1000)
+//   .then((html) => {
+//     console.log(html);
+//     return HttpUtilities.get('http://scooterlabs.com/echo?x=3&y=4', 1000);
+//   })
+//   .then((html) => { 
+//     console.log(html);
+//   })
+//   .catch((error) => console.error(error));
+// }
 
 // test();
