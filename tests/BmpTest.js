@@ -10,10 +10,26 @@ const Jimp = require('jimp');
 var transform = new EmulatorTransform();
 
 function testBmpFile() {
-    Jimp.read("test/sample1.bmp").then(image => {
+    Jimp.read("tests/sample1.bmp").then(image => {
         let bmpBuff = BitmapBuffer.fromImage(image);
         transform.transformScreen(bmpBuff);
     }, reason => console.log(reason));
+}
+
+async function testImageScroll() {
+    let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(255, 255, 255));
+    let srcImage = await Jimp.read("tests/car24.png");
+    let scroller1 = new HorizontalScroller(36, 6, bmpBuff, transform);
+    await scroller1.scrollBuffer(srcImage, 30, null, 12000);
+    transform.close();
+}
+
+async function testBlit(){
+    let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    let srcImage = await Jimp.read("tests/car24.png");
+    bmpBuff.blit(srcImage, 5, 5);
+    transform.transformScreen(bmpBuff);
+    transform.close();
 }
 
 function testDrawing() {
@@ -67,19 +83,19 @@ function testPrint1Line() {
 
 async function testHorizontalScrollText(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    let scroller1 = new HorizontalScroller(0, 0, 168, bmpBuff, transform);
-    let scroller2 = new HorizontalScroller(0, 18, 168, bmpBuff, transform);
-    scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, 30000);
-    await scroller2.scrollText("Home of the Holiday Lights at Farmstead Lane", BitmapBuffer.LITTERA_RED_16, 30, 30000);
+    let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
+    let scroller2 = new HorizontalScroller(0, 18, bmpBuff, transform);
+    scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, null, 30000);
+    await scroller2.scrollText("Home of the Holiday Lights at Farmstead Lane", BitmapBuffer.LITTERA_RED_16, 30, null, 30000);
     transform.close();
 }
 
 async function testScrollStop(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    let scroller1 = new HorizontalScroller(0, 0, 168, bmpBuff, transform);
-    let promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, 30000);
+    let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
+    let promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, null, 30000);
     setTimeout(() => {
-        promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_YELLOW_16, 30, 10000);
+        promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_YELLOW_16, 30, null, 10000);
     }, 10000);
     promise.then(() => {transform.close()});
     
@@ -126,6 +142,12 @@ BitmapBuffer.initializeFonts().then( () => {
         case "scrollStop":
             console.log("Text should change color after 10 seconds")
             testScrollStop();
+            break;
+        case "imageScroll":
+            testImageScroll();
+            break;
+        case "blit":
+            testBlit();
             break;
     }
 });
