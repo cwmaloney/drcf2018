@@ -144,6 +144,7 @@ class MessageScene {
       return;
     }
    
+    // date and time are optional
     let date = request.parameters.displayDate;
     let time = request.parameters.displayTime;
    
