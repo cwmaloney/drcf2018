@@ -37,50 +37,12 @@ class RequestQueue {
     return activeRequests;
   }
 
-  // ----- file storage -----
-
-  loadRequests(fileName) {
-    if (!fileName) {
-      fileName = this.queueFileName;
-    }
-    if (fs.existsSync(fileName)) {
-      console.log(`loading requests from ${fileName}...`);
-
-      try {
-        const temp = JSON.parse(fs.readFileSync(fileName, 'utf8'));
-        this.nextId = temp.nextId;
-        this.requests = new Map(temp.map);
-      } catch (error) {
-        if (error.code !== "ENOENT") {
-          throw error;
-        }
-      }
-
-      console.log(`loading requests complete nextId=${this.nextId} size=${this.requests.size}`);
-    }
-  }
-
-  writeRequests(fileName) {
-    if (!fileName) {
-      fileName = this.queueFileName;
-    }
-    //console.log(`writing requests to ${fileName} nextId=${this.nextId} size=${this.requests.size} ...`);
-
-    const temp = { nextId: this.nextId, map: [...this.requests] };
-
-    fs.writeFileSync(fileName, JSON.stringify(temp, null, '\t'), 'utf8');
-
-    //console.log(`writing requests complete`);
-  }
-
-  // ----- queue request ----
-
   addRequest(sessionId, request, date, time) {
-    const nowTimestampNumber = RequestQueue.getNowTimestampNumber();
+    const nowTimestampNumber = TimestampUtilities.getNowTimestampNumber();
 
-    const timestampObject = RequestQueue.parseDateAndTime(date, time);
-    const timestampString = RequestQueue.getTimestampStringFromObject(timestampObject);
-    const timestampNumber = RequestQueue.getTimestampNumber(timestampString);
+    const timestampObject = TimestampUtilities.parseDateAndTime(date, time);
+    const timestampString = TimestampUtilities.getTimestampStringFromObject(timestampObject);
+    const timestampNumber = TimestampUtilities.getTimestampNumber(timestampString);
 
     if (timestampNumber < nowTimestampNumber) {
       throw new Error(`Requested request time is in the past`);
@@ -180,6 +142,42 @@ class RequestQueue {
       }
     }
     return null;
+  }
+
+  // ----- file storage -----
+
+  loadRequests(fileName) {
+    if (!fileName) {
+      fileName = this.queueFileName;
+    }
+    if (fs.existsSync(fileName)) {
+      console.log(`loading requests from ${fileName}...`);
+
+      try {
+        const temp = JSON.parse(fs.readFileSync(fileName, 'utf8'));
+        this.nextId = temp.nextId;
+        this.requests = new Map(temp.requests);
+      } catch (error) {
+        if (error.code !== "ENOENT") {
+          throw error;
+        }
+      }
+
+      console.log(`loading requests complete nextId=${this.nextId} size=${this.requests.size}`);
+    }
+  }
+
+  writeRequests(fileName) {
+    if (!fileName) {
+      fileName = this.queueFileName;
+    }
+    //console.log(`writing requests to ${fileName} nextId=${this.nextId} size=${this.requests.size} ...`);
+
+    const temp = { nextId: this.nextId, requests: this.requests };
+
+    fs.writeFileSync(fileName, JSON.stringify(temp, null, '\t'), 'utf8');
+
+    //console.log(`writing requests complete`);
   }
 }
 
