@@ -31,6 +31,7 @@ describe('GridzillaTransfomer tests', function () {
       checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 5).channelData, 0, 2, 10);
       checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 9).channelData, 10, 0, 4);
       checkDiagonalLine(transformer.artnet.getUniverseInfo(controllerAddresses[0], 10).channelData, 0, 4, 8);
+      transformer.close();
     });
     
     it('horizontal line', function () {
@@ -55,6 +56,7 @@ describe('GridzillaTransfomer tests', function () {
       checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[2], 5).channelData, 5, 14);
       checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[2], 6).channelData, 5, 14);
       checkHorizontalLine(transformer.artnet.getUniverseInfo(controllerAddresses[2], 7).channelData, 5, 14);
+      transformer.close();
     });
   });
 });

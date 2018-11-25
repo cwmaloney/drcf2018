@@ -58,6 +58,10 @@ class GridzillaTransform {
         }
     }
 
+    close(){
+        this.artnet.close();
+    }
+
     transformScreen(screen){
         
         //transform all universes

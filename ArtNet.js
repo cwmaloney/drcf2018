@@ -105,7 +105,7 @@ class ArtNet extends EventEmitter {
     });
 
     universeInfo.socket.on('close', function () {
-      console.log("ArtNet::socket closed, universe=" + universe);
+      //console.log("ArtNet::socket closed, universe=" + universe);
     });
 
     if (sourcePort) {
@@ -233,8 +233,8 @@ class ArtNet extends EventEmitter {
   closeUniverse(address, universe) {
     const universeInfo = this.getUniverseInfo(address, universe, false);
     if (universeInfo) {
-      this.clearInterval(universeInfo.refreshInternvalTimerId);
-      this.clearTimeout(universeInfo.throttleTimerId);
+      clearInterval(universeInfo.refreshInternvalTimerId);
+      clearTimeout(universeInfo.throttleTimerId);
       universeInfo.socket.close();
       this.universeInfos.delete(this.getUniverseKey(address, universe));
     }

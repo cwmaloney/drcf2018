@@ -26,7 +26,7 @@ class BitmapBuffer {
         return instance;
     }
 
-    //TODO: fromPath take a path to an image and open the file and read it
+    //TODO: fromPath take a path to an image and open the file and read it, that would have to be async
 
     /**
      * Retuns the RGB values in a 3 element array.  This is the method used by transforms.
@@ -85,7 +85,6 @@ class BitmapBuffer {
         }
 
     }
-
 
     // draw a rectangle outline
     drawRect(x, y, width, height, color) {
@@ -161,6 +160,39 @@ class BitmapBuffer {
         }
     }
 
+    /**
+     * Blit an image on to this buffer
+     * @param {Jimp} srcImage The source image to blit on to this buffer
+     * @param {number} x  Where to place the image on this buffer
+     * @param {number} y Where to place the image on this buffer
+     * @param {number} [max available or max of the source] width 
+     * How much of the source image to show, use to crop the source image, a value larger than the source image will be ignored
+     * @param {number} [max available or max of the source] height 
+     * How much of the source image to show, use to crop the source image, a value larger than the source image will be ignored
+     */
+    blit(srcImage, x, y, width, height){
+        if (width == null){
+            width = Math.min(srcImage.bitmap.width, this.image.bitmap.width - x);
+        } else {
+            width = Math.min(srcImage.bitmap.width, this.image.bitmap.width - x, width);
+        }
+        if (height == null){
+            height = Math.min(srcImage.bitmap.height, this.image.bitmap.height - y);
+        } else {
+            height = Math.min(srcImage.bitmap.height, this.image.bitmap.height - y, height);
+        }
+        this.image.blit(srcImage, x, y, 0, 0, width, height);
+    }
+
+    /**
+     * Convience method to print three lines of text centered on the screen
+     * @param {string} text1 line 1
+     * @param {string} text2 line 2
+     * @param {string} text3 line 3
+     * @param {Jimp.Font} font1 line 1 font
+     * @param {Jimp.Font} [font1] font2 line 2 font
+     * @param {Jimp.Font} [font1] font3 line 3 font 
+     */
     print3Lines(text1, text2, text3, font1, font2, font3) {
         if (font2 == null) {
             font2 = font1;
@@ -168,21 +200,66 @@ class BitmapBuffer {
         if (font3 == null) {
             font3 = font1;
         }
-        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12)
-            .print(font2, 0, 12, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12)
-            .print(font3, 0, 24, { text: text3, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 12);
+        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+                    this.image.bitmap.width, this.image.bitmap.height / 3)
+            .print(font2, 0, 12, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
+                    this.image.bitmap.width, this.image.bitmap.height / 3)
+            .print(font3, 0, 24, { text: text3, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
+                    this.image.bitmap.width, this.image.bitmap.height / 3);
     }
 
+    /**
+     * Convience method to print two lines of text centered on the screen
+     * @param {string} text1 line 1
+     * @param {string} text2 line 2
+     * @param {Jimp.Font} font1 line 1 font
+     * @param {Jimp.Font} [font1] font2 line 2 font
+     */
     print2Lines(text1, text2, font1, font2) {
         if (font2 == null) {
             font2 = font1;
         }
-        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 18)
-            .print(font2, 0, 18, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 18);
+        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
+                    this.image.bitmap.width, this.image.bitmap.height / 2)
+            .print(font2, 0, this.image.bitmap.height / 2, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+                    this.image.bitmap.width, this.image.bitmap.height / 2);
     }
 
-    print1Line(text1, font) {
-        this.image.print(font, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 168, 36);
+    /**
+     * Convience method to print one line of text centered on the screen
+     * @param {string} text1 line 1
+     * @param {Jimp.Font} font1 line 1 font
+     */
+    print1Line(text1, font1) {
+        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+                this.image.bitmap.width, this.image.bitmap.height);
+    }
+
+    /**
+     * Print text at an exact coordinate
+     * @param {string} text1 the text to print
+     * @param {Jimp.Font} font1 The font to use
+     * @param {number} x Where to print
+     * @param {number} y Where to print
+     */
+    print(text1, font1, x, y) {
+        var text1Width = Jimp.measureText(font1, text1);
+        var text1Height = Jimp.measureTextHeight(font1, text1);
+
+        if (x == null) {
+            x = 0;
+        }
+        if (y == null) {
+            y = 0;
+        }
+        //If you tell Jimp to print with the exact width, it will wrap, maybe there is an error in their lenght calculation
+        //Addint 4 seems to be enough to get the correct behavior
+        var width = text1Width + 4;
+        
+        this.image.print(font1, x, y, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP },
+                width, text1Height);
+
+        return [width, text1Height];
     }
 
     static initializeFonts(){

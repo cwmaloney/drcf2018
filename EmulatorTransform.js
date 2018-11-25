@@ -21,6 +21,8 @@ class EmulatorTransform {
     constructor() {
     }
 
+    close(){}
+
     transformScreen(screen){
         var buffer;
         if (screen instanceof FrameBuffer){

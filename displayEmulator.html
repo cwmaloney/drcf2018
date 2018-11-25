@@ -8,14 +8,13 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.dom.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.sound.js"></script> 
     <script type="text/javascript">
-      var pixelSize = 4;
       var rows = 36;
       var columns = 168;
 
       var socket = io.connect('http://localhost:3000');
 
       function setup() {
-        createCanvas(columns*pixelSize, rows*pixelSize);
+        createCanvas(columns, rows);
         background(0);
         socket.on('background',
           function(data) {
@@ -38,14 +37,14 @@
                   drawPixel(x, y, data[pixelIndex], data[pixelIndex+1], data[pixelIndex+2]);
                 }
               }
+              updatePixels();
             }
         );
       }
       
       function drawPixel(x, y, r, g, b) {
         //console.log("drawPixel: ", x, ",", y, "-", r, ",", g, ",", b);
-        fill(r, g, b);
-        rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+        set(x, y, [r, g, b, 255]);
       }
       
       function draw() {
