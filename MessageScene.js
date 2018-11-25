@@ -176,7 +176,7 @@ class MessageScene {
     const requestObject = {sender, recipient, message};
     
     try {
-      const messageObject = this.messageQueue.adddRequest(request.sessionId, requestObject, date, time);
+      const messageObject = this.messageQueue.addRequest(request.sessionId, requestObject, date, time);
    
       // let responseMessage = `*** We are currently testing messages so your message will NOT be display. Try this in a few days. Watch for your message "${message}".`
       let responseMessage = `Watch for your message "${this.formatMessage(requestObject)}"`;
