@@ -37,7 +37,7 @@ const MessageScene = require("./MessageScene.js");
 const BannerScene = require("./BannerScene.js");
 
 //////////////////////////////////////////////////////////////////////////////
-// Data Managers
+// Managers
 //////////////////////////////////////////////////////////////////////////////
 
 const NameManager = require("./NameManager.js");
@@ -47,8 +47,8 @@ console.log(`loading names  @${new Date()} ...`);
 nameManager.loadNameLists();
 console.log(`loading names complete  @${new Date()}`);
 
-//const SuggestionBox = require("./SuggestionBox.js");
-//const suggestionBox = new SuggestionBox();
+const SuggestionManager = require("./SuggestionManager.js");
+const suggestionManager = new SuggestionManager();
 
 //////////////////////////////////////////////////////////////////////////////
 // Scene management
@@ -129,11 +129,17 @@ server.get("/status", function(request, response) {
     const messageCount = messageScene.getRequestCount();
     const activeCount = messageScene.getActiveMessageCount();
     const queuedCount = messageScene.getQueuedMessageCount();
-    let message = `messages: requests=${messageCount} ready=${activeCount} future=${queuedCount}\n`;
-    return fillResponse(request, response, "Okay", message);
+    const messages = { ready: activeCount, queued: queuedCount, requests: messageCount }
+    const suggestions = { count: suggestionManager.getSuggestions().length }
+    return response.json({
+      messages,
+      suggestions
+    });
   } catch (error) {
-    let message = error.toString();
-    return fillResponse(request, response, "Error", message);
+    return response.json({
+      status: "Error",
+      error: error.toString()
+    });
   }
 });
 
@@ -176,13 +182,23 @@ server.post("/messages", function(request, response) {
 //   return pollScene.addName(request, response);
 // });
 
-// server.post("/suggestions", function(request, response) {
-//   return suggestionBox.addSuggestion(request, response);
-// });
+server.post("/suggestions", function(request, response) {
+  return suggestionManager.addSuggestion(request, response);
+});
 
-// server.get("/suggestions", function(request, response) {
-//   return suggestionBox.getSuggestions(request, response);
-// });
+server.get("/suggestions", function(request, response) {
+  try {
+    const suggestions = suggestionManager.getSuggestions();
+    return response.json({
+        suggestions
+    });
+  } catch (error) {
+    return response.json({
+      status: "Error",
+      error: error.toString()
+    });
+  }
+});
 
 // server.post("/snakes", function(request, response) {
 //   return snakesScene.changeDirection(request, response);
@@ -199,15 +215,6 @@ server.post("/messages", function(request, response) {
 // server.put("/pongPaddle:paddleId", function(request, response) {
 //   return pongScene.changeDirection(request, response);
 // });
-
-
-function fillResponse(request, response, status, message) {
-  return response.json({
-    status: status,
-    message: message,
-    source: "Gridzilla"
-  });
-}
 
 //////////////////////////////////////////////////////////////////////////////
 // the "start-up" code
