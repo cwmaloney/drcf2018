@@ -33,8 +33,9 @@ const BitmapBuffer = require("./BitmapBuffer.js");
 // Scenes
 //////////////////////////////////////////////////////////////////////////////
 
-const MessageScene = require("./MessageScene.js");
 const BannerScene = require("./BannerScene.js");
+const MessageScene = require("./MessageScene.js");
+const CheersScene = require("./CheersScene.js");
 
 //////////////////////////////////////////////////////////////////////////////
 // Managers
@@ -99,15 +100,17 @@ const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to",
 const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music", line3: "More songs coming soon"} );
 const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "(coming soon)", line2: "Visit farmsteadlights.com", line3: "to play games on Gridzilla" } );
 //const instructions3Banner = new BannerScene(gridzilla, onPaused, { line1: "More songs coming soon" } );
-const messageScene = new MessageScene(gridzilla, onPaused, nameManager, {});
+const messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
+const cheersScene = new CheersScene(gridzilla, onPaused, nameManager, {});
 
 const scenes = [
   welcomeBanner,
 
   instructionsBanner,
   instructions2Banner,
-  // instructions3Banner,
-  messageScene
+
+  messagesScene,
+  cheersScene
 ];
 
 //////////////////////////////////////////////////////////////////////////////
@@ -126,9 +129,9 @@ server.use(bodyParser.json());
 // ----- utilities -----
 server.get("/status", function(request, response) {
   try {
-    const messageCount = messageScene.getRequestCount();
-    const activeCount = messageScene.getActiveMessageCount();
-    const queuedCount = messageScene.getQueuedMessageCount();
+    const messageCount = messagesScene.getRequestCount();
+    const activeCount = messagesScene.getActiveMessageCount();
+    const queuedCount = messagesScene.getQueuedMessageCount();
     const messages = { ready: activeCount, queued: queuedCount, requests: messageCount }
     const suggestions = { count: suggestionManager.getSuggestions().length }
     return response.json({
@@ -155,12 +158,12 @@ server.post("/names/:name", function(request, response) {
 // ----- scenes -----
 
 server.post("/messages", function(request, response) {
-  return messageScene.addMessage(request, response);
+  return messagesScene.addMessage(request, response);
 });
 
-// server.post("/cheers", function(request, response) {
-//   return cheersScene.addGreeting(request, response);
-// });
+server.post("/cheers", function(request, response) {
+  return cheersScene.addGreeting(request, response);
+});
 
 // server.post("/avatars", function(request, response) {
 //   return avatarScene.addAvatar(request, response);
