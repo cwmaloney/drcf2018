@@ -173,7 +173,7 @@ class RequestQueue {
     }
     //console.log(`writing requests to ${fileName} nextId=${this.nextId} size=${this.requests.size} ...`);
 
-    const temp = { nextId: this.nextId, requests: this.requests };
+    const temp = { nextId: this.nextId, requests: [...this.requests] };
 
     fs.writeFileSync(fileName, JSON.stringify(temp, null, '\t'), 'utf8');
 
