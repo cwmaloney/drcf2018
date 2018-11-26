@@ -3,6 +3,7 @@
 // HTTP server support
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require('cors');
 
 // // load this app"s configuration data
 // const { colorNameToRgb } = require("./config-colors.js");
@@ -121,6 +122,7 @@ const server = express();
 
 server.use(bodyParser.urlencoded( { extended: true } ) );
 server.use(bodyParser.json());
+server.use(cors());
 
 //////////////////////////////////////////////////////////////////////////////
 // routing
