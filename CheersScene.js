@@ -63,7 +63,7 @@ class CheerScene {
     console.log("CheerScene pause");
     clearTimeout(this.runningTimer);
     if (this.currentCheer) {
-      // message did not finish so we will restart the message
+      // cheer did not finish so we will restart the cheer
       // when the scene restarts
       this.currentCheer.startTime = undefined;
     }
@@ -86,7 +86,7 @@ class CheerScene {
     // console.log("CheerScene onTimer");
 
     if (this.currentCheer) {
-      if (this.currentCheer.startTime + this.perMesssagePeriod <= nowTime) {
+      if (this.currentCheer.startTime + this.perCheerPeriod <= nowTime) {
         this.currentCheer.endTime = nowTime;
         this.currentCheer.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
         this.cheerQueue.writeRequests();
@@ -101,8 +101,8 @@ class CheerScene {
       }
     }
     if (!this.currentCheer.startTime) {
-      console.log("CheerScene message: " + this.formatCheer(this.currentCheer));
-      this.currentCheer.startTime = nowTime;
+      console.log(`CheerScene cheer= ${this.formatCheer(this.currentCheer)} id=${this.currentCheer.id}`);
+      this.currentCheer.startTime = Date.now();
     }
 
     // to do: we should not redraw when we use scrolling
@@ -137,7 +137,7 @@ class CheerScene {
    
     console.log(`CheerScene addCheer: sender ${sender} teamName: ${teamName} colorNames: ${colorNames} on: ${date} at: ${time}`);
   
-    const overUseCheer = this.cheerQueue.checkOverUse(request.sessionId);
+    const overUseCheer = this.cheerQueue.checkOverUse(request.body.sessionId);
     if (overUseCheer != null && overUseCheer != undefined) {
       return this.fillResponse(request, response, "Error", overUseCheer);
     }
@@ -160,10 +160,10 @@ class CheerScene {
       }
     }
 
-    const requestObject = {sender, teamName, colorNames};
+    const requestObject = {sessionId: request.body.sessionId, sender, teamName, colorNames};
     
     try {
-      const cheerObject = this.cheerQueue.addRequest(request.sessionId, requestObject, date, time);
+      this.cheerQueue.addRequest(requestObject);
    
       let responseMessage = "";
       if (teamName) {
@@ -174,12 +174,12 @@ class CheerScene {
       responseMessage += `Happy Holidays!`;
 
       if (date != null && date != undefined && date.length > 0) {
-        responseMessage += ` on ${cheerObject.formattedDate}`;
+        responseMessage += ` on ${requestObject.formattedDate}`;
       }
       if (time != null && date != undefined && time.length > 0) {
-        responseMessage += ` at ${cheerObject.formattedTime}`;
+        responseMessage += ` at ${requestObject.formattedTime}`;
       }
-      responseMessage += `. Your message id is ${cheerObject.id}.`;
+      responseMessage += `. Your cheer id is ${requestObject.id}.`;
  
       return this.fillResponse(request, response, "Okay", responseMessage);
     } catch (error) {
