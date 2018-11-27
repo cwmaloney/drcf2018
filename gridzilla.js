@@ -1,7 +1,6 @@
 "use strict";
 
 // HTTP server support
-const cookieSession = require("cookie-session");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -84,8 +83,8 @@ function startNextScene() {
 }
 
 // create scenes
-const welcomeBanner = new BannerScene(gridzilla, onPaused, {line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane"} );
-const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music", line3: "More songs coming soon"} );
+const welcomeBanner = new BannerScene(gridzilla, onPaused, { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" } );
+const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights."} );
 const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "(coming soon)", line2: "Visit farmsteadlights.com", line3: "to play games on Gridzilla" } );
 //const instructions3Banner = new BannerScene(gridzilla, onPaused, { line1: "More songs coming soon" } );
 const messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
@@ -110,18 +109,6 @@ const server = express();
 server.use(bodyParser.urlencoded( { extended: true } ) );
 server.use(bodyParser.json());
 server.use(cors());
-server.use(cookieSession({
-  name: 'session',
-  keys: ['asecretkey1', 'asecretkey2']
-}));
-
-server.use(function (request, response, next) {
-  request.session.nowInMinutes = Math.floor(Date.now() / 60e3)
-  if (!request.session.id) {
-    request.session.id = uuidv4();
-  }
-  next();
-});
 
 //////////////////////////////////////////////////////////////////////////////
 // routing
@@ -147,6 +134,12 @@ server.get("/status", function(request, response) {
   }
 });
 
+function checkSessionId(request, response) {
+  if (!request.body.sessionId) {
+    request.body.sessionId = uuidv4();
+  }
+}
+
 server.post("/names", function(request, response) {
   return nameManager.addName(request, response);
 });
@@ -159,10 +152,12 @@ server.post("/names/:name", function(request, response) {
 // ----- scenes -----
 
 server.post("/messages", function(request, response) {
+  checkSessionId(request, response);
   return messagesScene.addMessage(request, response);
 });
 
 server.post("/cheers", function(request, response) {
+  checkSessionId(request, response);
   return cheersScene.addGreeting(request, response);
 });
 

@@ -57,7 +57,7 @@ class RequestQueue {
     request.id = this.nextId++;
     request.processedTimestamp = null;
 
-    console.log("addRequest:", request);
+    // console.log("addRequest:", request);
 
     if (request.date) {
       request.formattedDate

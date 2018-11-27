@@ -81,11 +81,6 @@ class MessageScene {
       this.pause();
       return;
     }
-
-    // if (this.getActiveMessageCount() < 1) {
-    //   this.pause();
-    //   return;
-    // }
    
     // console.log("MessageScene onTimer");
 
@@ -105,8 +100,8 @@ class MessageScene {
       }
     }
     if (!this.currentMessage.startTime) {
-      console.log("MessageScene message: " + this.formatMessage(this.currentMessage));
-      this.currentMessage.startTime = nowTime;
+      console.log(`MessageScene message= ${this.formatMessage(this.currentMessage)} id=${this.currentMessage.id}`);
+      this.currentMessage.startTime = Date.now();
     }
 
     // redraw every time to be safe
@@ -150,7 +145,7 @@ class MessageScene {
    
     console.log(`addMessage: From: ${sender} To: ${recipient} Message: ${message} On: ${date} At: ${time}`);
 
-    const overUseMessage = this.messageQueue.checkOverUse(request.session.id);
+    const overUseMessage = this.messageQueue.checkOverUse(request.body.sessionId);
     if (overUseMessage != null && overUseMessage != undefined) {
       return this.fillResponse(request, response, "Error", overUseMessage);
     }
@@ -174,7 +169,7 @@ class MessageScene {
       return this.fillResponse(request, response, "Error", responseMessage);
     }
 
-    const requestObject = { sessionId: request.session.id, sender, recipient, message, date, time };
+    const requestObject = { sessionId: request.body.sessionId, sender, recipient, message, date, time };
     
     try {
       this.messageQueue.addRequest(requestObject);
@@ -216,6 +211,7 @@ class MessageScene {
 
   fillResponse(request, response, status, message) {
     return response.json({
+      sessionId: request.body.sessionId,
       status: status,
       message: message,
       source: 'MessageScene'

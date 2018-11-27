@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "cookie-session": "^2.0.0-beta.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "jimp": "^0.5.6",

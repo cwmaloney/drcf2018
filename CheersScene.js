@@ -209,6 +209,7 @@ class CheerScene {
 
   fillResponse(request, response, status, message) {
     return response.json({
+      sessionId: request.body.sessionId,
       status: status,
       message: message,
       source: 'CheerScene'
