@@ -17,7 +17,7 @@ class SuggestionManager {
   addSuggestion(request, response) {
     // console.log("onRecordSuggestion");
 
-    const suggestion = request.parameters.message;
+    const suggestion = request.parameters.suggestion;
     if (suggestion === undefined || suggestion === null) {
       console.error('grizilla::recordSuggestion - missing suggestion');
       return;

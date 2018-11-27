@@ -37,10 +37,10 @@ class RequestQueue {
     return activeRequests;
   }
 
-  addRequest(sessionId, request, date, time) {
+  addRequest(request) {
     const nowTimestampNumber = TimestampUtilities.getNowTimestampNumber();
 
-    const timestampObject = TimestampUtilities.parseDateAndTime(date, time);
+    const timestampObject = TimestampUtilities.parseDateAndTime(request.date, request.time);
     const timestampString = TimestampUtilities.getTimestampStringFromObject(timestampObject);
     const timestampNumber = TimestampUtilities.getTimestampNumber(timestampString);
 
@@ -53,25 +53,26 @@ class RequestQueue {
       timestampMapObject = { timestampObject, timestampString, timestampNumber, requests: [] };
       this.requests.set(timestampString, timestampMapObject);
     }
-    const id = this.nextId++;
+    
+    request.id = this.nextId++;
+    request.processedTimestamp = null;
 
-    console.log("addRequest:", sessionId, id, request, date, time);
+    console.log("addRequest:", request);
 
-    const requestObject = { sessionId, id, request, processedTimestamp: undefined };
-    if (date) {
-      requestObject.formattedDate
+    if (request.date) {
+      request.formattedDate
         = (timestampObject.month).toString().padStart(2,0)
           + '/' + (timestampObject.day).toString().padStart(2,0);
     }
-    if (time) {
-      requestObject.formattedTime
+    if (request.time) {
+      request.formattedTime
         = (timestampObject.hour).toString().padStart(2,0)
           + ':' + (timestampObject.minute).toString().padStart(2,0);
     }
-    timestampMapObject.requests.push(requestObject);
+    timestampMapObject.requests.push(request);
     this.writeRequests();
 
-    return requestObject;
+    return request;
   }
 
   // get requests that have request times "in the future"

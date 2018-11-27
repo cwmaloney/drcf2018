@@ -1,23 +1,11 @@
 "use strict";
 
 // HTTP server support
+const cookieSession = require("cookie-session");
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require('cors');
-
-// // load this app"s configuration data
-// const { colorNameToRgb } = require("./config-colors.js");
-
-// // load this app"s configuration data
-// const { teamNameToColorsMap } = require("./config-team.js");
-
-// // load this app's configuration data
-// const {
-//   maxRequestPerUser,
-//   idleCheckTimeout,
-//   idleColors,
-//   idleTeams,
-// } = require("./config.js");
+const cors = require("cors");
+const uuidv4 = require('uuid/v4');
 
 //////////////////////////////////////////////////////////////////////////////
 // const GridzillaTransform = require("./GridzillaTransform.js");
@@ -87,7 +75,6 @@ function pauseScene() {
 }
 
 function startNextScene() {
-
   if (++sceneIndex >= scenes.length) sceneIndex = 0;
 
   console.log("running scene "+ sceneIndex);
@@ -123,6 +110,18 @@ const server = express();
 server.use(bodyParser.urlencoded( { extended: true } ) );
 server.use(bodyParser.json());
 server.use(cors());
+server.use(cookieSession({
+  name: 'session',
+  keys: ['asecretkey1', 'asecretkey2']
+}));
+
+server.use(function (request, response, next) {
+  request.session.nowInMinutes = Math.floor(Date.now() / 60e3)
+  if (!request.session.id) {
+    request.session.id = uuidv4();
+  }
+  next();
+});
 
 //////////////////////////////////////////////////////////////////////////////
 // routing
@@ -228,9 +227,7 @@ server.get("/suggestions", function(request, response) {
 const port = process.env.PORT || 8000;
 
 BitmapBuffer.initializeFonts().then( () =>  {
-  
   startNextScene();
-
 });
 
 server.listen(port, function() {

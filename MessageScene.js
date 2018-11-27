@@ -126,31 +126,31 @@ class MessageScene {
 
   addMessage(request, response) {
 
-    let sender = request.parameters.sender;
+    let sender = request.body.sender;
     if (sender === undefined || sender == null) {
       console.error('grizilla::addMessage - missing sender');
       return;
     }
    
-    let recipient = request.parameters.recipient;
+    let recipient = request.body.recipient;
     if (recipient === undefined || recipient == null) {
       console.error('grizilla::addMessage - missing recipient');
       return;
     }
    
-    let message = request.parameters.message;
+    let message = request.body.message;
     if (message === undefined || message === null) {
       console.error('grizilla::addMessage - missing messageType');
       return;
     }
    
     // date and time are optional
-    let date = request.parameters.displayDate;
-    let time = request.parameters.displayTime;
+    let date = request.body.displayDate;
+    let time = request.body.displayTime;
    
     console.log(`addMessage: From: ${sender} To: ${recipient} Message: ${message} On: ${date} At: ${time}`);
 
-    const overUseMessage = this.messageQueue.checkOverUse(request.sessionId);
+    const overUseMessage = this.messageQueue.checkOverUse(request.session.id);
     if (overUseMessage != null && overUseMessage != undefined) {
       return this.fillResponse(request, response, "Error", overUseMessage);
     }
@@ -174,20 +174,20 @@ class MessageScene {
       return this.fillResponse(request, response, "Error", responseMessage);
     }
 
-    const requestObject = {sender, recipient, message};
+    const requestObject = { sessionId: request.session.id, sender, recipient, message, date, time };
     
     try {
-      const messageObject = this.messageQueue.addRequest(request.sessionId, requestObject, date, time);
+      this.messageQueue.addRequest(requestObject);
    
       // let responseMessage = `*** We are currently testing messages so your message will NOT be display. Try this in a few days. Watch for your message "${message}".`
-      let responseMessage = `Watch for your message "${this.formatMessage(requestObject)}"`;
+      let responseMessage = `Watch for your message: "${this.formatMessage(requestObject)}"`;
       if (date != null && date != undefined && date.length > 0) {
-        responseMessage += ` on ${messageObject.formattedDate}`;
+        responseMessage += ` on ${requestObject.formattedDate}`;
       }
       if (time != null && date != undefined && time.length > 0) {
-        responseMessage += ` at ${messageObject.formattedTime}`;
+        responseMessage += ` at ${requestObject.formattedTime}`;
       }
-      responseMessage += `. Your message id is ${messageObject.id}.`;
+      responseMessage += `. Your message id is ${requestObject.id}.`;
  
       return this.fillResponse(request, response, "Okay", responseMessage);
     } catch (error) {
@@ -201,7 +201,7 @@ class MessageScene {
   formatMessage(requestObject) {
     let formattedMessage = ''
 
-    formattedMessage = `${requestObject.recipient}, ${requestObject.message}, ${requestObject.sender}.  `;
+    formattedMessage = `${requestObject.recipient}, ${requestObject.message}, ${requestObject.sender}`;
 
     return formattedMessage;
   }
@@ -211,6 +211,7 @@ class MessageScene {
   
   checkMessage(message) {
     // to do
+    return true;
   }
 
   fillResponse(request, response, status, message) {
