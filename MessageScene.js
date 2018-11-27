@@ -123,19 +123,19 @@ class MessageScene {
 
     let sender = request.body.sender;
     if (sender === undefined || sender == null) {
-      console.error('grizilla::addMessage - missing sender');
+      console.error('MessagesScene::addMessage - missing sender');
       return;
     }
    
     let recipient = request.body.recipient;
     if (recipient === undefined || recipient == null) {
-      console.error('grizilla::addMessage - missing recipient');
+      console.error('MessagesScene::addMessage - missing recipient');
       return;
     }
    
     let message = request.body.message;
     if (message === undefined || message === null) {
-      console.error('grizilla::addMessage - missing messageType');
+      console.error('MessagesScene::addMessage - missing messageType');
       return;
     }
    
@@ -143,7 +143,7 @@ class MessageScene {
     let date = request.body.displayDate;
     let time = request.body.displayTime;
    
-    console.log(`addMessage: From: ${sender} To: ${recipient} Message: ${message} On: ${date} At: ${time}`);
+    console.log(`MessagesScene::addMessage: From: ${sender} To: ${recipient} Message: ${message} On: ${date} At: ${time}`);
 
     const overUseMessage = this.messageQueue.checkOverUse(request.body.sessionId);
     if (overUseMessage != null && overUseMessage != undefined) {
