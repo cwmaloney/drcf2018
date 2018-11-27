@@ -73,7 +73,7 @@ npm installs packages in the folder "node_modules" withing the project folder.
 
 ## Running the Gridzilla show server
 
-1. Optional - Update the software from github.com
+1. Update the software from github.com
     * Open a terminal or command line window
     * cd to project folder
     * git pull
@@ -83,8 +83,23 @@ npm installs packages in the folder "node_modules" withing the project folder.
     * cd to project folder
     * node gridzilla.js
 
-## Editing and Debugging using VS Code
+## Debugging using VS Code
 
 1. In VS Code, open the project folder (File/Open)
 1. On the left navigation pane (Activity bar), click the debug icon
-1. Click the green arrow icon in the debug view to start the service and attach the debugger
+1. Choose Grizilla as the debug configuration (next to the green arrow)
+1. Click the green arrow icon in the debug view to start node.js running grizilla.js and attach the debugger
+
+## Quick tests
+
+Follow these steps to install test data
+
+1. "Install test data"
+1. cp testMessageQueue.json MessageQueue.json
+1. cp testCheerQueue.json CheerQueue.json
+
+Start the display emulator: node.js displayEmulatorServer.js
+
+Open the display emulator in a browser: localhost:3000
+
+Launch server with node or run the server in the debugger
