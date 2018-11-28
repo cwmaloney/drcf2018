@@ -165,9 +165,9 @@ class BitmapBuffer {
      * @param {Jimp} srcImage The source image to blit on to this buffer
      * @param {number} x  Where to place the image on this buffer
      * @param {number} y Where to place the image on this buffer
-     * @param {number} [max available or max of the source] width 
+     * @param {number} width [max available or max of the source]
      * How much of the source image to show, use to crop the source image, a value larger than the source image will be ignored
-     * @param {number} [max available or max of the source] height 
+     * @param {number} height [max available or max of the source]
      * How much of the source image to show, use to crop the source image, a value larger than the source image will be ignored
      */
     blit(srcImage, x, y, width, height){
@@ -213,7 +213,7 @@ class BitmapBuffer {
      * @param {string} text1 line 1
      * @param {string} text2 line 2
      * @param {Jimp.Font} font1 line 1 font
-     * @param {Jimp.Font} [font1] font2 line 2 font
+     * @param {Jimp.Font} font2 [font1] line 2 font
      */
     print2Lines(text1, text2, font1, font2) {
         if (font2 == null) {
@@ -229,10 +229,17 @@ class BitmapBuffer {
      * Convience method to print one line of text centered on the screen
      * @param {string} text1 line 1
      * @param {Jimp.Font} font1 line 1 font
+     * @param {number} y [null for vertically centered] y position or null for vertically centered
      */
-    print1Line(text1, font1) {
-        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+    print1Line(text1, font1, y) {
+        if (y == null) {
+            this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
+                    this.image.bitmap.width, this.image.bitmap.height);
+        }
+        else {
+            this.image.print(font1, 0, y, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_TOP },
                 this.image.bitmap.width, this.image.bitmap.height);
+        }
     }
 
     /**
