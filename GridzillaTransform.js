@@ -91,13 +91,13 @@ class GridzillaTransform {
 
     transformUniverse(screen, xOffset, yOffset, address, universe) {
         //channels use a 1 based index
-        var channelIndex = 1;
-        var up = true;
+        let channelIndex = 1;
+        let up = true;
         //go accross the width
-        for (var x = 0; x < GridzillaTransform.universeWidth; ++x){
+        for (let x = 0; x < GridzillaTransform.universeWidth; ++x){
             //up or down the height
             if (up) {
-                for (var y = 0; y < GridzillaTransform.universeHeight; ++y) {
+                for (let y = 0; y < GridzillaTransform.universeHeight; ++y) {
                     //get the RGB color, invert the y axis, gridzilla coordinates start in the lower left, the screen starts in the upper left
                     this.artnet.setChannelData(address, universe, channelIndex, screen.getPixelColors(
                         xOffset + x, 
@@ -107,7 +107,7 @@ class GridzillaTransform {
                 up = false;
             }
             else {
-                for (var y = GridzillaTransform.universeHeight - 1; y >= 0; --y) {
+                for (let y = GridzillaTransform.universeHeight - 1; y >= 0; --y) {
                     //get the RGB color, invert the y axis, gridzilla coordinates start in the lower left, the screen starts in the upper left
                     this.artnet.setChannelData(address, universe, channelIndex, screen.getPixelColors(xOffset + x, 
                         GridzillaTransform.height - (yOffset + y) - 1));
