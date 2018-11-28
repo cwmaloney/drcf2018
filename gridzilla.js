@@ -38,6 +38,7 @@ console.log(`loading names complete  @${new Date()}`);
 
 const SuggestionManager = require("./SuggestionManager.js");
 const suggestionManager = new SuggestionManager();
+suggestionManager.loadSuggestions();
 
 //////////////////////////////////////////////////////////////////////////////
 // Scene management

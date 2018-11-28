@@ -1,0 +1,22 @@
+{
+	"suggestions": [
+		{
+			"suggestion": "s1",
+			"sender": "Chris",
+			"timestampString": "201811272313",
+			"timestampNumber": 201811272313
+		},
+		{
+			"suggestion": "s2",
+			"sender": "Chris",
+			"timestampString": "201811272338",
+			"timestampNumber": 201811272338
+		},
+		{
+			"suggestion": "s3",
+			"sender": "Chris",
+			"timestampString": "201811272338",
+			"timestampNumber": 201811272338
+		}
+	]
+}
