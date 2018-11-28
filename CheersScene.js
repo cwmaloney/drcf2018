@@ -106,7 +106,7 @@ class CheerScene {
     this.doCheer();
   }
 
-  async doCheer() {
+  doCheer() {
      
     if (this.currentCheer) {
       if (!this.currentCheer.startTime) {
@@ -136,7 +136,7 @@ class CheerScene {
 
       let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
 
-      let treeImage = await Jimp.read("images/replaceTree36.png");
+      let treeImage = CheerScene.REPLACE_TREE.clone();
       let treeBuff = BitmapBuffer.fromImage(treeImage);
       treeBuff.switchColor(new Color(255, 0, 0), colors);
       frameBuffer.blit(treeBuff.image, 0, 0);
@@ -275,6 +275,16 @@ class CheerScene {
     });
   }
 
+  static initialize(){
+    var promises = [Jimp.read("images/replaceTree36.png")];
+
+    var resultPromise = Promise.all(promises);
+    resultPromise.then( (results) => {
+        CheerScene.REPLACE_TREE = results[0];
+    });
+
+    return resultPromise;
+  }
 }
 
 module.exports = CheerScene;

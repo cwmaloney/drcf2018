@@ -223,7 +223,9 @@ server.get("/suggestions", function(request, response) {
 const port = process.env.PORT || 8000;
 
 BitmapBuffer.initializeFonts().then( () =>  {
+  CheersScene.initialize().then( () => {
   startNextScene();
+  });
 });
 
 server.listen(port, function() {
