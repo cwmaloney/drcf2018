@@ -52,6 +52,11 @@
           "${workspaceFolder}/mochaTests"
       ],
       "internalConsoleOptions": "openOnSessionStart"
-  }
-  ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "NameManager test",
+      "program": "${workspaceFolder}/NameManager.js"
+    },  ]
 }

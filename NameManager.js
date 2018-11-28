@@ -15,9 +15,17 @@ class NameManager {
     this.additionalNames = new Map();
   }
 
-  isNameValid(name) {
-    return (this.additionalNames.get(name) !== undefined)
-            || (this.censusNames.get(name) !== undefined);
+  // isNameValid supports comma separated names
+  isNameValid(nameInput) {
+    const names = nameInput.split(',');
+    for (let name of names) {
+      let temp = name.trim();
+      if ((this.additionalNames.get(temp) === undefined)
+        && (this.censusNames.get(temp) === undefined)) {
+          return false;
+        }
+    }
+    return true;
   }
 
   addNameToAdditionalNames(name) {
@@ -141,23 +149,25 @@ class NameManager {
 
 module.exports = NameManager;
 
-// function test() {
+function test() {
 
-//   const nameManager = new NameManager();
+  const nameManager = new NameManager();
 
-//   console.log(`loading names ${new Date()} ...`);
-//   nameManager.loadNameLists();
-//   console.log(`loading names complete ${new Date()}`);
+  console.log(`loading names ${new Date()} ...`);
+  nameManager.loadNameLists();
+  console.log(`loading names complete ${new Date()}`);
 
-//   function checkName(name) {
-//     const isValid = nameManager.isNameValid(name)
-//     console.log(`${name} isValid=${isValid}`);
-//   }
-//   checkName("Chris");
-//   checkName("Mark");
-//   checkName("bad");
-//   checkName("Mom");
-//   checkName("Grand Ma");
-// }
+  function checkName(name) {
+    const isValid = nameManager.isNameValid(name)
+    console.log(`${name} isValid=${isValid}`);
+  }
+  checkName("Chris");
+  checkName("Mark");
+  checkName("bad");
+  checkName("Mom");
+  checkName("Grand Ma");
+  checkName("Mom, Dad");
+  checkName("Chris, Rachel");
+}
 
-// test();
+test();
