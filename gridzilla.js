@@ -158,9 +158,37 @@ server.post("/messages", function(request, response) {
   return messagesScene.addMessage(request, response);
 });
 
+server.get("/messages", function(request, response) {
+  try {
+    const queue = messagesScene.getMessageQueue();
+    return response.json({
+      queue
+    });
+  } catch (error) {
+    return response.json({
+      status: "Error",
+      error: error.toString()
+    });
+  }
+});
+
 server.post("/cheers", function(request, response) {
   checkSessionId(request, response);
   return cheersScene.addCheer(request, response);
+});
+
+server.get("/cheers", function(request, response) {
+  try {
+    const queue = cheersScene.getCheerQueue();
+    return response.json({
+      queue
+    });
+  } catch (error) {
+    return response.json({
+      status: "Error",
+      error: error.toString()
+    });
+  }
 });
 
 // server.post("/avatars", function(request, response) {
