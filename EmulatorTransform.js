@@ -18,6 +18,9 @@ class EmulatorTransform {
         return 36;
     }
 
+    /**
+     * Use TransfomerFactory.getTransformer()
+     */
     constructor() {
     }
 

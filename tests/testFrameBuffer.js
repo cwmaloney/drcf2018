@@ -1,6 +1,6 @@
-const Color = require("./Color.js");
-const FrameBuffer = require("./FrameBuffer.js");
-const { GridzillaTransform } = require("./GridzillaTransform.js");
+const Color = require("../Color.js");
+const FrameBuffer = require("../FrameBuffer.js");
+const TransformFactory = require("../TransformFactory.js");
 
 const frameBuffer = new FrameBuffer(168, 36);
 //frameBuffer.drawLine(0, 0, 35, 35, new Color(200, 0, 0));
@@ -29,7 +29,7 @@ for (let i = 0; i < 16; i+=2){
 }
 //frameBuffer.drawRect(0, 0, 168, 36, new Color(255, 0, 0));
 //frameBuffer.fillRect(2, 2, 164, 32, new Color(0, 255, 0));
-var transform = new GridzillaTransform();
+var transform = TransformFactory.getTransform();
 transform.transformScreen(frameBuffer);
 
 

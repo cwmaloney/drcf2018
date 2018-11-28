@@ -36,6 +36,9 @@ const universeInfos = [];
 
 class GridzillaTransform {
 
+    /**
+     * Use TransfomerFactory.getTransformer()
+     */
     constructor() {
         this.artnet = new ArtNet();
         

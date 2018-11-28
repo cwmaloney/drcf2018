@@ -1,13 +1,13 @@
 "use strict";
 
-const GridzillaTransform = require("./GridzillaTransform.js");
+const TransformFactory = require("./TransformFactory.js");
 
 const FrameBuffer = require("./FrameBuffer.js");
 const Color = require("./Color.js");
 
-var transform = new GridzillaTransform();
 var frame = new FrameBuffer(168, 36);
 
+var transform = TransformFactory.getTransform();
 setInterval(animate, 2000);
 
 function drawBall(frame, x, y, color){

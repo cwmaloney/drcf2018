@@ -6,6 +6,7 @@ node_modules
 secrets.js
 ngrok.yml
 
+envConfigOverrides.json
 MessageQueue.json
 CheerQueue.json
 Suggestions.json

@@ -1,4 +1,5 @@
 const assert = require('assert');
+//We're specifically testing the GridzillaTransform, so don't use the factory
 const GridzillaTransform  = require("../GridzillaTransform.js");
 const { Screen } = require("./Screen.js");
 

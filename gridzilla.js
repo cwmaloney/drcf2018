@@ -5,12 +5,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const uuidv4 = require('uuid/v4');
+const envConfig = require("./envConfig.js");
+const TransformFactory = require("./TransformFactory.js");
 
-//////////////////////////////////////////////////////////////////////////////
-// const GridzillaTransform = require("./GridzillaTransform.js");
-const GridzillaTransform = require("./EmulatorTransform.js"); // for debugging
-
-const gridzilla = new GridzillaTransform();
+let gridzilla;
 
 // const FrameBuffer = require("./FrameBuffer.js");
 // var frame = new FrameBuffer(168, 36);
@@ -98,8 +96,8 @@ const scenes = [
   instructionsBanner,
   instructions2Banner,
 
-  messagesScene,
-  cheersScene
+   messagesScene,
+   cheersScene
 ];
 
 //////////////////////////////////////////////////////////////////////////////
@@ -253,7 +251,9 @@ const port = process.env.PORT || 8000;
 
 BitmapBuffer.initializeFonts().then( () =>  {
   CheersScene.initialize().then( () => {
-  startNextScene();
+    envConfig.loadOverrides();
+    gridzilla = TransformFactory.getTransform();
+    startNextScene();
   });
 });
 

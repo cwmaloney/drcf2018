@@ -1,13 +1,13 @@
 "use strict";
 
-const EmulatorTransform = require("../EmulatorTransform.js");
+const TransformFactory = require("../TransformFactory.js");
 const BitmapBuffer = require("../BitmapBuffer.js");
 const HorizontalScroller = require("../HorizontalScroller.js");
 const Color = require("../Color.js");
 
 const Jimp = require('jimp');
 
-var transform = new EmulatorTransform();
+var transform;
 
 function testBmpFile() {
     Jimp.read("tests/sample1.bmp").then(image => {
@@ -20,7 +20,7 @@ async function testImageScroll() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(255, 255, 255));
     let srcImage = await Jimp.read("images/Christmas train006_36.png");
     let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
-    await scroller1.scrollImage(srcImage, 30, null, 12000);
+    await scroller1.scrollImage(srcImage, undefined, null, 12000);
     transform.close();
 }
 
@@ -135,6 +135,7 @@ async function testCheer2(){
 }
 
 BitmapBuffer.initializeFonts().then( () => {
+    transform = TransformFactory.getTransform();
     var test = "print3Lines";
     if (process.argv.length > 2){
         test = process.argv[2];
