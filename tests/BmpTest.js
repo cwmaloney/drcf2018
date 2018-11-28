@@ -20,7 +20,7 @@ async function testImageScroll() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(255, 255, 255));
     let srcImage = await Jimp.read("tests/car24.png");
     let scroller1 = new HorizontalScroller(36, 6, bmpBuff, transform);
-    await scroller1.scrollBuffer(srcImage, 30, null, 12000);
+    await scroller1.scrollImage(srcImage, 30, null, 12000);
     transform.close();
 }
 
@@ -83,7 +83,7 @@ function testPrint1Line() {
 
 async function testHorizontalScrollText(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
+    let scroller1 = new HorizontalScroller(0, 1, bmpBuff, transform);
     let scroller2 = new HorizontalScroller(0, 18, bmpBuff, transform);
     scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, null, 30000);
     await scroller2.scrollText("Home of the Holiday Lights at Farmstead Lane", BitmapBuffer.LITTERA_RED_16, 30, null, 30000);
@@ -105,6 +105,17 @@ function testPrint(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     bmpBuff.print("Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 50, 5);
     transform.transformScreen(bmpBuff);
+    transform.close();
+}
+
+
+async function testCheer(){
+    let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+    let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
+    scroller1.scrollText("Blake says: Go Cyclones!", BitmapBuffer.LITTERA_RED_11, null, null, 20000);
+    let srcImage = await Jimp.read("tests/pennant24.png");
+    let scroller2 = new HorizontalScroller(0, 12, bmpBuff, transform);
+    await scroller2.scrollImage(srcImage, 30, null, 20000);
     transform.close();
 }
 
@@ -148,6 +159,9 @@ BitmapBuffer.initializeFonts().then( () => {
             break;
         case "blit":
             testBlit();
+            break;
+        case "cheer":
+            testCheer();
             break;
     }
 });
