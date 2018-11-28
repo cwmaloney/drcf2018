@@ -160,6 +160,26 @@ class BitmapBuffer {
         }
     }
 
+
+    /**
+     * Swap all pixels of color c1 to color c2
+     * @param {Color} c1 The original color
+     * @param {Color} c2 The replacement color
+     */
+    switchColor(c1, c2){
+        for (let i = 0; i < this.image.bitmap.data.length; i = i + 4) {
+            if (this.image.bitmap.data[i] == c1.red && this.image.bitmap.data[i+1] == c1.green && this.image.bitmap.data[i+2] == c1.blue) {
+                let replacementColor = c2;
+                if (Array.isArray(c2)){
+                    replacementColor = c2[Math.floor(Math.random() * c2.length)];
+                }
+                this.image.bitmap.data[i] = replacementColor.red;
+                this.image.bitmap.data[i+1] = replacementColor.green;
+                this.image.bitmap.data[i+2] = replacementColor.blue;
+            }
+        }
+    }
+
     /**
      * Blit an image on to this buffer
      * @param {Jimp} srcImage The source image to blit on to this buffer
