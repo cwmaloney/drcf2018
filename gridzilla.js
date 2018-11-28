@@ -38,6 +38,7 @@ console.log(`loading names complete  @${new Date()}`);
 
 const SuggestionManager = require("./SuggestionManager.js");
 const suggestionManager = new SuggestionManager();
+suggestionManager.loadSuggestions();
 
 //////////////////////////////////////////////////////////////////////////////
 // Scene management
@@ -85,7 +86,7 @@ function startNextScene() {
 // create scenes
 const welcomeBanner = new BannerScene(gridzilla, onPaused, { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" } );
 const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights."} );
-const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: "(coming soon)", line2: "Visit farmsteadlights.com", line3: "to play games on Gridzilla" } );
+const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." } );
 //const instructions3Banner = new BannerScene(gridzilla, onPaused, { line1: "More songs coming soon" } );
 const messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
 const cheersScene = new CheersScene(gridzilla, onPaused, nameManager, {});
