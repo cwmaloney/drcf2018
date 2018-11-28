@@ -158,7 +158,7 @@ server.post("/messages", function(request, response) {
 
 server.post("/cheers", function(request, response) {
   checkSessionId(request, response);
-  return cheersScene.addGreeting(request, response);
+  return cheersScene.addCheer(request, response);
 });
 
 // server.post("/avatars", function(request, response) {

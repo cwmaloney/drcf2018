@@ -85,6 +85,10 @@ class MessageScene {
     // console.log("MessageScene onTimer");
 
     if (this.currentMessage) {
+      if (!this.currentMessage.startTime) {
+        console.log(`MessageScene restarting=${this.formatMessage(this.currentMessage)} id=${this.currentMessage.id}`);
+        this.currentMessage.startTime = Date.now();
+      }
       if (this.currentMessage.startTime + this.perMesssagePeriod <= nowTime) {
         this.currentMessage.endTime = nowTime;
         this.currentMessage.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
@@ -98,11 +102,9 @@ class MessageScene {
         this.pause();
         return;
       }
-    }
-    if (!this.currentMessage.startTime) {
-      console.log(`MessageScene message= ${this.formatMessage(this.currentMessage)} id=${this.currentMessage.id}`);
+      console.log(`MessageScene starting=${this.formatMessage(this.currentMessage)} id=${this.currentMessage.id}`);
       this.currentMessage.startTime = Date.now();
-    }
+     }
 
     // redraw every time to be safe
     let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));

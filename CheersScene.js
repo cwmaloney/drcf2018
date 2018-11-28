@@ -86,6 +86,10 @@ class CheerScene {
     // console.log("CheerScene onTimer");
 
     if (this.currentCheer) {
+      if (!this.currentCheer.startTime) {
+        console.log(`CheerScene restarting=${this.formatCheer(this.currentCheer)} id=${this.currentCheer.id}`);
+        this.currentCheer.startTime = Date.now();
+      }
       if (this.currentCheer.startTime + this.perCheerPeriod <= nowTime) {
         this.currentCheer.endTime = nowTime;
         this.currentCheer.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
@@ -99,9 +103,7 @@ class CheerScene {
         this.pause();
         return;
       }
-    }
-    if (!this.currentCheer.startTime) {
-      console.log(`CheerScene cheer= ${this.formatCheer(this.currentCheer)} id=${this.currentCheer.id}`);
+      console.log(`CheerScene starting=${this.formatCheer(this.currentCheer)} id=${this.currentCheer.id}`);
       this.currentCheer.startTime = Date.now();
     }
 
@@ -121,19 +123,19 @@ class CheerScene {
 
   addCheer(request, response) {
     // either of teamName or colorNames is required
-    let teamName = request.parameters.teamName;
-    let colorNames = request.parameters.teamNames;
+    let teamName = request.body.teamName;
+    let colorNames = request.body.colorNames;
     if (!teamName && !colorNames) {
       console.error('CheerScene::cheer - missing teamName or colorNames');
       return;
     }
 
     // sender is optional
-    let sender = request.parameters.sender;
+    let sender = request.body.sender;
    
     // date and time are optional
-    let date = request.parameters.displayDate;
-    let time = request.parameters.displayTime;
+    let date = request.body.displayDate;
+    let time = request.body.displayTime;
    
     console.log(`CheerScene addCheer: sender ${sender} teamName: ${teamName} colorNames: ${colorNames} on: ${date} at: ${time}`);
   
@@ -167,11 +169,10 @@ class CheerScene {
    
       let responseMessage = "";
       if (teamName) {
-        responseMessage += "Go ${teamName}!"
+        responseMessage += `Go ${teamName}!`;
       } else {
-        responseMessage += "Go ${colorNames}!"
+        responseMessage += `Go ${colorNames}!`;
       }
-      responseMessage += `Happy Holidays!`;
 
       if (date != null && date != undefined && date.length > 0) {
         responseMessage += ` on ${requestObject.formattedDate}`;
