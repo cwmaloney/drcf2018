@@ -18,6 +18,10 @@ class RequestQueue {
     return this.nextId;
   }
 
+  getRequests() {
+    return [...this.requests];
+  }
+
   // get requests that have request times "in the past"
   // and have not been processed
   getActiveRequests() {
