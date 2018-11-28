@@ -8,8 +8,6 @@ const uuidv4 = require('uuid/v4');
 const envConfig = require("./envConfig.js");
 const TransformFactory = require("./TransformFactory.js");
 
-let gridzilla;
-
 // const FrameBuffer = require("./FrameBuffer.js");
 // var frame = new FrameBuffer(168, 36);
 
@@ -83,22 +81,11 @@ function startNextScene() {
 }
 
 // create scenes
-const welcomeBanner = new BannerScene(gridzilla, onPaused, { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" } );
-const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights."} );
-const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." } );
-//const instructions3Banner = new BannerScene(gridzilla, onPaused, { line1: "More songs coming soon" } );
-const messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
-const cheersScene = new CheersScene(gridzilla, onPaused, nameManager, {});
+let messagesScene;
+let cheersScene;
+// Array of scenes, initialized at start up
+let scenes;
 
-const scenes = [
-  welcomeBanner,
-
-  instructionsBanner,
-  instructions2Banner,
-
-   messagesScene,
-   cheersScene
-];
 
 //////////////////////////////////////////////////////////////////////////////
 // the HTTP server
@@ -252,7 +239,23 @@ const port = process.env.PORT || 8000;
 BitmapBuffer.initializeFonts().then( () =>  {
   CheersScene.initialize().then( () => {
     envConfig.loadOverrides();
-    gridzilla = TransformFactory.getTransform();
+    let gridzilla = TransformFactory.getTransform();
+
+    // create scenes
+    const welcomeBanner = new BannerScene(gridzilla, onPaused, { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
+    const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights." });
+    const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
+    messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
+    cheersScene = new CheersScene(gridzilla, onPaused, nameManager, {});
+
+    scenes = [
+      welcomeBanner,
+      instructionsBanner,
+      instructions2Banner,
+      messagesScene,
+      cheersScene
+    ];
+
     startNextScene();
   });
 });

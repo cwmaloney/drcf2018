@@ -150,27 +150,29 @@ class CheerScene {
       let message;
       if (teamData.cheers.length == 0)
       {
-        message = sender ? sender + " says: " : "";
-        message = message + teamData.cheers[Math.floor(Math.random() * teamData.length)];
-      }
-      else{
         message = sender ? "From " + sender : "Hooray!";
       }
-      this.scroller1.scrollText(sender + " says:" + teamData.cheers[0], BitmapBuffer.LITTERA_WHITE_16, null, 120, 8000);
+      else{
+        message = sender ? sender + " says: " : "";
+        message = message + teamData.cheers[Math.floor(Math.random() * teamData.cheers.length)];
+      }
+      this.scroller1.scrollText(message, BitmapBuffer.LITTERA_WHITE_16, null, 120);
       timeout = Math.min(timeout, 10000);
     }
     else {
-      let message = (sender == null || sender == "") ? "Hooray!" : "Cheer from " + sender + "!";
+      //let message = (sender == null || sender == "") ? "Hooray!" : "Cheer from " + sender + "!";
       let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
 
       if (sender == null || sender == "") {
-        frameBuffer.print1Line("Go " + this.currentCheer.colorNames + "!",
-          BitmapBuffer.LITTERA_WHITE_16);
+        this.scroller1 = new HorizontalScroller(0, 10, frameBuffer, this.gridzilla);
+        this.scroller1.scrollText("Go " + this.currentCheer.colorNames + "!",
+            BitmapBuffer.LITTERA_WHITE_16);
       }
       else  {
-        frameBuffer.print2Lines("Go " + this.currentCheer.colorNames + "!",
-          "From: " + sender,
-          BitmapBuffer.LITTERA_WHITE_16);
+        frameBuffer.print1Line(sender + " says:", BitmapBuffer.LITTERA_WHITE_11, 0);
+        this.scroller1 = new HorizontalScroller(0, 14, frameBuffer, this.gridzilla);
+        this.scroller1.scrollText("Go " + this.currentCheer.colorNames + "!",
+            BitmapBuffer.LITTERA_WHITE_16);
       }
       this.gridzilla.transformScreen(frameBuffer);
       timeout = Math.min(timeout, 5000);
