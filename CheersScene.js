@@ -1,9 +1,14 @@
 const BitmapBuffer = require("./BitmapBuffer.js");
+const Jimp = require('jimp');
+const HorizontalScroller = require("./HorizontalScroller.js");
+
 //const Font = require("./Font.js");
 const Color = require("./Color.js");
+
 //const colorNameToRgb = require("./config-colors.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
-const { teamNameToColorsMap } = require("./config-teams.js");
+const { teamNameToDataMap } = require("./config-teams.js");
+const {colorNameToRgb} = require("./config-colors.js");
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -28,10 +33,11 @@ class CheerScene {
 
   configure(configuration) {
     const {
-      perCheerPeriod = 8000,
+      perCheerPeriod = 10000,
       period = 60000,
     } = configuration;
 
+    //perCheerPeriod is a maximum, some cheers are shorter, but never longer
     this.perCheerPeriod = perCheerPeriod;
     this.period = period;
   }
@@ -56,7 +62,7 @@ class CheerScene {
     console.log("CheerScene run");
     this.paused = false;
     this.startTime = Date.now();
-    this.onTimer();
+    this.doCheer();
   }
 
   pause() {
@@ -67,6 +73,10 @@ class CheerScene {
       // when the scene restarts
       this.currentCheer.startTime = undefined;
     }
+    if (this.scroller1){
+      this.scroller1.stop();
+      this.scroller1 = null;
+    }
     this.paused = true;
     this.onPaused();
   }
@@ -76,28 +86,35 @@ class CheerScene {
     this.pause();
   }
 
-  onTimer() {
+  onCheerComplete() {
+
     const nowTime = Date.now();
-    if (this.startTime + this.period <= nowTime) {
+    this.currentCheer.endTime = nowTime;
+    this.currentCheer.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
+    this.cheerQueue.writeRequests();
+    this.currentCheer = null;
+    if (this.scroller1){
+      this.scroller1.stop();
+      this.scroller1 = null;
+    }
+    //if we can't run the next cheer completely, stop this scene
+    if (nowTime + this.perCheerPeriod > this.startTime + this.period){
       this.pause();
       return;
     }
-   
-    // console.log("CheerScene onTimer");
 
+    this.doCheer();
+  }
+
+  async doCheer() {
+     
     if (this.currentCheer) {
       if (!this.currentCheer.startTime) {
         console.log(`CheerScene restarting=${this.formatCheer(this.currentCheer)} id=${this.currentCheer.id}`);
         this.currentCheer.startTime = Date.now();
       }
-      if (this.currentCheer.startTime + this.perCheerPeriod <= nowTime) {
-        this.currentCheer.endTime = nowTime;
-        this.currentCheer.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
-        this.cheerQueue.writeRequests();
-        this.currentCheer = null;
-      }
     }
-    if (!this.currentCheer) {
+    else {
       this.currentCheer = this.cheerQueue.getNextRequest();
       if (this.currentCheer == null) {
         this.pause();
@@ -106,15 +123,56 @@ class CheerScene {
       console.log(`CheerScene starting=${this.formatCheer(this.currentCheer)} id=${this.currentCheer.id}`);
       this.currentCheer.startTime = Date.now();
     }
+    const sender = this.currentCheer.sender;
 
-    // to do: we should not redraw when we use scrolling
-    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    frameBuffer.print2Lines("Go " + ((this.currentCheer.teamName ? this.currentCheer.teamName : this.currentCheer.colorNames)) + "!",
-                            "From:" + this.currentCheer.sender,
-                            BitmapBuffer.LITTERA_WHITE_11);
-    this.gridzilla.transformScreen(frameBuffer);
+    let timeout = this.perCheerPeriod;
+    
+    if (this.currentCheer.teamName != null) {
+      const teamData = teamNameToDataMap[this.currentCheer.teamName];
+      let colors = [];
+      for (let i = 0;  i < teamData.colors.length; ++i){
+        colors[i] = new Color(colorNameToRgb[teamData.colors[i]][0], colorNameToRgb[teamData.colors[i]][1], colorNameToRgb[teamData.colors[i]][2])
+      }
 
-    this.runningTimer = setTimeout(this.onTimer.bind(this), 1000);
+      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+
+      let treeImage = await Jimp.read("images/replaceTree36.png");
+      let treeBuff = BitmapBuffer.fromImage(treeImage);
+      treeBuff.switchColor(new Color(255, 0, 0), colors);
+      frameBuffer.blit(treeBuff.image, 0, 0);
+      frameBuffer.blit(treeBuff.image, 144, 0);
+      this.scroller1 = new HorizontalScroller(24, 10, frameBuffer, this.gridzilla);
+
+      let message;
+      if (teamData.cheers.length == 0)
+      {
+        message = sender ? sender + " says: " : "";
+        message = message + teamData.cheers[Math.floor(Math.random() * teamData.length)];
+      }
+      else{
+        message = sender ? "From " + sender : "Hooray!";
+      }
+      this.scroller1.scrollText(sender + " says:" + teamData.cheers[0], BitmapBuffer.LITTERA_WHITE_16, null, 120, 8000);
+      timeout = Math.min(timeout, 10000);
+    }
+    else {
+      let message = (sender == null || sender == "") ? "Hooray!" : "Cheer from " + sender + "!";
+      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+
+      if (sender == null || sender == "") {
+        frameBuffer.print1Line("Go " + this.currentCheer.colorNames + "!",
+          BitmapBuffer.LITTERA_WHITE_16);
+      }
+      else  {
+        frameBuffer.print2Lines("Go " + this.currentCheer.colorNames + "!",
+          "From: " + sender,
+          BitmapBuffer.LITTERA_WHITE_16);
+      }
+      this.gridzilla.transformScreen(frameBuffer);
+      timeout = Math.min(timeout, 5000);
+    }
+    
+    this.runningTimer = setTimeout(this.onCheerComplete.bind(this), timeout);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -146,8 +204,8 @@ class CheerScene {
     
     // check team name
     if (teamName) {
-      const colorNames = teamNameToColorsMap[teamName];
-      if (colorNames == undefined || colorNames == null) {
+      const teamData = teamNameToDataMap[teamName];
+      if (teamData == undefined || teamData == null) {
         console.error(`CheerScene::cheer - Invalid team name ${teamName}.`);
         return;
       }
