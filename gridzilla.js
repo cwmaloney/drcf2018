@@ -78,9 +78,10 @@ function startNextScene() {
   if (++sceneIndex >= scenes.length) sceneIndex = 0;
 
   console.log("running scene "+ sceneIndex);
-  scenes[sceneIndex].run();
-
+  //set the timeout before telling the scene to run
+  //if the scene has nothing to do, it will call onPause and cancel the timeout
   pauseTimer = setTimeout(pauseScene, scenePeriod);
+  scenes[sceneIndex].run();
 }
 
 // create scenes
