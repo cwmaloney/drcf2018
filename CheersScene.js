@@ -46,11 +46,11 @@ class CheerScene {
     return this.cheerQueue.nextId;
   }
   
-  getActiveCheerCount() {
+  getActiveRequestCount() {
     return this.cheerQueue.getActiveRequests().length;
   }
 
-  getQueuedCheerCount() {
+  getQueuedRequestCount() {
     return this.cheerQueue.getQueuedRequests().length;
   }
 

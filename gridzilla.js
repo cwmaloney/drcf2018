@@ -104,13 +104,23 @@ server.use(cors());
 // ----- utilities -----
 server.get("/status", function(request, response) {
   try {
-    const messageCount = messagesScene.getRequestCount();
-    const activeCount = messagesScene.getActiveMessageCount();
-    const queuedCount = messagesScene.getQueuedMessageCount();
-    const messages = { ready: activeCount, queued: queuedCount, requests: messageCount }
+    const messages = {
+      ready: messagesScene.getActiveRequestCount(),
+      queued: messagesScene.getQueuedRequestCount(),
+      requests: messagesScene.getRequestCount()
+    };
+
+    const cheers = {
+      ready: cheersScene.getActiveRequestCount(),
+      queued: cheersScene.getQueuedRequestCount(),
+      requests: cheersScene.getRequestCount()
+    };
+
     const suggestions = { count: suggestionManager.getSuggestions().length }
+
     return response.json({
       messages,
+      cheers,
       suggestions
     });
   } catch (error) {

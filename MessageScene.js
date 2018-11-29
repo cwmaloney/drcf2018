@@ -39,11 +39,11 @@ class MessageScene {
     return this.messageQueue.nextId;
   }
   
-  getActiveMessageCount() {
+  getActiveRequestCount() {
     return this.messageQueue.getActiveRequests().length;
   }
 
-  getQueuedMessageCount() {
+  getQueuedRequestCount() {
     return this.messageQueue.getQueuedRequests().length;
   }
 
