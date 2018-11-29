@@ -63,17 +63,19 @@ class BannerScene {
     // console.log("bannerScene onTimer: " + this.formatMessage())
   
     if (this.line3) {
-      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      frameBuffer.print3Lines(this.line1, this.line2, this.line3,
-        BitmapBuffer.LITTERA_RED_11);
+      const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+      const font = new Font("Littera", 11, new Color(255, 0, 0));
+      frameBuffer.print3Lines(this.line1, this.line2, this.line3, font);
         this.gridzilla.transformScreen(frameBuffer);
     } else if (this.line2) {
-      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      frameBuffer.print2Lines(this.line1, this.line2, BitmapBuffer.LITTERA_RED_16);
+      const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+      const font = new Font("Littera", 16, new Color(255, 0, 0));
+      frameBuffer.print2Lines(this.line1, this.line2, font);
       this.gridzilla.transformScreen(frameBuffer);
     } else if (this.line1) {
-      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      frameBuffer.print1Line(this.line1, BitmapBuffer.LITTERA_RED_16);
+      const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+      const font = new Font("Littera", 18, new Color(255, 0, 0));
+      frameBuffer.print1Line(this.line1, font);
       this.gridzilla.transformScreen(frameBuffer);
     }
   

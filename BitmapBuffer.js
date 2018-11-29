@@ -167,17 +167,18 @@ class BitmapBuffer {
      * @param {Color} c2 The replacement color
      */
     switchColor(c1, c2){
-        for (let i = 0; i < this.image.bitmap.data.length; i = i + 4) {
-            if (this.image.bitmap.data[i] == c1.red && this.image.bitmap.data[i+1] == c1.green && this.image.bitmap.data[i+2] == c1.blue) {
+        let c1h = Jimp.rgbaToInt(c1.red, c1.green, c1.blue, 255);
+        this.image.scan(0, 0, this.image.bitmap.width, this.image.bitmap.height, (x, y, idx) => {
+            if (this.image.getPixelColor(x, y) == c1h) {
                 let replacementColor = c2;
-                if (Array.isArray(c2)){
+                if (Array.isArray(c2)) {
                     replacementColor = c2[Math.floor(Math.random() * c2.length)];
                 }
-                this.image.bitmap.data[i] = replacementColor.red;
-                this.image.bitmap.data[i+1] = replacementColor.green;
-                this.image.bitmap.data[i+2] = replacementColor.blue;
+                this.image.bitmap.data[idx] = replacementColor.red;
+                this.image.bitmap.data[idx + 1] = replacementColor.green;
+                this.image.bitmap.data[idx + 2] = replacementColor.blue;
             }
-        }
+        });
     }
 
     /**
@@ -209,9 +210,9 @@ class BitmapBuffer {
      * @param {string} text1 line 1
      * @param {string} text2 line 2
      * @param {string} text3 line 3
-     * @param {Jimp.Font} font1 line 1 font
-     * @param {Jimp.Font} [font1] font2 line 2 font
-     * @param {Jimp.Font} [font1] font3 line 3 font 
+     * @param {Font} font1 line 1 font
+     * @param {Font} [font1] font2 line 2 font
+     * @param {Font} [font1] font3 line 3 font 
      */
     print3Lines(text1, text2, text3, font1, font2, font3) {
         if (font2 == null) {
@@ -220,107 +221,102 @@ class BitmapBuffer {
         if (font3 == null) {
             font3 = font1;
         }
-        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
-                    this.image.bitmap.width, this.image.bitmap.height / 3)
-            .print(font2, 0, 12, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
-                    this.image.bitmap.width, this.image.bitmap.height / 3)
-            .print(font3, 0, 24, { text: text3, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
-                    this.image.bitmap.width, this.image.bitmap.height / 3);
+
+        this.print(text1, font1, this.getXCentered(text1, font1), 0);
+        this.print(text2, font2, this.getXCentered(text2, font2), this.image.bitmap.height / 3);
+        this.print(text3, font3, this.getXCentered(text3, font3), (this.image.bitmap.height / 3) * 2);
     }
 
     /**
      * Convience method to print two lines of text centered on the screen
      * @param {string} text1 line 1
      * @param {string} text2 line 2
-     * @param {Jimp.Font} font1 line 1 font
-     * @param {Jimp.Font} font2 [font1] line 2 font
+     * @param {Font} font1 line 1 font
+     * @param {Font} font2 [font1] line 2 font
      */
     print2Lines(text1, text2, font1, font2) {
         if (font2 == null) {
             font2 = font1;
         }
-        this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE }, 
-                    this.image.bitmap.width, this.image.bitmap.height / 2)
-            .print(font2, 0, this.image.bitmap.height / 2, { text: text2, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
-                    this.image.bitmap.width, this.image.bitmap.height / 2);
+        this.print(text1, font1, this.getXCentered(text1, font1), 0);
+        this.print(text2, font2, this.getXCentered(text2, font2), this.image.bitmap.height / 2);
     }
 
     /**
      * Convience method to print one line of text centered on the screen
-     * @param {string} text1 line 1
-     * @param {Jimp.Font} font1 line 1 font
+     * @param {string} text Text to print
+     * @param {Font} font Font to use
      * @param {number} y [null for vertically centered] y position or null for vertically centered
      */
-    print1Line(text1, font1, y) {
+    print1Line(text, font, y) {
         if (y == null) {
-            this.image.print(font1, 0, 0, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE },
-                    this.image.bitmap.width, this.image.bitmap.height);
+            this.print(text, font, this.getXCentered(text, font), this.getYCentered(text, font));
         }
         else {
-            this.image.print(font1, 0, y, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_TOP },
-                this.image.bitmap.width, this.image.bitmap.height);
+            this.print(text, font, this.getXCentered(text, font), y);
         }
+    }
+
+    getXCentered(text, font) {
+        let width = Jimp.measureText(BitmapBuffer.getJimpFont(font), text);
+        return this.image.bitmap.width / 2 - width / 2;
+    }
+
+    getYCentered(text, font) {
+        var height = Jimp.measureTextHeight(BitmapBuffer.getJimpFont(font), text);
+        return this.image.bitmap.height / 2 - height / 2;
+    }
+
+    static getJimpFont(font) {
+        let size = font.size;
+        if (size < 8) {
+            size = 8;
+        }
+        else if (size > 18) {
+            size = 18;
+        }
+
+        return BitmapBuffer.litteraFonts[size - 8];
     }
 
     /**
      * Print text at an exact coordinate
-     * @param {string} text1 the text to print
-     * @param {Jimp.Font} font1 The font to use
+     * @param {string} text the text to print
+     * @param {Jimp.Font} font The font to use
      * @param {number} x Where to print
      * @param {number} y Where to print
      */
-    print(text1, font1, x, y) {
-        var text1Width = Jimp.measureText(font1, text1);
-        var text1Height = Jimp.measureTextHeight(font1, text1);
+    print(text, font, x = 0, y = 0) {
+        const jimpFont = BitmapBuffer.getJimpFont(font);
+        var textWidth = Jimp.measureText(jimpFont, text);
+        var textHeight = Jimp.measureTextHeight(jimpFont, text);
 
-        if (x == null) {
-            x = 0;
+        let textImage = new Jimp(textWidth, textHeight, Jimp.rgbaToInt(0, 0, 0, 255));        
+        textImage.print(jimpFont, 0, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });   
+        if (font.color)
+        {
+            let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, 255);
+            textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
+                let p = textImage.getPixelColor(x, y);
+                if (p > 0xFF){
+                    textImage.setPixelColor((p & c) >>> 0, x, y);
+                }
+            });
         }
-        if (y == null) {
-            y = 0;
-        }
-        //If you tell Jimp to print with the exact width, it will wrap, maybe there is an error in their lenght calculation
-        //Addint 4 seems to be enough to get the correct behavior
-        var width = text1Width + 4;
-        
-        this.image.print(font1, x, y, { text: text1, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP },
-                width, text1Height);
+        this.image.blit(textImage, x, y, 0, 0, textWidth, textHeight);
 
-        return [width, text1Height];
+        return [textWidth, textHeight];
     }
 
     static initializeFonts(){
-        var promises = [Jimp.loadFont("fonts/litteraBlack11.fnt"), Jimp.loadFont("fonts/litteraBlack16.fnt"), Jimp.loadFont("fonts/litteraWhite11.fnt"),
-                Jimp.loadFont("fonts/litteraWhite16.fnt"), Jimp.loadFont("fonts/litteraRed11.fnt"), Jimp.loadFont("fonts/litteraRed16.fnt"),
-                Jimp.loadFont("fonts/litteraBlue11.fnt"), Jimp.loadFont("fonts/litteraBlue16.fnt"), Jimp.loadFont("fonts/litteraGreen11.fnt"),
-                Jimp.loadFont("fonts/litteraGreen16.fnt"), Jimp.loadFont("fonts/litteraYellow11.fnt"), Jimp.loadFont("fonts/litteraYellow16.fnt"),
-
-                Jimp.loadFont("fonts/litteraPink11.fnt"), Jimp.loadFont("fonts/litteraPink16.fnt"), Jimp.loadFont("fonts/litteraPurple11.fnt"),
-                Jimp.loadFont("fonts/litteraPurple16.fnt"), Jimp.loadFont("fonts/litteraTeal11.fnt"), Jimp.loadFont("fonts/litteraTeal16.fnt"),
-                Jimp.loadFont("fonts/litteraOrange11.fnt"), Jimp.loadFont("fonts/litteraOrange16.fnt")];
-
+        var promises = [Jimp.loadFont("fonts/litteraWhite8.fnt"), Jimp.loadFont("fonts/litteraWhite9.fnt"), Jimp.loadFont("fonts/litteraWhite10.fnt"),
+            Jimp.loadFont("fonts/litteraWhite11.fnt"), Jimp.loadFont("fonts/litteraWhite12.fnt"), Jimp.loadFont("fonts/litteraWhite13.fnt"),
+            Jimp.loadFont("fonts/litteraWhite14.fnt"), Jimp.loadFont("fonts/litteraWhite15.fnt"), Jimp.loadFont("fonts/litteraWhite16.fnt"),
+            Jimp.loadFont("fonts/litteraWhite17.fnt"), Jimp.loadFont("fonts/litteraWhite18.fnt")]
+        
         var resultPromise = Promise.all(promises);
         resultPromise.then( (results) => {
-            BitmapBuffer.LITTERA_BLACK_11 = results[0];
-            BitmapBuffer.LITTERA_BLACK_16 = results[1];
-            BitmapBuffer.LITTERA_WHITE_11 = results[2];
-            BitmapBuffer.LITTERA_WHITE_16 = results[3];
-            BitmapBuffer.LITTERA_RED_11 = results[4];
-            BitmapBuffer.LITTERA_RED_16 = results[5];
-            BitmapBuffer.LITTERA_BLUE_11 = results[6];
-            BitmapBuffer.LITTERA_BLUE_16 = results[7];
-            BitmapBuffer.LITTERA_GREEN_11 = results[8];
-            BitmapBuffer.LITTERA_GREEN_16 = results[9];
-            BitmapBuffer.LITTERA_YELLOW_11 = results[10];
-            BitmapBuffer.LITTERA_YELLOW_16 = results[11];
-            BitmapBuffer.LITTERA_PINK_11 = results[12];
-            BitmapBuffer.LITTERA_PINK_16 = results[13];
-            BitmapBuffer.LITTERA_PURPLE_11 = results[14];
-            BitmapBuffer.LITTERA_PURPLE_16 = results[15];
-            BitmapBuffer.LITTERA_TEAL_11 = results[16];
-            BitmapBuffer.LITTERA_TEAL_16 = results[17];
-            BitmapBuffer.LITTERA_ORANGE_11 = results[18];
-            BitmapBuffer.LITTERA_ORANGE_16 = results[19];
+            BitmapBuffer.litteraFonts = results;
         });
 
         return resultPromise;

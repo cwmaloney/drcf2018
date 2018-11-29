@@ -2,7 +2,7 @@ const BitmapBuffer = require("./BitmapBuffer.js");
 const Jimp = require('jimp');
 const HorizontalScroller = require("./HorizontalScroller.js");
 
-//const Font = require("./Font.js");
+const Font = require("./Font.js");
 const Color = require("./Color.js");
 
 //const colorNameToRgb = require("./config-colors.js");
@@ -156,7 +156,8 @@ class CheerScene {
         message = sender ? sender + " says: " : "";
         message = message + teamData.cheers[Math.floor(Math.random() * teamData.cheers.length)];
       }
-      this.scroller1.scrollText(message, BitmapBuffer.LITTERA_WHITE_16, null, 120);
+      const font16 = new Font("Littera", 16, colors[0]);
+      this.scroller1.scrollText(message, font16, null, 120);
       timeout = Math.min(timeout, 10000);
     }
     else {
@@ -165,14 +166,17 @@ class CheerScene {
 
       if (sender == null || sender == "") {
         this.scroller1 = new HorizontalScroller(0, 10, frameBuffer, this.gridzilla);
+        const font16 = new Font("Littera", 16, new Color(255, 255, 255));
         this.scroller1.scrollText("Go " + this.currentCheer.colorNames + "!",
-            BitmapBuffer.LITTERA_WHITE_16);
+            font16);
       }
       else  {
-        frameBuffer.print1Line(sender + " says:", BitmapBuffer.LITTERA_WHITE_11, 0);
+        const font11 = new Font("Littera", 11, new Color(255, 255, 255));
+        frameBuffer.print1Line(sender + " says:", font11, 0);
         this.scroller1 = new HorizontalScroller(0, 14, frameBuffer, this.gridzilla);
+        const font16 = new Font("Littera", 16, new Color(255, 255, 255));
         this.scroller1.scrollText("Go " + this.currentCheer.colorNames + "!",
-            BitmapBuffer.LITTERA_WHITE_16);
+            font16);
       }
       this.gridzilla.transformScreen(frameBuffer);
       timeout = Math.min(timeout, 5000);

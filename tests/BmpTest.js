@@ -4,6 +4,7 @@ const TransformFactory = require("../TransformFactory.js");
 const BitmapBuffer = require("../BitmapBuffer.js");
 const HorizontalScroller = require("../HorizontalScroller.js");
 const Color = require("../Color.js");
+const Font = require("../Font.js");
 
 const Jimp = require('jimp');
 
@@ -62,21 +63,27 @@ function testDrawing() {
 
 function testPrint3Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    bmpBuff.print3Lines("Welcome to", "Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_11, BitmapBuffer.LITTERA_RED_11);
+    let font1 = new Font("Littera", 11, new Color(255, 0, 0));
+    let font2 = new Font("Littera", 10, new Color(0, 255, 0));
+    let font3 = new Font("Littera", 9, new Color(0, 0, 255));
+    bmpBuff.print3Lines("Welcome to", "Deanna Rose", "Children's Farmstead", font1, font2, font3);
     transform.transformScreen(bmpBuff);
     transform.close();
 }
 
 function testPrint2Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    bmpBuff.print2Lines("Deanna Rose", "Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16);
+    let font1 = new Font("Littera", 15, new Color(255, 255, 0));
+    let font2 = new Font("Littera", 12, new Color(0, 255, 255));
+    bmpBuff.print2Lines("Deanna Rose", "Children's Farmstead", font1, font2);
     transform.transformScreen(bmpBuff);
     transform.close();
 }
 
 function testPrint1Line() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    bmpBuff.print1Line("Deanna Rose", BitmapBuffer.LITTERA_GREEN_16);
+    let font = new Font("Littera", 18, new Color(0, 255, 0));
+    bmpBuff.print1Line("Deanna Rose", font);
     transform.transformScreen(bmpBuff);
     transform.close();
 }
@@ -85,18 +92,23 @@ async function testHorizontalScrollText(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     let scroller1 = new HorizontalScroller(0, 1, bmpBuff, transform);
     let scroller2 = new HorizontalScroller(0, 18, bmpBuff, transform);
-    scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, null, 20000);
-    await scroller2.scrollText("Home of the Holiday Lights at Farmstead Lane", BitmapBuffer.LITTERA_RED_16, 30, null, 20000);
+    let font1 = new Font("Littera", 16, new Color(255, 0, 0));
+    let font2 = new Font("Littera", 16, new Color(0, 255, 0));
+    scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font1, 30, null, 20000);
+    await scroller2.scrollText("Home of the Holiday Lights at Farmstead Lane", font2, 30, null, 20000);
     transform.close();
 }
 
 async function testScrollStop(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
-    let promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 30, null, 30000);
+    let font1 = new Font("Littera", 16, new Color(0, 255, 0));
+
+    let promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font1, 30, null, 30000);
     //telling the scroller to scroll before it finishes will call stop
     setTimeout(() => {
-        promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_YELLOW_16, 30, null, 10000);
+        let font2 = new Font("Littera", 16, new Color(255, 255, 0));
+        promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font2, 30, null, 10000);
     }, 10000);
     promise.then(() => {transform.close()});
     
@@ -104,7 +116,8 @@ async function testScrollStop(){
 
 function testPrint(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    bmpBuff.print("Deanna Rose Children's Farmstead", BitmapBuffer.LITTERA_GREEN_16, 50, 5);
+    let font = new Font("Littera", 18, new Color(0, 255, 0));
+    bmpBuff.print("Deanna Rose Children's Farmstead", font, 50, 5);
     transform.transformScreen(bmpBuff);
     transform.close();
 }
@@ -113,7 +126,8 @@ function testPrint(){
 async function testCheer1(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
-    scroller1.scrollText("Blake says: Go Cyclones!", BitmapBuffer.LITTERA_RED_11, null, null, 20000);
+    let font = new Font("Littera", 11, new Color(255, 255, 255));
+    scroller1.scrollText("Blake says: Go Cyclones!", font, null, null, 20000);
     let srcImage = await Jimp.read("tests/pennant24.png");
     let scroller2 = new HorizontalScroller(0, 12, bmpBuff, transform);
     await scroller2.scrollImage(srcImage, 30, null, 20000);
@@ -130,7 +144,8 @@ async function testCheer2(){
     bmpBuff.blit(treeBuff.image, 0, 0);
     bmpBuff.blit(treeBuff.image, 144, 0);
     let scroller1 = new HorizontalScroller(24, 10, bmpBuff, transform);
-    await scroller1.scrollText("Blake says: Go Cyclones!", BitmapBuffer.LITTERA_RED_16, null, 120, 8000);
+    let font = new Font("Littera", 16, new Color(255, 0, 0));
+    await scroller1.scrollText("Blake says: Go Cyclones!", font, null, 120, 8000);
     transform.close();
 }
 
@@ -159,7 +174,7 @@ BitmapBuffer.initializeFonts().then( () => {
         case "print1Line":
             testPrint1Line();
             break;
-        case "horizontalScrollText":
+        case "scrollText":
             testHorizontalScrollText();
             break;
         case "print":

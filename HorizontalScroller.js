@@ -1,6 +1,7 @@
 "use strict";
 
 const Jimp = require('jimp');
+const BitmapBuffer = require("./BitmapBuffer.js");
 
 class HorizontalScroller{
 
@@ -86,30 +87,41 @@ class HorizontalScroller{
     /**
       * Scrolls the supplied text on the destination
       * @param {string} text The text to scroll
-      * @param {Jimp.Font} font The font to use
+      * @param {Font} font The font to use
       * @param {number}  speed [30] The speed to scroll at, in ms between refreshes
       * @param {number} width [max available or max of the source]
       * How much of the source text to show, use to limit the right boundry of the scrolling area
       * @param {number} maxTime [300000] maximum time to scroll
       */
      async scrollText(text, font, speed, width, maxTime){
-        // pad the left and the right of the string by 2 pixels
-        var textWidth = Jimp.measureText(font, text) + 4;
-        var textHeight = Jimp.measureTextHeight(font, text);
+        const jimpFont = BitmapBuffer.getJimpFont(font);
+
+        let textWidth = Jimp.measureText(jimpFont, text);
+        let textHeight = Jimp.measureTextHeight(jimpFont, text);
         if (width == null){
-            width = Math.min(textWidth, this.buffer.image.bitmap.width - this.destX);
+            width = this.buffer.image.bitmap.width - this.destX;
         } else {
-            width = Math.min(textWidth, this.buffer.image.bitmap.width - this.destX, width);
+            width = Math.min(this.buffer.image.bitmap.width - this.destX, width);
         }
         if (textWidth <= width){
-            this.buffer.print1Line(text, font, this.destY);
+            this.buffer.print(text, font, this.destX + (width - textWidth) / 2, this.destY);
             this.transform.transformScreen(this.buffer);
             return;
         }
-        var textImage = new Jimp(textWidth, textHeight, Jimp.rgbaToInt(0, 0, 0, 255));
-        //offset by x=2 to achieve the desired padding
-        textImage.print(font, 2, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });
-        
+
+        // pad the right side of the image by 4 pixels to add space when the text wraps arounnd
+        let textImage = new Jimp(textWidth + 4, textHeight, Jimp.rgbaToInt(0, 0, 0, 255));
+        textImage.print(jimpFont, 0, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });
+        if (font.color)
+        {
+            let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, 255);
+            textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
+                let p = textImage.getPixelColor(x, y);
+                if (p > 0xFF){
+                    textImage.setPixelColor((p & c) >>> 0, x, y);
+                }
+            });
+        }
         this.scrollImage(textImage, speed, width, maxTime);
      }
 
