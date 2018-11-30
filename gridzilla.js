@@ -20,6 +20,7 @@ const BitmapBuffer = require("./BitmapBuffer.js");
 const BannerScene = require("./BannerScene.js");
 const MessageScene = require("./MessageScene.js");
 const CheersScene = require("./CheersScene.js");
+const ImageScene = require("./ImageScene.js");
 
 //////////////////////////////////////////////////////////////////////////////
 // Managers
@@ -246,27 +247,32 @@ server.get("/suggestions", function(request, response) {
 
 const port = process.env.PORT || 8000;
 
+envConfig.loadOverrides();
+
 BitmapBuffer.initializeFonts().then( () =>  {
   CheersScene.initialize().then( () => {
-    envConfig.loadOverrides();
-    let gridzilla = TransformFactory.getTransform();
+    ImageScene.initialize().then( () => {
+      let gridzilla = TransformFactory.getTransform();
 
-    // create scenes
-    const welcomeBanner = new BannerScene(gridzilla, onPaused, { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
-    const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights." });
-    const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
-    messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
-    cheersScene = new CheersScene(gridzilla, onPaused, nameManager, {});
+      // create scenes
+      const welcomeBanner = new BannerScene(gridzilla, onPaused, { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
+      const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights." });
+      const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
+      messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
+      cheersScene = new CheersScene(gridzilla, onPaused, nameManager, {});
+      const imageScene = new ImageScene(gridzilla, onPaused, {});
 
-    scenes = [
-      welcomeBanner,
-      instructionsBanner,
-      instructions2Banner,
-      messagesScene,
-      cheersScene
-    ];
+      scenes = [
+        welcomeBanner,
+        instructionsBanner,
+        instructions2Banner,
+        messagesScene,
+        cheersScene,
+        imageScene
+      ];
 
-    startNextScene();
+      startNextScene();
+    });
   });
 });
 
