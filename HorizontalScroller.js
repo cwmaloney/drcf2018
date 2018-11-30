@@ -24,7 +24,7 @@ class HorizontalScroller{
      /**
       * Scrolls the supplied image on the destination
       * @param {Jimp} image The sorce image to scroll
-      * @param {number} speed [30] The speed to scroll at, in ms between refreshes
+      * @param {number} speed [40] The speed to scroll at, in ms between refreshes
       * @param {number} width [max available or max of the source]  
       * How much of the source image to show, use to crop the source image, a value larger than the source image will be ignored
       * @param {number} maxTime [300000] maximum time to scroll
@@ -35,7 +35,7 @@ class HorizontalScroller{
             maxTime = 300000; //5 minutes
         }
         if (speed == null) {
-            speed = 30;
+            speed = 40;
         }
         if (width == null){
             width = Math.min(image.bitmap.width, this.buffer.image.bitmap.width - this.destX);
@@ -43,12 +43,12 @@ class HorizontalScroller{
             width = Math.min(image.bitmap.width, this.buffer.image.bitmap.width - this.destX, width);
         }
 
-        var srcWidth = image.bitmap.width;
-        var srcHeight = image.bitmap.height;
-        var srcX = 0;
-        var srcY = 0;
-        var blit1width = Math.min(width, srcWidth - srcX);
-        var blit2width = width - blit1width;
+        const srcWidth = image.bitmap.width;
+        const srcHeight = image.bitmap.height;
+        let srcX = 0;
+        const srcY = 0;
+        let blit1width = Math.min(width, srcWidth - srcX);
+        let blit2width = width - blit1width;
         this.buffer.image.blit(image, this.destX, this.destY, srcX++, srcY, blit1width, srcHeight);
         this.transform.transformScreen(this.buffer);
 
@@ -75,7 +75,7 @@ class HorizontalScroller{
     /**
       * Scrolls the supplied buffer on the destination
       * @param {BitmapBuffer} buffer The sorce image to scroll
-      * @param {number} speed [30] The speed to scroll at, in ms between refreshes
+      * @param {number} speed [40] The speed to scroll at, in ms between refreshes
       * @param {number} width [max available or max of the source]   
       * How much of the source image to show, use to crop the source image, a value larger than the source image will be ignored
       * @param {number} maxTime [300000] maximum time to scroll
@@ -88,13 +88,17 @@ class HorizontalScroller{
       * Scrolls the supplied text on the destination
       * @param {string} text The text to scroll
       * @param {Font} font The font to use
-      * @param {number}  speed [30] The speed to scroll at, in ms between refreshes
+      * @param {number} speed [35] The speed to scroll at, in ms between refreshes
       * @param {number} width [max available or max of the source]
       * How much of the source text to show, use to limit the right boundry of the scrolling area
       * @param {number} maxTime [300000] maximum time to scroll
       */
      async scrollText(text, font, speed, width, maxTime){
         const jimpFont = BitmapBuffer.getJimpFont(font);
+
+        if (speed == null) {
+            speed = 35;
+        }
 
         let textWidth = Jimp.measureText(jimpFont, text);
         let textHeight = Jimp.measureTextHeight(jimpFont, text);

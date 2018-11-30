@@ -86,8 +86,8 @@ async function testHorizontalScrollText(){
     let scroller2 = new HorizontalScroller(0, 18, bmpBuff, transform);
     let font1 = new Font("Littera", 16, new Color(255, 0, 0));
     let font2 = new Font("Littera", 16, new Color(0, 255, 0));
-    scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font1, 30, null, 20000);
-    await scroller2.scrollText("Home of the Holiday Lights at Farmstead Lane", font2, 30, null, 20000);
+    scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font1, null, null, 20000);
+    await scroller2.scrollText("Home of the Holiday Lights at Farmstead Lane", font2, null, null, 20000);
     transform.close();
 }
 
@@ -96,11 +96,11 @@ async function testScrollStop(){
     let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
     let font1 = new Font("Littera", 16, new Color(0, 255, 0));
 
-    let promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font1, 30, null, 30000);
+    let promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font1, null, null, 30000);
     //telling the scroller to scroll before it finishes will call stop
     setTimeout(() => {
         let font2 = new Font("Littera", 16, new Color(255, 255, 0));
-        promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font2, 30, null, 10000);
+        promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font2, null, null, 10000);
     }, 10000);
     promise.then(() => {transform.close()});
     
@@ -122,7 +122,7 @@ async function testCheer1(){
     scroller1.scrollText("Blake says: Go Cyclones!", font, null, null, 20000);
     let srcImage = await Jimp.read("tests/pennant24.png");
     let scroller2 = new HorizontalScroller(0, 12, bmpBuff, transform);
-    await scroller2.scrollImage(srcImage, 30, null, 20000);
+    await scroller2.scrollImage(srcImage, null, null, 20000);
     transform.close();
 }
 
