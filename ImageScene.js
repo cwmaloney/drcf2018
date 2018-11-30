@@ -93,7 +93,7 @@ class ImageScene {
     if (image.bitmap.width > frameBuffer.image.bitmap.width) {
       //scroll it
       this.scroller1 = new HorizontalScroller(0, frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2, frameBuffer, this.gridzilla);
-      this.scroller1.scrollImage(image, 45);
+      this.scroller1.scrollImage(image, 30);
     }
     else {
       //show it
