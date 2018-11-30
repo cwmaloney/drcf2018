@@ -18,20 +18,20 @@ var config;
 function loadOverrides(){
   
   const filename = "envConfigOverrides.json";
-    if (fs.existsSync(filename)) {
-      console.log(`loading envirnment config overrides from ${filename}...`);
+  if (fs.existsSync(filename)) {
+    console.log(`loading envirnment config overrides from ${filename}...`);
 
-      try {
-        const temp = JSON.parse(fs.readFileSync(filename, 'utf8'));
-        config = {...config, ...temp};
-      } catch (error) {
-        if (error.code !== "ENOENT") {
-          throw error;
-        }
+    try {
+      const temp = JSON.parse(fs.readFileSync(filename, 'utf8'));
+      config = {...config, ...temp};
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        throw error;
       }
-
-      console.log(`loading envirnoment config overrides complete. targetEnv is ${config.targetEnv}`);
     }
+
+    console.log(`loading envirnoment config overrides complete. targetEnv is ${config.targetEnv}`);
+  }
 }
 
 /**
