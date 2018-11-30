@@ -88,7 +88,7 @@ class HorizontalScroller{
       * Scrolls the supplied text on the destination
       * @param {string} text The text to scroll
       * @param {Font} font The font to use
-      * @param {number} speed [35] The speed to scroll at, in ms between refreshes
+      * @param {number} speed [30] The speed to scroll at, in ms between refreshes
       * @param {number} width [max available or max of the source]
       * How much of the source text to show, use to limit the right boundry of the scrolling area
       * @param {number} maxTime [300000] maximum time to scroll
@@ -97,7 +97,7 @@ class HorizontalScroller{
         const jimpFont = BitmapBuffer.getJimpFont(font);
 
         if (speed == null) {
-            speed = 35;
+            speed = 30;
         }
 
         let textWidth = Jimp.measureText(jimpFont, text);
