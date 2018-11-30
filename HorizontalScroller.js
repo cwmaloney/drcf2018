@@ -114,7 +114,7 @@ class HorizontalScroller{
         textImage.print(jimpFont, 0, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });
         if (font.color)
         {
-            let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, 255);
+            let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, font.color.alpha);
             textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
                 let p = textImage.getPixelColor(x, y);
                 if (p > 0xFF){

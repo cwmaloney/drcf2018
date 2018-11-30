@@ -1,6 +1,7 @@
 "use strict";
 
 const Jimp = require('jimp');
+const Color = require('./Color.js');
 
 
 /**
@@ -20,9 +21,9 @@ class BitmapBuffer {
         return instance;
     }
 
-    static fromNew(x, y, color) {
+    static fromNew(x, y, color = new Color(0, 0, 0)) {
         var instance = new BitmapBuffer();
-        instance.image = new Jimp(x, y, Jimp.rgbaToInt(color.red, color.green, color.blue, 255));
+        instance.image = new Jimp(x, y, Jimp.rgbaToInt(color.red, color.green, color.blue, color.alpha));
         return instance;
     }
 
@@ -51,7 +52,7 @@ class BitmapBuffer {
         }
 
         // const pixelStartIndex = jimp.getPixelIndex(x, y);
-        this.image.setPixelColor(Jimp.rgbaToInt(color.red, color.green, color.blue, 255), x, y)
+        this.image.setPixelColor(Jimp.rgbaToInt(color.red, color.green, color.blue, color.alpha), x, y)
 
         // console.log("FrameBuffer::drawPixel(", x, y, ")", " r=", color.red, " g=", color.green, " b=", color.blue)
     }
@@ -89,8 +90,8 @@ class BitmapBuffer {
     // draw a rectangle outline
     drawRect(x, y, width, height, color) {
         const left = x;
-        const bottom = y;
-        const top = y + height - 1;
+        const top = y;
+        const bottom = y + height - 1;
         const right = x + width - 1;
 
         //bottom
@@ -125,6 +126,7 @@ class BitmapBuffer {
      */
     // This uses use Bresenham's line algorithm.
     drawCircle(x0, y0, radius, color) {
+        radius = Math.abs(radius);
 
         // draw the bounding points
         this.drawPixel(x0, y0 + radius, color);
@@ -160,6 +162,31 @@ class BitmapBuffer {
         }
     }
 
+    /**
+     * Standard fill changes all pixels of the same color as the starting pixel,
+     * to a new color within a region bounded by any other color not equal to the starting pixel color
+     * @param {number} x Where to start the fill
+     * @param {number} y Where to start the fill
+     * @param {Color} color The color to fill
+     */
+    fill(x, y, color) {
+        const currentColor = this.image.getPixelColor(x, y);
+        this.image.setPixelColor(Jimp.rgbaToInt(color.red, color.green, color.blue, color.alpha), x, y);
+       
+        if (y > 0 && this.image.getPixelColor(x, y - 1) == currentColor) {
+            this.fill(x, y - 1, color);
+        }
+        if (x < this.image.bitmap.width - 1 && this.image.getPixelColor(x + 1, y) == currentColor) {
+            this.fill(x + 1, y, color);
+        }
+        if (y < this.image.bitmap.height - 1 && this.image.getPixelColor(x, y + 1) == currentColor) {
+            this.fill(x, y + 1, color);
+        }
+        if (x > 0 && this.image.getPixelColor(x - 1, y) == currentColor) {
+            this.fill(x - 1, y, color);
+        }
+    }
+
 
     /**
      * Swap all pixels of color c1 to color c2
@@ -167,7 +194,7 @@ class BitmapBuffer {
      * @param {Color} c2 The replacement color
      */
     switchColor(c1, c2){
-        let c1h = Jimp.rgbaToInt(c1.red, c1.green, c1.blue, 255);
+        let c1h = Jimp.rgbaToInt(c1.red, c1.green, c1.blue, c1.alpha);
         this.image.scan(0, 0, this.image.bitmap.width, this.image.bitmap.height, (x, y, idx) => {
             if (this.image.getPixelColor(x, y) == c1h) {
                 let replacementColor = c2;
@@ -177,6 +204,7 @@ class BitmapBuffer {
                 this.image.bitmap.data[idx] = replacementColor.red;
                 this.image.bitmap.data[idx + 1] = replacementColor.green;
                 this.image.bitmap.data[idx + 2] = replacementColor.blue;
+                this.image.bitmap.data[idx + 3] = replacementColor.alpha;
             }
         });
     }
@@ -295,7 +323,7 @@ class BitmapBuffer {
         textImage.print(jimpFont, 0, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });   
         if (font.color)
         {
-            let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, 255);
+            let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, font.color.alpha);
             textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
                 let p = textImage.getPixelColor(x, y);
                 if (p > 0xFF){

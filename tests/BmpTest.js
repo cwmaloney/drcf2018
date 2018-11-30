@@ -47,18 +47,10 @@ function testDrawing() {
     bmpBuff.fillRect(55, 5, 5, 26, new Color(255, 255, 0));
 
     bmpBuff.drawCircle(75, 18, 10, new Color(255, 0, 255));
+    bmpBuff.fill(75, 18, new Color(127, 255, 127));
+
     transform.transformScreen(bmpBuff);
     transform.close();
-
-    // var image = new Jimp(168, 36, Jimp.rgbaToInt(255, 255, 255, 255), (err, image) => {
-    //     image.setPixelColor(Jimp.rgbaToInt(255, 0, 0, 255), 0, 0);
-    //     image.setPixelColor(Jimp.rgbaToInt(255, 0, 0, 255), 1, 1);
-    //     // image.setPixelColor(Jimp.rgbaToInt(255, 0, 0, 255), 0, 35);
-    //     // image.setPixelColor(Jimp.rgbaToInt(255, 0, 0, 255), 167, 35);
-    //     image.write("test/out.bmp");
-    //     let bmpBuff = new BitmapBuffer(image);
-    //     transform.transformScreen(bmpBuff);
-    // });
 }
 
 function testPrint3Lines() {
