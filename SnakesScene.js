@@ -108,6 +108,7 @@ class Game {
 
     this.addSnacks();
 
+    // send status to all players
     this.sendStatus();
       
     this.timer = setTimeout(this.onTimer.bind(this), this.timeout); 
@@ -256,7 +257,7 @@ class Snake {
       return true;
     }
     for (let index = 0; index < this.tail.length; index++) {
-      if (this.tail[index].x == x && this.tail[index].y === y) {
+      if (this.tail[index].x === x && this.tail[index].y === y) {
         return true;
       }
     }
@@ -287,32 +288,23 @@ class Snake {
     }
     for (let snackIndex = 0; snackIndex < this.game.snacks.length; snackIndex++) {
       const snack = this.games.snack[snackIndex];
-      if (snack.x == this.x && snack.y == this.y) {
-        this.addTail();
+      if (snack.x === this.x && snack.y === this.y) {
+        this.tail.push({x: this.x, y: this.y});
       }
     }
   }
 
-  addTail() {
-    this.tail.push({x: this.x, y: this.y});
-  }
 }
 
 
 class SnakeServer {
 
-  constructor(scene, configuration) {
-    this.scene = scene;
+  constructor(nameManager, configuration) {
+    this.nameManager = nameManager;
     this.configure(configuration);
 
     this.players = new Map();
     this.games = new Map();
-  }
-
-  start() {
-    this.socket = SocketIo(this.port);
-    
-    this.socket.on(this.onConnection.bind(this));
   }
 
   configure(configuration) {
@@ -327,11 +319,19 @@ class SnakeServer {
     this.boardWidth = boardWidth;
   }
 
+  start() {
+    console.log(`starting snake scene server  @${new Date()} ...`);
+    this.socket = SocketIo(this.port);
+    
+    this.socket.on(this.onConnection.bind(this));
+    console.log(`started snake scene server  @${new Date()} ...`);
+  }
+
   registerPlayer(playerId, name) {
     let senderOkay = this.nameManager.isNameValid(name);
     if (!senderOkay) {
-      let responseMessage = "We do not recognize that name - try a common first name.";
-      return this.fillResponse(request, response, "Error", responseMessage);
+      //let responseMessage = "We do not recognize that name - try a common first name.";
+      //return this.fillResponse(request, response, "Error", responseMessage);
   }
   this.players.set(playerId, name);
   }
@@ -357,49 +357,43 @@ class SnakeServer {
     this.players.delete(playerId);
   }
 
-
   onConnection(socket) {
     console.log("Client connected: " + socket.id);
 
     socket.on("disconnect", function(socket) {
       console.log("Client disconnected: " + socket.id);
       this.deletePlayer(socket.id);
-    });
+    }.bind(this));
 
     // Socket.io events
-    socket.on("registration", function(player) {
-      scene.nameManager.checkName()
-      player.id = socket.id;
-      this.players.set(player.id, player.name);
+    socket.on("registration", function(name) {
+      this.nameManager.checkName(name);
+      const player = { id:socket.id, name:name, socket:socket };
+      this.players.set(player.id, player);
       socket.emit("registrationComplete", player);
     }.bind(this));
 
-    socket.on("playerReady", function(player) {
-      if (this.getNextGameForPlayer(player)) {
-        //
-        return;
-      }
-
-      this.addPlayerToNextAvailableGame(player);
-      socket.emit("playerAddedtoGame", player.id);
-
+    socket.on("ready", function(player) {
+      const game = this.getNextGameForPlayer(player.id);
+      socket.emit("playerAddedtoGame", player.playerId, game.id);
     }.bind(this));
 
     // keypress - player presses a key
-    socket.on("keypress", function(message) {
-      const game = this.getCurrentGame(message);
+    socket.on("keypress", function(key) {
+      const game = this.getCurrentGame();
       if (game) {
-        game.onKeyPress(message);
+        game.onKeyPress(socket.id, key);
       }
     }.bind(this));
 
     // player disconnected
     socket.on("disconnect", function() {
+      const playerId = socket.id;
       const game = this.getCurrentGame();
       if (!game) {
-        game.onPlayerDisconnect(socket.id);
+        game.onPlayerDisconnect(playerId);
       }
-      this.deletePlayer(socket.id);
+      this.deletePlayer(playerId);
 
     }.bind(this));
   }
@@ -408,7 +402,6 @@ class SnakeServer {
 
 
 //////////////////////////////////////////////////////////////////////////////
-const RequestQueue = require("./RequestQueue.js");
 
 class SnakesScene {
 
@@ -419,7 +412,6 @@ class SnakesScene {
 
     this.configure(configuration);
   
-    console.log(`loading cheer queue  @${new Date()} ...`);
     this.server = new SnakeServer(this);
     this.server.start();
     console.log(`loading cheer complete  @${new Date()}`);
@@ -438,22 +430,6 @@ class SnakesScene {
     this.scenePeriod = scenePeriod;
   }
 
-  getRequestCount() {
-    return this.cheerQueue.nextId;
-  }
-  
-  getActiveRequestCount() {
-    return this.cheerQueue.getActiveRequests().length;
-  }
-
-  getQueuedRequestCount() {
-    return this.cheerQueue.getQueuedRequests().length;
-  }
-
-  getCheerQueue() {
-    return this.cheerQueue.getRequests();
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // Scene control 
   //////////////////////////////////////////////////////////////////////////////
@@ -468,7 +444,9 @@ class SnakesScene {
   pause() {
     console.log("SnakeScene pause");
     clearTimeout(this.runningTimer);
-    server.stopCurentGame();
+    if (this.snakeServer) {
+      this.snakeserver.stopCurentGame();
+    }
     this.paused = true;
     this.onPaused();
   }
@@ -477,8 +455,6 @@ class SnakesScene {
     console.log("SnakeScene forcePause");
     this.pause();
   }
-
-
 
   //////////////////////////////////////////////////////////////////////////////
 
