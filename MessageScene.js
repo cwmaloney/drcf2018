@@ -1,5 +1,5 @@
 const BitmapBuffer = require("./BitmapBuffer.js");
-//const Font = require("./Font.js");
+const Font = require("./Font.js");
 const Color = require("./Color.js");
 //const colorNameToRgb = require("./config-colors.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
@@ -115,7 +115,7 @@ class MessageScene {
     frameBuffer.print3Lines("To:" + this.currentMessage.recipient,
                             this.currentMessage.message,
                             "From:" + this.currentMessage.sender,
-                            BitmapBuffer.LITTERA_WHITE_11);
+                            new Font("Littera", 11, new Color(255, 255, 255)));
     this.gridzilla.transformScreen(frameBuffer);
 
     this.runningTimer = setTimeout(this.onTimer.bind(this), 1000);
