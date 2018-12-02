@@ -149,25 +149,25 @@ class NameManager {
 
 module.exports = NameManager;
 
-function test() {
+// function test() {
 
-  const nameManager = new NameManager();
+//   const nameManager = new NameManager();
 
-  console.log(`loading names ${new Date()} ...`);
-  nameManager.loadNameLists();
-  console.log(`loading names complete ${new Date()}`);
+//   console.log(`loading names ${new Date()} ...`);
+//   nameManager.loadNameLists();
+//   console.log(`loading names complete ${new Date()}`);
 
-  function checkName(name) {
-    const isValid = nameManager.isNameValid(name)
-    console.log(`${name} isValid=${isValid}`);
-  }
-  checkName("Chris");
-  checkName("Mark");
-  checkName("bad");
-  checkName("Mom");
-  checkName("Grand Ma");
-  checkName("Mom, Dad");
-  checkName("Chris, Rachel");
-}
+//   function checkName(name) {
+//     const isValid = nameManager.isNameValid(name)
+//     console.log(`${name} isValid=${isValid}`);
+//   }
+//   checkName("Chris");
+//   checkName("Mark");
+//   checkName("bad");
+//   checkName("Mom");
+//   checkName("Grand Ma");
+//   checkName("Mom, Dad");
+//   checkName("Chris, Rachel");
+// }
 
-test();
+// test();
