@@ -1,11 +1,15 @@
 "use strict";
 
 // HTTP server support
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const uuidv4 = require('uuid/v4');
-const envConfig = require("./envConfig.js");
+const Express = require("express");
+const Http = require("http");
+const SocketIo = require("socket.io");
+
+const BodyParser = require("body-parser");
+const Cors = require("cors");
+
+const Uuidv4 = require('uuid/v4');
+const EnvConfig = require("./envConfig.js");
 const TransformFactory = require("./TransformFactory.js");
 
 // const FrameBuffer = require("./FrameBuffer.js");
@@ -21,6 +25,7 @@ const BannerScene = require("./BannerScene.js");
 const MessageScene = require("./MessageScene.js");
 const CheersScene = require("./CheersScene.js");
 const ImageScene = require("./ImageScene.js");
+const SnakesScene = require("./SnakesScene.js");
 
 //////////////////////////////////////////////////////////////////////////////
 // Managers
@@ -74,7 +79,8 @@ function pauseScene() {
 function startNextScene() {
   if (++sceneIndex >= scenes.length) sceneIndex = 0;
 
-  console.log("running scene "+ sceneIndex);
+  //console.log("running scene "+ sceneIndex);
+
   //set the timeout before telling the scene to run
   //if the scene has nothing to do, it will call onPause and cancel the timeout
   pauseTimer = setTimeout(pauseScene, scenePeriod);
@@ -92,18 +98,28 @@ let scenes;
 // the HTTP server
 //////////////////////////////////////////////////////////////////////////////
 
-const server = express();
+// the name "app" follows the Express "naming convention"
+const app = Express();
+const server = Http.Server(app);
 
-server.use(bodyParser.urlencoded( { extended: true } ) );
-server.use(bodyParser.json());
-server.use(cors());
+app.use(BodyParser.urlencoded( { extended: true } ) );
+app.use(BodyParser.json());
+app.use(Cors());
+//app.options('*', Cors());
+
+// the name "io" follows the Socket.io "nameing convention"
+const io = SocketIo(server);
+//io.set('origins', '*:*');
+io.origins((origin, callback) => {
+  callback(null, true);
+});
 
 //////////////////////////////////////////////////////////////////////////////
 // routing
 //////////////////////////////////////////////////////////////////////////////
 
 // ----- utilities -----
-server.get("/status", function(request, response) {
+app.get("/status", function(request, response) {
   try {
     const messages = {
       ready: messagesScene.getActiveRequestCount(),
@@ -134,27 +150,27 @@ server.get("/status", function(request, response) {
 
 function checkSessionId(request, response) {
   if (!request.body.sessionId) {
-    request.body.sessionId = uuidv4();
+    request.body.sessionId = Uuidv4();
   }
 }
 
-server.post("/names", function(request, response) {
+app.post("/names", function(request, response) {
   return nameManager.addName(request, response);
 });
 
 // check name
-server.post("/names/:name", function(request, response) {
+app.post("/names/:name", function(request, response) {
   return nameManager.checkName(request, response);
 });
 
 // ----- scenes -----
 
-server.post("/messages", function(request, response) {
+app.post("/messages", function(request, response) {
   checkSessionId(request, response);
   return messagesScene.addMessage(request, response);
 });
 
-server.get("/messages", function(request, response) {
+app.get("/messages", function(request, response) {
   try {
     const queue = messagesScene.getMessageQueue();
     return response.json({
@@ -168,12 +184,12 @@ server.get("/messages", function(request, response) {
   }
 });
 
-server.post("/cheers", function(request, response) {
+app.post("/cheers", function(request, response) {
   checkSessionId(request, response);
   return cheersScene.addCheer(request, response);
 });
 
-server.get("/cheers", function(request, response) {
+app.get("/cheers", function(request, response) {
   try {
     const queue = cheersScene.getCheerQueue();
     return response.json({
@@ -187,31 +203,31 @@ server.get("/cheers", function(request, response) {
   }
 });
 
-// server.post("/avatars", function(request, response) {
+// app.post("/avatars", function(request, response) {
 //   return avatarScene.addAvatar(request, response);
 // });
 
-// server.get("/triviaQuestions", function(request, response) {
+// app.get("/triviaQuestions", function(request, response) {
 //   return triviaScene.getQuesions(request, response);
 // });
 
-// server.post("/trivaResults", function(request, response) {
+// app.post("/trivaResults", function(request, response) {
 //   return triviaScene.addName(request, response);
 // });
 
-// server.get("/pollQuestions", function(request, response) {
+// app.get("/pollQuestions", function(request, response) {
 //   return pollScene.addName(request, response);
 // });
 
-// server.get("/pollResults", function(request, response) {
+// app.get("/pollResults", function(request, response) {
 //   return pollScene.addName(request, response);
 // });
 
-server.post("/suggestions", function(request, response) {
+app.post("/suggestions", function(request, response) {
   return suggestionManager.addSuggestion(request, response);
 });
 
-server.get("/suggestions", function(request, response) {
+app.get("/suggestions", function(request, response) {
   try {
     const suggestions = suggestionManager.getSuggestions();
     return response.json({
@@ -225,29 +241,13 @@ server.get("/suggestions", function(request, response) {
   }
 });
 
-// server.post("/snakes", function(request, response) {
-//   return snakesScene.changeDirection(request, response);
-// });
-
-// server.put("/snake/:snakeId", function(request, response) {
-//   return snakesScene.changeDirection(request, response);
-// });
-
-// server.post("/pongPlayers", function(request, response) {
-//   return snakesScene.changeDirection(request, response);
-// });
-
-// server.put("/pongPaddle:paddleId", function(request, response) {
-//   return pongScene.changeDirection(request, response);
-// });
-
 //////////////////////////////////////////////////////////////////////////////
 // the "start-up" code
 //////////////////////////////////////////////////////////////////////////////
 
 const port = process.env.PORT || 8000;
 
-envConfig.loadOverrides();
+EnvConfig.loadOverrides();
 
 BitmapBuffer.initializeFonts().then( () =>  {
   CheersScene.initialize().then( () => {
@@ -256,19 +256,21 @@ BitmapBuffer.initializeFonts().then( () =>  {
 
       // create scenes
       const welcomeBanner = new BannerScene(gridzilla, onPaused, { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
-      const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights." });
-      const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
+      // const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights." });
+      // const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
       messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
       cheersScene = new CheersScene(gridzilla, onPaused, nameManager, {});
-      const imageScene = new ImageScene(gridzilla, onPaused, {});
+      // const imageScene = new ImageScene(gridzilla, onPaused, {});
+      const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
 
       scenes = [
         welcomeBanner,
-        instructionsBanner,
-        instructions2Banner,
-        messagesScene,
-        cheersScene,
-        imageScene
+        // instructionsBanner,
+        // instructions2Banner,
+        // messagesScene,
+        // cheersScene,
+        // imageScene,
+        snakeScene
       ];
 
       startNextScene();
@@ -276,6 +278,32 @@ BitmapBuffer.initializeFonts().then( () =>  {
   });
 });
 
+// ----- Socket.io initialization -----
+
+io.on("connection", function(socket) {
+  console.log("Socket.io user connection: " + socket.id);
+
+  for (let sceneIndex = 0; sceneIndex < scenes.length; sceneIndex++) {
+    const scene = scenes[sceneIndex];
+    if (scene.onUserConnected) {
+      scene.onUserConnected(socket);
+    }
+  }
+
+  socket.on("disconnect", function(error) {
+    console.log(`Socket.io user disconnected: ${socket.id} error=${error.toString}`);
+
+    for (let sceneIndex = 0; sceneIndex < scenes.length; sceneIndex++) {
+      const scene = scenes[sceneIndex];
+      if (scene.onUserDisconnected) {
+        scene.onUserDisconnected(socket);
+      }
+    }
+  });
+
+});
+
+// ----- start the server -----
 server.listen(port, function() {
-  console.log("gridzilla server starting; listening on port " + port);
+  console.log("Gridzilla server listening on port " + port);
 });
