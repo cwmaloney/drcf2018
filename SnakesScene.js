@@ -36,13 +36,15 @@ let nextGameId = 1;
 
 class Game {
 
-  constructor(server, configuration) {
-    this.server = server;
-    this.gameId = nextGameId++;
+  constructor(scene, configuration) {
+    this.scene = scene;
+    this.id = nextGameId++;
     
     this.configure(configuration);
 
     this.players = new Map();
+    this.snakes = new Map();
+    this.snacks = new Array();
   }
 
   configure(configuration) {
@@ -64,20 +66,19 @@ class Game {
   deletePlayer(playerId) {
     // remove player from future games
     if (!this.started && !this.ended) {
-      this.players.delete(playerId);
+      this.snakes.delete(playerId);
     }
   }
 
   addPlayer(player) {
-    if (this.players.size >= this.maxPlayers) {
+    if (this.snakes.size >= this.maxPlayers) {
       throw "To many players added to game";
     }
+    this.players.set(player.id, player);
     const color = playerColors[this.players.size];
-    this.players.set(player.id, player.name, color);
-  }
-
-  sendMessage() {
-
+    const snake = new Snake(this, player.id, color);
+    this.snakes.set(player.id, snake);
+    return snake;
   }
 
   addSnacks() {
@@ -95,17 +96,16 @@ class Game {
   }
 
   createSnakes() {
-    for (let index = 0; index < this.players.length; index++) {
-      const player = this.players[index];
-      const snake = new Snake(this, player);
-      this.snakes.push(snake);
-      snake.initialize();
-    }
+    this.snakes.forEach( function(snake) { snake.initialize(); }, this);
+  }
+
+  sendMessage() {
+
   }
 
   start() {
     this.createSnakes();
-    this.addFood();
+    this.addSnacks();
     
     this.startTime = TimestampUtilities.getNowTimestampNumber();
 
@@ -135,7 +135,7 @@ class Game {
     const nowTime = Date.now();
     if (nowTime > this.startTime + this.gameTimeLimit) {
       this.stop();
-      this.pause();
+      this.scene.pause();
       return;
     }
     
@@ -143,27 +143,21 @@ class Game {
   }
 
   sendStatus() {
-    this.server.socket.emit("state", {
-      snakes: this.snakes.map((snake) => ({
-        id : snake.player.id,
-        color : snake.player.color,
-        colorRgb: colorNameToRgb[snake.player.color],
-        x: snake.x,
-        y: snake.y ,
-        tail: snake.tail
-      })),
-      snacks: this.snacks
-    });
+    // socket.emit("state", {
+    //   snakes: this.snakes.map((snake) => ({
+    //     id : snake.player.id,
+    //     color : snake.player.color,
+    //     colorRgb: colorNameToRgb[snake.player.color],
+    //     x: snake.x,
+    //     y: snake.y ,
+    //     tail: snake.tail
+    //   })),
+    //   snacks: this.snacks
+    // });
   }
 
   getSnake(playerId) {
-    for (let snakeIndex = 0; snakeIndex < this.snakes.length; snakeIndex++) {
-      const snake = this.snakes[snakeIndex];
-      if (snake.playerId == playerId) {
-        return snake;
-      }
-    }
-    return null;
+    return this.snakes.get(playerId);
   }
 
   onKeyPress(message) {
@@ -183,15 +177,20 @@ class Game {
 
     this.reportResults();
   }
+
+  isEmpty(x, y) {
+    return true;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 class Snake {
 
-  constructor(game, player) {
+  constructor(game, player, color) {
     this.game = game;
     this.player = player;
+    this.color = color;
   }
  
   initialize() {
@@ -199,7 +198,7 @@ class Snake {
     for (let tryIndex = 0; tryIndex < maxTries; tryIndex++) {
       const headX = (Math.random() * (this.gridWidth - 3) + 1);
       const headY = (Math.random() * (this.gridHeight - 3) + 1);
-      if (this.game.board.isEmpty(headX, headY)) {
+      if (this.game.isEmpty(headX, headY)) {
         const tailY = headY;
         let tailX;
         if (headX < this.gridWidth/2) {
@@ -209,7 +208,7 @@ class Snake {
           tailX = headX + 1;
           this.direction = Direction.left;
         }
-        if (!this.game.board.isEmpty(headX, headY)) {
+        if (!this.game.isEmpty(headX, headY)) {
           this.x = headX;
           this.y = headY;
           this.tail[0] = { x: tailX, y: tailY };
@@ -303,7 +302,7 @@ class Snake {
 
   checkTouches() {
     for (let snakeIndex = 0; snakeIndex < this.game.snakes.length; snakeIndex++) {
-      const other = this.games.snakes[snakeIndex];
+      const other = this.snakes[snakeIndex];
       // is this a head to head collision?
       if (other !== this) {
         if(other.x === this.x && other.y === this.y) {
@@ -320,7 +319,7 @@ class Snake {
       }
     }
     for (let snackIndex = 0; snackIndex < this.game.snacks.length; snackIndex++) {
-      const snack = this.games.snack[snackIndex];
+      const snack = this.snacks[snackIndex];
       if (snack.x === this.x && snack.y === this.y) {
         this.tail.push({x: this.x, y: this.y});
       }
@@ -342,7 +341,8 @@ class SnakesScene {
     this.configure(configuration);
 
     this.players = new Map();
-    this.games = new Map();
+    this.games = new Array();
+
     this.paused = true;
   }
 
@@ -361,15 +361,6 @@ class SnakesScene {
     this.boardWidth = boardWidth;
   }
 
-  registerPlayer(playerId, name) {
-    let senderOkay = this.nameManager.isNameValid(name);
-    if (!senderOkay) {
-      //let responseMessage = "We do not recognize that name - try a common first name.";
-      //return this.fillResponse(request, response, "Error", responseMessage);
-    }
-  this.players.set(playerId, name);
-  }
-
   addPlayerToNextAvailableGame(player) {
     let resultGame = null;
     for (let gameIndex = 0; gameIndex < this.games.size; gameIndex++) {
@@ -380,10 +371,10 @@ class SnakesScene {
       }
     }
     if (resultGame === null) {
-      resultGame = new Game();
+      resultGame = new Game(this, {});
       this.games.push(resultGame);
     }
-    resultGame.appPlayer(player);
+    resultGame.addPlayer(player);
     return resultGame;
   }
 
@@ -427,16 +418,27 @@ class SnakesScene {
 
     // Socket.io events
     socket.on("snakes.register", function(data) {
-      this.nameManager.isNameValid(data.name);
+      if (!this.nameManager.isNameValid(data.name)) {
+        socket.emit("snakes.registered",{
+          status: "Error",
+          message: "We do not recognize the name - try a common first name." });
+      }
+
       const player = { id:socket.id, name:data.name };
       this.players.set(player.id, player);
-      socket.emit("snakes.registered", player);
+      const game = this.addPlayerToNextAvailableGame(player);
+      const snake = game.getSnake(player.id);
+
+      socket.emit("snakes.registered", {
+        status: "Okay",
+        gameId: game.id,
+        snakeColor: snake.color });
     }.bind(this));
 
     socket.on("snakes.ping", function() {
       const game = this.currentGame;
-      const currentGameId = (game) ? game.id : undefined;
-      socket.emit("snakes.pingResponse", { currentGameId } );
+      const activeGameId = (game) ? game.id : undefined;
+      socket.emit("snakes.pingResponse", { activeGameId } );
     }.bind(this));
 
     // socket.on("snakes.ready", function(player) {
@@ -491,8 +493,8 @@ class SnakesScene {
 
   stopCurrentGame() {
     if (this.currentGame) {
-      this.currentGame = null;
       this.currentGame.stop();
+      this.currentGame = null;
     }
   }
 

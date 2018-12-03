@@ -273,37 +273,42 @@ BitmapBuffer.initializeFonts().then( () =>  {
         snakeScene
       ];
 
-      startNextScene();
+      startListening();
     });
   });
 });
 
-// ----- Socket.io initialization -----
+function startListening() {
 
-io.on("connection", function(socket) {
-  console.log("Socket.io user connection: " + socket.id);
+  // ----- Socket.io initialization -----
 
-  for (let sceneIndex = 0; sceneIndex < scenes.length; sceneIndex++) {
-    const scene = scenes[sceneIndex];
-    if (scene.onUserConnected) {
-      scene.onUserConnected(socket);
-    }
-  }
-
-  socket.on("disconnect", function(error) {
-    console.log(`Socket.io user disconnected: ${socket.id} error=${error.toString}`);
+  io.on("connection", function(socket) {
+    console.log("Socket.io user connection: " + socket.id);
 
     for (let sceneIndex = 0; sceneIndex < scenes.length; sceneIndex++) {
       const scene = scenes[sceneIndex];
-      if (scene.onUserDisconnected) {
-        scene.onUserDisconnected(socket);
+      if (scene.onUserConnected) {
+        scene.onUserConnected(socket);
       }
     }
+
+    socket.on("disconnect", function(error) {
+      console.log(`Socket.io user disconnected: ${socket.id} error=${error.toString}`);
+
+      for (let sceneIndex = 0; sceneIndex < scenes.length; sceneIndex++) {
+        const scene = scenes[sceneIndex];
+        if (scene.onUserDisconnected) {
+          scene.onUserDisconnected(socket);
+        }
+      }
+    });
+
   });
 
-});
+  // ----- start the server -----
+  server.listen(port, function() {
+    console.log("Gridzilla server listening on port " + port);
+  });
 
-// ----- start the server -----
-server.listen(port, function() {
-  console.log("Gridzilla server listening on port " + port);
-});
+  startNextScene();
+}
