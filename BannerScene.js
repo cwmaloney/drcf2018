@@ -1,7 +1,7 @@
 const BitmapBuffer = require("./BitmapBuffer.js");
 const Font = require("./Font.js");
 const Color = require("./Color.js");
-const colorNameToRgb = require("./config-colors.js");
+//const {colorNameToRgb} = require("./config-colors.js");
 
 class BannerScene {
 
@@ -19,11 +19,7 @@ class BannerScene {
 
       line1 = null,
       line2 = null,
-      line3 = null,
-
-      font1 = new Font("", 11, new Color(colorNameToRgb.White)),
-      font2 = new Font("", 11, new Color(colorNameToRgb.White)),
-      font3 = new Font("", 11, new Color(colorNameToRgb.White)),
+      line3 = null
     } = configuration;
 
     this.period = period;
@@ -31,11 +27,7 @@ class BannerScene {
     this.line1 = line1;
     this.line2 = line2;
     this.line3 = line3;
-
-    this.font1 = font1;
-    this.font2 = font2;
-    this.font3 = font3;
-  }
+ }
 
   //////////////////////////////////////////////////////////////////////////////
   // Scene control 
