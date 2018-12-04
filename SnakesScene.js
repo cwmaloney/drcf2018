@@ -53,7 +53,7 @@ class Game {
       gameTimeLimit = 50000,
       gridHeight = 36,
       gridWidth = 168,
-      moveInterval = 1000
+      moveInterval = 250
     } = configuration;
 
     this.maxPlayers = maxPlayers;
@@ -66,7 +66,7 @@ class Game {
   deletePlayer(playerId) {
     // remove player from future games
     if (!this.isStarted()) {
-      this.palyers.delete(playerId);
+      this.players.delete(playerId);
       this.snakes.delete(playerId);
     }
   }
@@ -180,7 +180,7 @@ class Game {
     const data = {snakes, snacks: this.snacks}
 
     this.io.emit("snakes.state", data);
-    console.log("snakes.state", data);
+    // console.log("snakes.state", data);
   }
 
   getSnake(playerId) {
@@ -219,7 +219,7 @@ class Snake {
     this.game = game;
     this.playerId = playerId;
     this.colorName = colorName;
-    // this.dead = false;
+    this.dead = false;
   }
  
   initialize() {
@@ -227,21 +227,56 @@ class Snake {
     for (let tryIndex = 0; tryIndex < maxTries; tryIndex++) {
       const headX = Math.floor((Math.random() * (this.game.gridWidth - 3) + 1));
       const headY = Math.floor((Math.random() * (this.game.gridHeight - 3) + 1));
+
       if (this.game.isEmpty(headX, headY)) {
-        const tailY = headY;
-        let tailX;
-        if (headX < this.gridWidth/2) {
-          tailX = headX - 1;
-          this.direction = Direction.right;
-        } else {
-          tailX = headX + 1;
-          this.direction = Direction.left;
+        switch (Math.floor((Math.random() * 4)))
+        {
+          case 1: this.direction = Direction.right; break;
+          case 2: this.direction = Direction.up; break;
+          case 3: this.direction = Direction.down; break;
+          default: this.direction = Direction.left; break;
         }
-        if (this.game.isEmpty(tailX, tailY)) {
+        let x = headX;
+        let y = headY;
+        let foundOverlap = false;
+        let tempTail = [];
+        for (let tailIndex=0; tailIndex < 5 && !foundOverlap; tailIndex++) {
+          switch (this.direction) {
+            case Direction.left:
+              x++;
+              if (x >= this.game.gridWidth) {
+                x = 0;
+              }
+              break;
+            case Direction.right:
+              x--;
+              if(x < 0) {
+                x = this.game.gridWidth-1;
+              }
+              break;
+            case Direction.up:
+              y++;
+              if (y >= this.game.gridHeight) {
+                y = 0;
+              }
+                  break;
+            case Direction.down:
+              y--;
+              if(y < 0) {
+                y = this.game.gridHeight-1;
+              }
+              break;
+          }
+          if (!this.game.isEmpty(x, y)) {
+            foundOverlap = true;
+            break;
+          }
+          tempTail[tailIndex] = { x, y};
+        }
+        if (!foundOverlap) {
           this.x = headX;
           this.y = headY;
-          this.tail = [];
-          this.tail[0] = { x: tailX, y: tailY };
+          this.tail = tempTail;
           break;
         }
       }
@@ -276,42 +311,37 @@ class Snake {
   move() {
     if (!this.dead) {
       // remove the last tail segment
-      for(let index = 1; index < this.tail.length; index++) {
-        this.tail[index].x = this.tail[index-1].x;
-        this.tail[index].y = this.tail[index-1].y;
+      for(let index = this.tail.length-1; index > 0; index--) {
+        this.tail[index] = this.tail[index-1];
       }
-      this.tail[0] = this.x;
-      this.tail[0] = this.y;
+      this.tail[0] = { x: this.x, y: this.y };
 
       // set new head
       switch(this.direction) {
         case Direction.right:
           this.x++;
+          if (this.x >= this.game.gridWidth) {
+            this.x = 0;
+          }
           break;
         case Direction.left:
           this.x--;
-          break;
-        case Direction.up:
-          this.y--;
+          if(this.x < 0) {
+            this.x = this.game.gridWidth-1;
+          }
           break;
         case Direction.down:
           this.y++;
-           break;
-      }
-
-      // wrap around
-      if(this.x >= this.gridWidth) {
-        this.x = 0;
-      }
-      else if(this.x < 0) {
-        this.x = this.gridWidth-1;
-      }
-
-      if(this.y >= this.gridHeight) {
-        this.y = 0;
-      }
-      else if(this.y < 0) {
-        this.y = this.gridHeight-1;
+          if (this.y >= this.game.gridHeight) {
+            this.y = 0;
+          }
+              break;
+        case Direction.up:
+          this.y--;
+          if(this.y < 0) {
+            this.y = this.game.gridHeight-1;
+          }
+          break;
       }
     }
   }
