@@ -82,11 +82,9 @@ class Game {
     const wanted = Math.max(3, this.players.size);
     const toAdd = wanted - this.snacks.length;
     for (let index = 0; index < toAdd; index++) {
-      const x = Math.floor((Math.random() * (this.gridWidth - 3) + 1));
-      const y = Math.floor((Math.random() * (this.gridHeight - 3) + 1));
-      if (this.isEmpty(x, y)) {
-        this.snacks.push({x, y});
-      }
+      const snack = new Snack(this);
+      snack.initialize();
+      this.snacks.push(snack);
     }
   }
 
@@ -165,11 +163,20 @@ class Game {
         colorName: snake.colorName,
         colorRgb: colorNameToRgb[snake.colorName],
         x: snake.x,
-        y: snake.y ,
+        y: snake.y,
         tail: snake.tail
       });
     }
-    const data = {snakes, snacks: this.snacks}
+    const snacks = Array();
+    this.snacks.forEach( function(snack) { 
+      snacks.push({
+        x: snack.x,
+        y: snack.y
+      });
+     });
+
+
+    const data = {snakes, snacks}
 
     this.io.emit("snakes.state", data);
     // console.log("snakes.state", data);
@@ -191,7 +198,8 @@ class Game {
   }
 
   isEmpty(x, y) {
-    // to do
+    this.snakes.forEach( function(snake) { if (snake.isTouching(x, y)) return false; } );
+    this.snacks.forEach( function(snack) { if (snack.isTouching(x, y)) return false; } );
     return true;
   }
 
@@ -344,18 +352,18 @@ class Snake {
     if (this.x === x && this.y === y) {
       return true;
     }
-    for (let index = 0; index < this.tail.length; index++) {
-      if (this.tail[index].x === x && this.tail[index].y === y) {
-        return true;
+    if (this.tail) {
+      for (let index = 0; index < this.tail.length; index++) {
+        if (this.tail[index].x === x && this.tail[index].y === y) {
+          return true;
+        }
       }
     }
     return false;
   }
 
   isHeadTouching(x, y) {
-    if (this.dead) return false;
-
-    return (this.x === x && this.y === y);
+    return (!this.dead && this.x === x && this.y === y);
   }
 
   checkTouches() {
@@ -367,6 +375,7 @@ class Snake {
         if(other.x === this.x && other.y === this.y) {
           this.kill();
           other.kill();
+          break;
         }
       }
       // did another snake or this snake "bite" this snake?
@@ -374,14 +383,16 @@ class Snake {
         const segment = this.tail[segmentIndex];
         if (other.isHeadTouching(segment.x, segment.y)) {
           this.kill();
+          break;
         }
       }
     }
-    const snacks = this.game.snacks;
-    for (let snackIndex = 0; snackIndex < snacks.length; snackIndex++) {
-      const snack = snacks[snackIndex];
-      if (snack.x === this.x && snack.y === this.y) {
+    for (let snackIndex = this.game.snacks.length-1; snackIndex >= 0; snackIndex--) {
+      const snack = this.game.snacks[snackIndex];
+      if (this.isHeadTouching(snack.x, snack.y)) {
+        this.game.snacks.splice(snackIndex, 1);
         this.tail.push({x: this.x, y: this.y});
+        break;
       }
     }
   }
@@ -389,6 +400,34 @@ class Snake {
   kill() {
     this.dead = true;
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+class Snack {
+
+  constructor(game) {
+    this.game = game;
+  }
+ 
+  initialize() {
+    const maxTries = this.game.gridWidth * this.game.gridHeight;
+    for (let tryIndex = 0; tryIndex < maxTries; tryIndex++) {
+      const x = Math.floor((Math.random() * (this.game.gridWidth - 3) + 1));
+      const y = Math.floor((Math.random() * (this.game.gridHeight - 3) + 1));
+
+      if (this.game.isEmpty(x, y)) {
+          this.x = x;
+          this.y = y;
+          break;
+      }
+    }
+  }
+
+  isTouching(x, y) {
+    return (this.x === x && this.y === y);
+  }
+
 }
 
 //////////////////////////////////////////////////////////////////////////////
