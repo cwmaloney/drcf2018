@@ -13,7 +13,7 @@ const { colorNameToRgb } = require("./config-colors.js");
 
 // ----- constants -----
 
-const snakeColors = [ "Red", "Blue", "Green", "Yellow", "Purple", "Orange" ];
+const snakeColors = [ "Red", "Green", "Yellow", "Blue", "Purple", "Orange" ];
 
 // // key codes
 // const KeyCodes = {
@@ -76,7 +76,7 @@ class Game {
       throw "To many players added to game";
     }
     this.players.set(player.id, player);
-    const colorName = snakeColors[this.players.size];
+    const colorName = snakeColors[this.snakes.size];
     const snake = new Snake(this, player.id, colorName);
     this.snakes.set(player.id, snake);
     return snake;
@@ -504,7 +504,7 @@ class SnakesScene {
       socket.emit("snakes.registered", {
         status: "Okay",
         gameId: game.id,
-        snakeColor: snake.color });
+        colorName: snake.colorName });
     }.bind(this));
 
     socket.on("snakes.ping", function() {
