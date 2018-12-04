@@ -13,15 +13,15 @@ const { colorNameToRgb } = require("./config-colors.js");
 
 // ----- constants -----
 
-const playerColors = [ "Red", "Blue", "Green", "Yellow", "Purple", "Orange", "White" ];
+const snakeColors = [ "Red", "Blue", "Green", "Yellow", "Purple", "Orange" ];
 
-// key codes
-const KeyCodes = {
-  left: 37,
-  up: 38,
-  right: 39,
-  down: 40
-};
+// // key codes
+// const KeyCodes = {
+//   left: 37,
+//   up: 38,
+//   right: 39,
+//   down: 40
+// };
 
 const Direction = {
   up: "up",
@@ -51,21 +51,22 @@ class Game {
     const {
       maxPlayers = 4,
       gameTimeLimit = 50000,
-      boardHeight = 36,
-      boardWidth = 168,
+      gridHeight = 36,
+      gridWidth = 168,
       moveInterval = 1000
     } = configuration;
 
     this.maxPlayers = maxPlayers;
     this.gameTimeLimit = gameTimeLimit;
-    this.boardHeight = boardHeight,
-    this.boardWidth = boardWidth;
+    this.gridHeight = gridHeight,
+    this.gridWidth = gridWidth;
     this.moveInterval = moveInterval;
   }
 
   deletePlayer(playerId) {
     // remove player from future games
-    if (!this.started && !this.ended) {
+    if (!this.isStarted()) {
+      this.palyers.delete(playerId);
       this.snakes.delete(playerId);
     }
   }
@@ -75,56 +76,77 @@ class Game {
       throw "To many players added to game";
     }
     this.players.set(player.id, player);
-    const color = playerColors[this.players.size];
-    const snake = new Snake(this, player.id, color);
+    const colorName = snakeColors[this.players.size];
+    const snake = new Snake(this, player.id, colorName);
     this.snakes.set(player.id, snake);
     return snake;
   }
 
+  isFull() {
+    return (this.snakes.size >= this.maxPlayers);
+  }
+
   addSnacks() {
-    let count = Math.max(3, this.players.length);
-    if (!this.snacks) {
-      this.snacks = [];
-    }
-    for (let index = this.snacks.length; index < count; index++) {
-      const x = (Math.random() * (this.gridWidth - 3) + 1);
-      const y = (Math.random() * (this.gridHeight - 3) + 1);
-      if (this.game.board.isEmpty(x, y)) {
-        this.snackes.push({x, y});
+    const wanted = Math.max(3, this.players.size);
+    const toAdd = wanted - this.snacks.length;
+    for (let index = 0; index < toAdd; index++) {
+      const x = Math.floor((Math.random() * (this.gridWidth - 3) + 1));
+      const y = Math.floor((Math.random() * (this.gridHeight - 3) + 1));
+      if (this.isEmpty(x, y)) {
+        this.snacks.push({x, y});
       }
     }
   }
 
-  createSnakes() {
+  initializeSnakes() {
     this.snakes.forEach( function(snake) { snake.initialize(); }, this);
   }
 
   sendMessage() {
-
+    // to do
   }
 
-  start() {
-    this.createSnakes();
+  start(io) {
+    this.io = io;
+
+    this.initializeSnakes();
     this.addSnacks();
     
-    this.startTime = TimestampUtilities.getNowTimestampNumber();
+    this.startTime = Date.now();
+    this.startTimestampNumber = TimestampUtilities.getNowTimestampNumber();
+    this.active = true;
 
     this.timer = setTimeout(this.onTimer.bind(this), this.moveInterval);
-    this.running = true;
+    this.io.emit("snakes.gameStarted", { id: this.id });
+  }
+
+  isStarted() {
+    return this.startTime !== undefined;
+  }
+
+  isEnded() {
+    return this.endTime !== undefined;
+  }
+
+  stop() {
+    if (!this.stopTime) {
+      this.io.emit("snakes.gameEnded", { id: this.id });
+
+      this.stopTime = Date.now();
+      this.stopTimestampNumber = TimestampUtilities.getNowTimestampNumber();
+      this.active = false;
+ 
+      this.reportResults();
+      this.io = null;
+    }
   }
 
   onTimer() {
     // move snakes
-    for (let snakeIndex = 0; snakeIndex < this.snakes.length; snakeIndex++) {
-      const snake = this.snakes[snakeIndex];
-      snake.move();
-    }
+    this.snakes.forEach( function(snake) { snake.move(); } );
 
     // check for touches
-    for (let snakeIndex = 0; snakeIndex < this.snakes.length; snakeIndex++) {
-      const snake = this.snakes[snakeIndex];
-      snake.checkTouches();
-    }
+    this.snakes.forEach( function(snake) { snake.checkTouches(); } );
 
     this.addSnacks();
 
@@ -143,17 +165,22 @@ class Game {
   }
 
   sendStatus() {
-    // socket.emit("state", {
-    //   snakes: this.snakes.map((snake) => ({
-    //     id : snake.player.id,
-    //     color : snake.player.color,
-    //     colorRgb: colorNameToRgb[snake.player.color],
-    //     x: snake.x,
-    //     y: snake.y ,
-    //     tail: snake.tail
-    //   })),
-    //   snacks: this.snacks
-    // });
+    const snakes = new Array();
+    for (let [playerId, snake] of this.snakes) {
+      snakes.push({
+        id : playerId,
+        dead: snake.dead,
+        colorName: snake.colorName,
+        colorRgb: colorNameToRgb[snake.colorName],
+        x: snake.x,
+        y: snake.y ,
+        tail: snake.tail
+      });
+    }
+    const data = {snakes, snacks: this.snacks}
+
+    this.io.emit("snakes.state", data);
+    console.log("snakes.state", data);
   }
 
   getSnake(playerId) {
@@ -168,18 +195,19 @@ class Game {
   }
 
   reportResults() {
-
-  }
-
-  stop() {
-    this.running = true;
-    this.stopTime = TimestampUtilities.getNowTimestampNumber();
-
-    this.reportResults();
+    // to do
   }
 
   isEmpty(x, y) {
+    // to do
     return true;
+  }
+
+  onPlayerDisconnected(playerId) {
+    const snake = this.getSnake(playerId);
+    if (snake) {
+      snake.dead = true;
+    }
   }
 }
 
@@ -187,17 +215,18 @@ class Game {
 
 class Snake {
 
-  constructor(game, player, color) {
+  constructor(game, playerId, colorName) {
     this.game = game;
-    this.player = player;
-    this.color = color;
+    this.playerId = playerId;
+    this.colorName = colorName;
+    // this.dead = false;
   }
  
   initialize() {
-    const maxTries = this.game.boardWidth * this.game.boardHeight;
+    const maxTries = this.game.gridWidth * this.game.gridHeight;
     for (let tryIndex = 0; tryIndex < maxTries; tryIndex++) {
-      const headX = (Math.random() * (this.gridWidth - 3) + 1);
-      const headY = (Math.random() * (this.gridHeight - 3) + 1);
+      const headX = Math.floor((Math.random() * (this.game.gridWidth - 3) + 1));
+      const headY = Math.floor((Math.random() * (this.game.gridHeight - 3) + 1));
       if (this.game.isEmpty(headX, headY)) {
         const tailY = headY;
         let tailX;
@@ -208,9 +237,10 @@ class Snake {
           tailX = headX + 1;
           this.direction = Direction.left;
         }
-        if (!this.game.isEmpty(headX, headY)) {
+        if (this.game.isEmpty(tailX, tailY)) {
           this.x = headX;
           this.y = headY;
+          this.tail = [];
           this.tail[0] = { x: tailX, y: tailY };
           break;
         }
@@ -244,47 +274,51 @@ class Snake {
   }
 
   move() {
-    // remove the last tail segment
-    for(let index = 1; index < this.tail.length; index++) {
-      this.tail[index].x = this.tail[index-1].x;
-      this.tail[index].y = this.tail[index-1].y;
-    }
-    this.tail[0] = this.x;
-    this.tail[0] = this.y;
+    if (!this.dead) {
+      // remove the last tail segment
+      for(let index = 1; index < this.tail.length; index++) {
+        this.tail[index].x = this.tail[index-1].x;
+        this.tail[index].y = this.tail[index-1].y;
+      }
+      this.tail[0] = this.x;
+      this.tail[0] = this.y;
 
-    // set new head
-    switch(this.direction) {
-      case Direction.right:
-        this.x++;
-        break;
-      case Direction.left:
-        this.x--;
-        break;
-      case Direction.up:
-        this.y--;
-        break;
-      case Direction.down:
-        this.y++;
-         break;
-    }
+      // set new head
+      switch(this.direction) {
+        case Direction.right:
+          this.x++;
+          break;
+        case Direction.left:
+          this.x--;
+          break;
+        case Direction.up:
+          this.y--;
+          break;
+        case Direction.down:
+          this.y++;
+           break;
+      }
 
-    // wrap around
-    if(this.x >= this.gridWidth) {
-      this.x = 0;
-    }
-    else if(this.x < 0) {
-      this.x = this.gridWidth-1;
-    }
+      // wrap around
+      if(this.x >= this.gridWidth) {
+        this.x = 0;
+      }
+      else if(this.x < 0) {
+        this.x = this.gridWidth-1;
+      }
 
-    if(this.y >= this.gridHeight) {
-      this.y = 0;
-    }
-    else if(this.y < 0) {
-      this.y = this.gridHeight-1;
+      if(this.y >= this.gridHeight) {
+        this.y = 0;
+      }
+      else if(this.y < 0) {
+        this.y = this.gridHeight-1;
+      }
     }
   }
 
   isTouching(x, y) {
+    if (this.dead) return false;
+
     if (this.x === x && this.y === y) {
       return true;
     }
@@ -297,12 +331,15 @@ class Snake {
   }
 
   isHeadTouching(x, y) {
+    if (this.dead) return false;
+
     return (this.x === x && this.y === y);
   }
 
   checkTouches() {
-    for (let snakeIndex = 0; snakeIndex < this.game.snakes.length; snakeIndex++) {
-      const other = this.snakes[snakeIndex];
+    let snakes = this.game.snakes;
+    for (let snakeIndex = 0; snakeIndex < snakes.length; snakeIndex++) {
+      const other = snakes[snakeIndex];
       // is this a head to head collision?
       if (other !== this) {
         if(other.x === this.x && other.y === this.y) {
@@ -318,12 +355,17 @@ class Snake {
         }
       }
     }
-    for (let snackIndex = 0; snackIndex < this.game.snacks.length; snackIndex++) {
-      const snack = this.snacks[snackIndex];
+    const snacks = this.game.snacks;
+    for (let snackIndex = 0; snackIndex < snacks.length; snackIndex++) {
+      const snack = snacks[snackIndex];
       if (snack.x === this.x && snack.y === this.y) {
         this.tail.push({x: this.x, y: this.y});
       }
     }
+  }
+
+  kill() {
+    this.dead = true;
   }
 
 }
@@ -350,22 +392,22 @@ class SnakesScene {
     const {
       gameTimeLimit = 50000,
       scenePeriod = 60000,
-      boardHeight = 36,
-      boardWidth = 168,
+      gridHeight = 36,
+      gridWidth = 168,
     } = configuration;
 
     // gameTimeLimit is a maximum, some games are shorter, but never longer
     this.gameTimeLimit = gameTimeLimit;
     this.scenePeriod = scenePeriod;
-    this.boardHeight = boardHeight;
-    this.boardWidth = boardWidth;
+    this.gridHeight = gridHeight;
+    this.gridWidth = gridWidth;
   }
 
   addPlayerToNextAvailableGame(player) {
     let resultGame = null;
     for (let gameIndex = 0; gameIndex < this.games.size; gameIndex++) {
       const game = this.games.get(gameIndex);
-      if (!game.started() && !game.full()) {
+      if (!game.isStarted() && !game.isFull()) {
         resultGame = game;
         break;
       }
@@ -392,7 +434,7 @@ class SnakesScene {
     if (this.games) {
       for (let gameIndex = 0; gameIndex < this.games.length; gameIndex++) {
         const game = this.games[gameIndex];
-        if (!game.started && !game.ended) {
+        if (!game.isStarted()) {
           return game;
         }
       }
@@ -404,7 +446,7 @@ class SnakesScene {
       const nextGame = this.getNextGame();
       if (nextGame) {
         this.currentGame = nextGame;
-        nextGame.start();
+        nextGame.start(this.io);
       } else {
         this.pause();
       }
@@ -461,7 +503,7 @@ class SnakesScene {
 
     const playerId = socket.id;
     if (this.currentGame) {
-      this.currentGame.onPlayerDisconnect(playerId);
+      this.currentGame.onPlayerDisconnected(playerId);
     }
 
     this.deletePlayer(playerId);

@@ -265,11 +265,11 @@ BitmapBuffer.initializeFonts().then( () =>  {
 
       scenes = [
         welcomeBanner,
-        instructionsBanner,
-        instructions2Banner,
-        messagesScene,
-        cheersScene,
-        imageScene,
+        //instructionsBanner,
+        //instructions2Banner,
+        //messagesScene,
+        //cheersScene,
+        //imageScene,
         snakeScene
       ];
 
