@@ -37,10 +37,18 @@ class HorizontalScroller{
         if (speed == null) {
             speed = 40;
         }
+
+
+
         if (width == null){
-            width = Math.min(image.bitmap.width, this.buffer.image.bitmap.width - this.destX);
+            width = this.buffer.image.bitmap.width - this.destX;
         } else {
-            width = Math.min(image.bitmap.width, this.buffer.image.bitmap.width - this.destX, width);
+            width = Math.min(this.buffer.image.bitmap.width - this.destX, width);
+        }
+        if (image.bitmap.width < width){
+            this.buffer.blit(image, this.destX + (width - image.bitmap.width) / 2, this.destY);
+            this.transform.transformScreen(this.buffer);
+            return;
         }
 
         const srcWidth = image.bitmap.width;
