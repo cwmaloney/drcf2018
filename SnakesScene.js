@@ -15,19 +15,11 @@ const { colorNameToRgb } = require("./config-colors.js");
 
 const snakeColors = [ "Red", "Green", "Yellow", "Blue", "Purple", "Orange" ];
 
-// // key codes
-// const KeyCodes = {
-//   left: 37,
-//   up: 38,
-//   right: 39,
-//   down: 40
-// };
-
 const Direction = {
-  up: "up",
-  down: "down",
-  left: "left",
-  right: "right"
+  Up: "Up",
+  Down: "Down",
+  Left: "Left",
+  Right: "Right"
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -187,10 +179,10 @@ class Game {
     return this.snakes.get(playerId);
   }
 
-  onKeyPress(message) {
-    const snake = this.findSnake(message.playerId);
+  changeDirection(playerId, direction) {
+    const snake = this.getSnake(playerId);
     if (snake) {
-      snake.onKeyPress(message);
+      snake.changeDirection(direction);
     }
   }
 
@@ -229,12 +221,12 @@ class Snake {
       const headY = Math.floor((Math.random() * (this.game.gridHeight - 3) + 1));
 
       if (this.game.isEmpty(headX, headY)) {
-        switch (Math.floor((Math.random() * 4)))
+        switch (Math.floor((Math.random() * 5)))
         {
-          case 1: this.direction = Direction.right; break;
-          case 2: this.direction = Direction.up; break;
-          case 3: this.direction = Direction.down; break;
-          default: this.direction = Direction.left; break;
+          case 1: this.direction = Direction.Left; break;
+          case 2: this.direction = Direction.Up; break;
+          case 3: this.direction = Direction.Down; break;
+          default: this.direction = Direction.Right; break;
         }
         let x = headX;
         let y = headY;
@@ -242,25 +234,25 @@ class Snake {
         let tempTail = [];
         for (let tailIndex=0; tailIndex < 5 && !foundOverlap; tailIndex++) {
           switch (this.direction) {
-            case Direction.left:
+            case Direction.Left:
               x++;
               if (x >= this.game.gridWidth) {
                 x = 0;
               }
               break;
-            case Direction.right:
+            case Direction.Right:
               x--;
               if(x < 0) {
                 x = this.game.gridWidth-1;
               }
               break;
-            case Direction.up:
+            case Direction.Up:
               y++;
               if (y >= this.game.gridHeight) {
                 y = 0;
               }
                   break;
-            case Direction.down:
+            case Direction.Down:
               y--;
               if(y < 0) {
                 y = this.game.gridHeight-1;
@@ -283,24 +275,24 @@ class Snake {
     }
   }
 
-  onKeyPress(key) {
-    switch (key) {
-      case KeyCodes.Up:
+  changeDirection(direction) {
+    switch (direction) {
+      case Direction.Up:
         if (this.direction !== Direction.Down) {
           this.direction = Direction.Up;
         }
         break;
-      case KeyCodes.Right:
+      case Direction.Right:
         if (this.direction !== Direction.Left) {
           this.direction = Direction.Right;
         }
         break;
-      case KeyCodes.Down:
+      case Direction.Down:
         if (this.direction !== Direction.Up) {
           this.direction = Direction.Down;
         }
         break;
-      case KeyCodes.Left:
+      case Direction.Left:
         if (this.direction !== Direction.Right) {
           this.direction = Direction.Left;
         }
@@ -318,25 +310,25 @@ class Snake {
 
       // set new head
       switch(this.direction) {
-        case Direction.right:
+        case Direction.Right:
           this.x++;
           if (this.x >= this.game.gridWidth) {
             this.x = 0;
           }
           break;
-        case Direction.left:
+        case Direction.Left:
           this.x--;
           if(this.x < 0) {
             this.x = this.game.gridWidth-1;
           }
           break;
-        case Direction.down:
+        case Direction.Down:
           this.y++;
           if (this.y >= this.game.gridHeight) {
             this.y = 0;
           }
               break;
-        case Direction.up:
+        case Direction.Up:
           this.y--;
           if(this.y < 0) {
             this.y = this.game.gridHeight-1;
@@ -397,7 +389,6 @@ class Snake {
   kill() {
     this.dead = true;
   }
-
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -518,11 +509,10 @@ class SnakesScene {
     //   socket.emit("playerAddedtoGame", player.playerId, game.id);
     // }.bind(this));
 
-    // keypress - player presses a key
-    socket.on("snakes.keypress", function(key) {
-      const game = this.getCurrentGame();
+    socket.on("snakes.changeDirection", function(direction) {
+      const game = this.currentGame;
       if (game) {
-        game.onKeyPress(socket.id, key);
+        game.changeDirection(socket.id, direction);
       }
     }.bind(this));
 
