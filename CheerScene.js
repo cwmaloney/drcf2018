@@ -5,10 +5,9 @@ const HorizontalScroller = require("./HorizontalScroller.js");
 const Font = require("./Font.js");
 const Color = require("./Color.js");
 
-//const colorNameToRgb = require("./config-colors.js");
+const {colorNameToRgb} = require("./config-colors.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
 const { teamNameToDataMap } = require("./config-teams.js");
-const {colorNameToRgb} = require("./config-colors.js");
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -161,28 +160,91 @@ class CheerScene {
       timeout = Math.min(timeout, 10000);
     }
     else {
-      //let message = (sender == null || sender == "") ? "Hooray!" : "Cheer from " + sender + "!";
-      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+      switch(Math.floor(Math.random() * 2)){
+        case(0):
+        default:
+          this.colorWords(sender);
+          break;
+        case(1):
+          this.colorTrees(sender);
+          break;
+      }
+      timeout = Math.min(timeout, 8000);
 
-      if (sender == null || sender == "") {
-        this.scroller1 = new HorizontalScroller(0, 10, frameBuffer, this.gridzilla);
-        const font16 = new Font("Littera", 16, new Color(255, 255, 255));
-        this.scroller1.scrollText("Go " + this.currentCheer.colorNames + "!",
-            font16);
-      }
-      else  {
-        const font11 = new Font("Littera", 11, new Color(255, 255, 255));
-        frameBuffer.print1Line(sender + " says:", font11, 0);
-        this.scroller1 = new HorizontalScroller(0, 14, frameBuffer, this.gridzilla);
-        const font16 = new Font("Littera", 16, new Color(255, 255, 255));
-        this.scroller1.scrollText("Go " + this.currentCheer.colorNames + "!",
-            font16);
-      }
-      this.gridzilla.transformScreen(frameBuffer);
-      timeout = Math.min(timeout, 5000);
     }
     
     this.runningTimer = setTimeout(this.onCheerComplete.bind(this), timeout);
+  }
+
+  colorWords(sender){
+    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+
+
+    let y = 10;
+    if (sender != null && sender != "") {
+      const font11 = new Font("Littera", 11, new Color(255, 255, 255));
+      frameBuffer.print1Line(sender + " cheers for:", font11, 0);
+      this.gridzilla.transformScreen(frameBuffer);
+      y = 16;
+    }
+
+    let length = 0;
+    let font = new Font("Littera", 16, new Color(255, 255, 255));
+    let jimpFont = BitmapBuffer.getJimpFont(font);
+    for (let i = 0; i < this.currentCheer.colorNames.length && i < 10; ++i) {
+      length += Jimp.measureText(jimpFont, this.currentCheer.colorNames[i]) + 4;
+    }
+
+    let x = 0;
+    let textBuffer = BitmapBuffer.fromNew(length, 18, new Color(0, 0, 0));
+    for (let i = 0; i < this.currentCheer.colorNames.length && i < 10; ++i) {
+      font = new Font("Littera", 16, Color.fromRgb(colorNameToRgb[this.currentCheer.colorNames[i]]));
+      x = x + textBuffer.print(this.currentCheer.colorNames[i], font, x, 0)[0] + 4;
+    }
+
+    this.scroller1 = new HorizontalScroller(0, y, frameBuffer, this.gridzilla);
+    this.scroller1.scrollImage(textBuffer.image, null, 168);
+  }
+
+  colorTrees(sender){
+    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+
+
+    let y = 6;
+    if (sender != null && sender != "") {
+      const font11 = new Font("Littera", 11, new Color(255, 255, 255));
+      frameBuffer.print1Line(sender + " cheers for:", font11, 0);
+      this.gridzilla.transformScreen(frameBuffer);
+      y = 12;
+    }
+
+    let treeCount = Math.min(this.currentCheer.colorNames.length, 20);
+    let treeBuffer = BitmapBuffer.fromNew(treeCount * 21, 24, new Color(0, 0, 0));
+    for (let i = 0; i < treeCount; ++i){
+      let color = Color.fromRgb(colorNameToRgb[this.currentCheer.colorNames[i]]);
+      this.drawTree(treeBuffer, color, i * 21, 0);
+    }
+    this.scroller1 = new HorizontalScroller(0, y, frameBuffer, this.gridzilla);
+    this.scroller1.scrollImage(treeBuffer.image, null, 168);
+
+  }
+
+  drawTree(buffer, color, x, y = 0){
+    //draw the triangle
+    buffer.drawLine(x + 3, y + 20, x + 10, y + 2, color);
+    buffer.drawLine(x + 10, y + 2, x + 18, y + 20, color);
+    buffer.drawLine(x + 18, y + 20, x + 3, y + 20, color);
+    //fill the triangle
+    buffer.fill(x + 10, y + 19, color);
+    //draw the trunk
+    buffer.fillRect(x + 9, y + 21, 3, 3, new Color(139,69,19));
+    //draw the light on top
+    buffer.drawPixel(x + 9, y + 0, new Color(127, 127, 0));
+    buffer.drawPixel(x + 10, y + 0, new Color(255, 255, 0));
+    buffer.drawPixel(x + 11, y + 0, new Color(127, 127, 0));
+    buffer.drawPixel(x + 9, y + 1, new Color(127, 127, 0));
+    buffer.drawPixel(x + 10, y + 1, new Color(255, 255, 0));
+    buffer.drawPixel(x + 11, y + 1, new Color(127, 127, 0));
   }
 
   //////////////////////////////////////////////////////////////////////////////
