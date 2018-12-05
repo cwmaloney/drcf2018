@@ -171,6 +171,9 @@ class BitmapBuffer {
      */
     fill(x, y, color) {
         const currentColor = this.image.getPixelColor(x, y);
+        if (Jimp.rgbaToInt(color.red, color.green, color.blue, color.alpha) == currentColor){
+            return;
+        }
         this.image.setPixelColor(Jimp.rgbaToInt(color.red, color.green, color.blue, color.alpha), x, y);
        
         if (y > 0 && this.image.getPixelColor(x, y - 1) == currentColor) {

@@ -8,7 +8,7 @@ const colorNameToRgb = {
   White: [ 255, 255, 255 ],
   Snow: [ 225, 225, 225 ],
   Celadon: [ 162, 215, 165 ],
-  Gray: [ 32, 32, 32 ],
+  Gray: [ 127, 127, 127 ],
   Silver: [ 175, 175, 175 ],
   
   Red: [ 255, 0, 0 ],
@@ -18,7 +18,7 @@ const colorNameToRgb = {
   Scarlet: [ 204, 0 , 0 ],
 
   Pink: [ 255, 102, 178 ],
-  "Dark Pink": [ 175, 75, 140 ],
+  "Dark Pink": [ 231, 84, 128 ],
   Maroon: [ 128, 0, 0],
   Fuchsia: [ 255, 0, 255 ],
   Magenta: [ 255, 0, 255 ],
@@ -29,8 +29,8 @@ const colorNameToRgb = {
   Yellow: [ 255, 255, 0 ],
 
   Cream: [ 0xFD, 0xF9, 0xD8],
-  Brown: [ 32, 20, 11 ],
-  "Dark Brown": [ 20, 13, 5 ],
+  Brown: [ 165, 42, 42 ],
+  "Dark Brown": [ 101, 67, 33 ],
   Gold: [ 215, 185, 0 ],
 
   "Yellow Green": [ 154, 205, 50 ],
@@ -52,9 +52,9 @@ const colorNameToRgb = {
   Blue: [ 0, 0, 255 ],
   "Light Blue": [ 107, 164, 184 ],
   "Cornflower Blue": [ 70, 119, 207 ],
-  "Dark Blue": [ 0, 0, 30],
+  "Dark Blue": [ 0, 0, 129],
   "Royal Blue": [ 65, 105, 225],
-  Navy: [0, 0, 25],
+  Navy: [0, 0, 128],
   "Midnight Blue": [ 25, 25, 112 ],
   "Sporting Blue": [ 147, 177, 215 ],
   
