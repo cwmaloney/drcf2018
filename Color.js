@@ -5,7 +5,7 @@ class Color {
     this.red = red;
     this.green = green;
     this.blue = blue;
-    this.alpha = 255;
+    this.alpha = alpha;
   }
 
   /**
@@ -20,6 +20,10 @@ class Color {
   get g() { return this.green; }
   get b() { return this.blue; }
   get a() { return this.alpha; }
+
+  toInt(){
+    return ((this.red << 24) | (this.green << 16) | (this.blue << 8) | this.alpha) >>> 0;
+  }
 }
 
 module.exports = Color;
