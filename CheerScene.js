@@ -185,11 +185,48 @@ class CheerScene {
       return teamData.images[Math.floor(Math.random() * teamData.images.length)];
     }
     else{
-      let treeImage = CheerScene.REPLACE_TREE.clone();
-      let treeBuff = BitmapBuffer.fromImage(treeImage);
-      treeBuff.switchColor(new Color(255, 0, 0), colors);
-      return treeBuff.image;
+      let random = Math.floor(Math.random() * 2);
+      if (random == 0 && colors.length == 2){
+        return this.getPennantImage(colors);
+      }
+      else {
+        let treeImage = CheerScene.REPLACE_TREE.clone();
+        let treeBuff = BitmapBuffer.fromImage(treeImage);
+        treeBuff.switchColor(new Color(255, 0, 0), colors);
+        return treeBuff.image;
+      }
     }
+  }
+
+  getPennantImage(colors){
+    //Pennant fill color
+    let color1 = colors[0];
+    //Pennant outline color
+    let color2 = colors[1];
+
+    //if color2 is black, switch the colors
+    if (color2.toInt() == Color.fromRgb(colorNameToRgb.Black).toInt()){
+      color2 = colors[0];
+      color1 = colors[1];
+    }
+
+    let pennantBuffer = BitmapBuffer.fromNew(24, 36, new Color(0, 0, 0));
+
+    //draw the pole
+    pennantBuffer.fillRect(0, 16, 3, 19, Color.fromRgb(colorNameToRgb.Brown));
+    pennantBuffer.drawPixel(1, 0, Color.fromRgb(colorNameToRgb.Brown));
+    pennantBuffer.drawLine(0, 1, 2, 1, Color.fromRgb(colorNameToRgb.Brown));
+    pennantBuffer.drawPixel(1, 35, Color.fromRgb(colorNameToRgb.Brown));
+
+    //draw a triangle with a line width of 2 and fill it
+    pennantBuffer.fillRect(0, 2, 2, 14, color2);
+    pennantBuffer.drawLine(1, 2, 23, 8, color2);
+    pennantBuffer.drawLine(1, 3, 23, 9, color2);
+    pennantBuffer.drawLine(1, 15, 23, 9, color2);
+    pennantBuffer.drawLine(1, 14, 23, 8, color2);
+    pennantBuffer.fill(3, 8, color1);
+
+    return pennantBuffer.image;
   }
 
   showColorWords(){
