@@ -126,47 +126,21 @@ class CheerScene {
       console.log(`CheerScene starting=${this.formatCheer(this.currentCheer)} id=${this.currentCheer.id}`);
       this.currentCheer.startTime = Date.now();
     }
-    const sender = this.currentCheer.sender;
 
     let timeout = this.perCheerPeriod;
     
     if (this.currentCheer.teamName != null) {
-      const teamData = teamNameToDataMap[this.currentCheer.teamName];
-      let colors = [];
-      for (let i = 0;  i < teamData.colors.length; ++i){
-        colors[i] = new Color(colorNameToRgb[teamData.colors[i]][0], colorNameToRgb[teamData.colors[i]][1], colorNameToRgb[teamData.colors[i]][2])
-      }
-
-      let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-
-      let treeImage = CheerScene.REPLACE_TREE.clone();
-      let treeBuff = BitmapBuffer.fromImage(treeImage);
-      treeBuff.switchColor(new Color(255, 0, 0), colors);
-      frameBuffer.blit(treeBuff.image, 0, 0);
-      frameBuffer.blit(treeBuff.image, 144, 0);
-      this.scroller1 = new HorizontalScroller(24, 10, frameBuffer, this.gridzilla);
-
-      let message;
-      if (teamData.cheers.length == 0)
-      {
-        message = sender ? "From " + sender : "Hooray!";
-      }
-      else{
-        message = sender ? sender + " says: " : "";
-        message = message + teamData.cheers[Math.floor(Math.random() * teamData.cheers.length)];
-      }
-      const font16 = new Font("Littera", 16, colors[0]);
-      this.scroller1.scrollText(message, font16, null, 120);
+      this.showTeamAnimation();
       timeout = Math.min(timeout, 10000);
     }
     else {
       switch(Math.floor(Math.random() * 2)){
         case(0):
         default:
-          this.colorWords(sender);
+          this.showColorWords();
           break;
         case(1):
-          this.colorTrees(sender);
+          this.showColorTrees();
           break;
       }
       timeout = Math.min(timeout, 8000);
@@ -176,14 +150,56 @@ class CheerScene {
     this.runningTimer = setTimeout(this.onCheerComplete.bind(this), timeout);
   }
 
-  colorWords(sender){
+  showTeamAnimation(){
+    const teamData = teamNameToDataMap[this.currentCheer.teamName];
+    let colors = [];
+    for (let i = 0;  i < teamData.colors.length; ++i){
+      colors[i] = new Color(colorNameToRgb[teamData.colors[i]][0], colorNameToRgb[teamData.colors[i]][1], colorNameToRgb[teamData.colors[i]][2])
+    }
+
+    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+
+    //show image
+    let teamImage = this.getTeamImage(teamData, colors);
+    frameBuffer.blit(teamImage, 0, 0);
+
+    //show text
+    this.scroller1 = new HorizontalScroller(teamImage.bitmap.width + 2, 10, frameBuffer, this.gridzilla);
+
+    let message;
+    if (teamData.cheers.length == 0)
+    {
+      message = this.currentCheer.sender ? "From " + this.currentCheer.sender : "Hooray!";
+    }
+    else{
+      message = this.currentCheer.sender ? this.currentCheer.sender + " says: " : "";
+      message = message + teamData.cheers[Math.floor(Math.random() * teamData.cheers.length)];
+    }
+    const font16 = new Font("Littera", 16, colors[0]);
+    this.scroller1.scrollText(message, font16, null, null);
+    
+  }
+
+  getTeamImage(teamData, colors){
+    if (teamData.images != null && Array.isArray(teamData.images) && teamData.images.length > 0){
+      return teamData.images[Math.floor(Math.random() * teamData.images.length)];
+    }
+    else{
+      let treeImage = CheerScene.REPLACE_TREE.clone();
+      let treeBuff = BitmapBuffer.fromImage(treeImage);
+      treeBuff.switchColor(new Color(255, 0, 0), colors);
+      return treeBuff.image;
+    }
+  }
+
+  showColorWords(){
     let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
 
 
     let y = 10;
-    if (sender != null && sender != "") {
+    if (this.currentCheer.sender != null && this.currentCheer.sender != "") {
       const font11 = new Font("Littera", 11, new Color(255, 255, 255));
-      frameBuffer.print1Line(sender + " cheers for:", font11, 0);
+      frameBuffer.print1Line(this.currentCheer.sender + " cheers for:", font11, 0);
       this.gridzilla.transformScreen(frameBuffer);
       y = 16;
     }
@@ -206,14 +222,13 @@ class CheerScene {
     this.scroller1.scrollImage(textBuffer.image, null, 168);
   }
 
-  colorTrees(sender){
+  showColorTrees(){
     let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
 
-
     let y = 6;
-    if (sender != null && sender != "") {
+    if (this.currentCheer.sender != null && this.currentCheer.sender != "") {
       const font11 = new Font("Littera", 11, new Color(255, 255, 255));
-      frameBuffer.print1Line(sender + " cheers for:", font11, 0);
+      frameBuffer.print1Line(this.currentCheer.sender + " cheers for:", font11, 0);
       this.gridzilla.transformScreen(frameBuffer);
       y = 12;
     }
@@ -258,6 +273,11 @@ class CheerScene {
     if (!teamName && !colorNames) {
       console.error('CheerScene::cheer - missing teamName or colorNames');
       return;
+    }
+
+    if (!teamName && Array.isArray(colorNames) && colorNames.length == 0){
+      let responseMessage = "Please select at least one color.";
+      return this.fillResponse(request, response, "Error", responseMessage);
     }
 
     // sender is optional
@@ -348,14 +368,24 @@ class CheerScene {
   }
 
   static initialize(){
-    var promises = [Jimp.read("images/replaceTree36.png")];
+    var promises = [Jimp.read("images/replaceTree36.png").then((img) => {
+      CheerScene.REPLACE_TREE = img;
+    })];
 
-    var resultPromise = Promise.all(promises);
-    resultPromise.then( (results) => {
-        CheerScene.REPLACE_TREE = results[0];
+    Object.keys(teamNameToDataMap).forEach((key) => {
+      if (teamNameToDataMap[key].imageNames != null && Array.isArray(teamNameToDataMap[key].imageNames)){
+        teamNameToDataMap[key].images = [];
+        for (let i = 0; i < teamNameToDataMap[key].imageNames.length; ++i){
+          let imageName = teamNameToDataMap[key].imageNames[i];
+          let p = Jimp.read("images/" + imageName).catch((err)=>{console.log(`CheerScene: ${err}`);}).then((img) => {
+            teamNameToDataMap[key].images[teamNameToDataMap[key].images.length] = img;
+          });
+          promises[promises.length] = p;
+        }
+      }
     });
 
-    return resultPromise;
+    return Promise.all(promises);
   }
 }
 

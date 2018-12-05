@@ -127,22 +127,17 @@ class MessageScene {
 
   addMessage(request, response) {
 
-    let sender = request.body.sender;
-    if (sender === undefined || sender == null) {
-      console.error('MessagesScene::addMessage - missing sender');
-      return;
-    }
-   
+    let sender = request.body.sender;   
     let recipient = request.body.recipient;
-    if (recipient === undefined || recipient == null) {
-      console.error('MessagesScene::addMessage - missing recipient');
-      return;
+    if (!recipient  || !sender) {
+      let responseMessage = "Please enter both a to and from name.";
+      return this.fillResponse(request, response, "Error", responseMessage);
     }
    
     let message = request.body.message;
     if (message === undefined || message === null) {
-      console.error('MessagesScene::addMessage - missing messageType');
-      return;
+      let responseMessage = "Please select a message.";
+      return this.fillResponse(request, response, "Error", responseMessage);
     }
    
     // date and time are optional

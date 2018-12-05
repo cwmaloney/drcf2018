@@ -14,7 +14,7 @@ const colorNameToRgb = {
   Red: [ 255, 0, 0 ],
   Crimson: [ 0x84, 0x16, 0x17],
   //crimson: [ 220, 20, 60 ],
-  "Dark Red": [20, 0, 0],
+  "Dark Red": [139, 0, 0],
   Scarlet: [ 204, 0 , 0 ],
 
   Pink: [ 255, 102, 178 ],
@@ -37,7 +37,7 @@ const colorNameToRgb = {
   Chartreuse: [ 63, 128, 0 ],
 
   Green:[ 0, 255, 0 ],
-  "Dark Green": [ 0, 30, 0 ],
+  "Dark Green": [ 0, 100, 0 ],
   "Grinch Green": [ 40, 190, 0 ],
   Olive: [ 45, 65, 0 ],
   Turquoise: [ 64, 224, 204 ],
