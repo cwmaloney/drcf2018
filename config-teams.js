@@ -32,7 +32,7 @@ const teamNameToDataMap = {
   Snow: {name: "Snow", colors: [ "Snow"], mascot: "Snow", cheers: ["Snow!"], imageNames:["2744.png"]},
   Snowman: {name: "Snowman", colors: [ "Snow"], mascot: "Snowman", cheers: ["Snowman!"], imageNames:["26c4.png"]},
   Tree: {name: "Tree", colors: [ "Green"], mascot: "Tree", cheers: ["Tree!"], imageNames:["1f384.png"]},
-  "Sporting KC": {name: "Sporting KC", colors: [ "Dark Indigo", "Sporting Blue"], mascot: "Sporting", cheers: ["Go Sporting!"]},
+  "Sporting KC": {name: "Sporting KC", colors: [ "Sporting Blue", "Dark Indigo"], mascot: "Sporting", cheers: ["Go Sporting!"]},
   "STA Saints": {name: "STA", colors: [ "Blue", "Gold" ], mascot: "Saints", cheers: ["Go Saints!"]},
   "Texas Christian": {name: "TCU", colors: [ "Horned Frog Purple", "White"], mascot: "Horned Frogs", cheers: ["Go Frogs!"]},
   Texas: {name: "Texas", colors: [ "Orange", "White"], mascot: "Horns", cheers: ["Hook 'em Horns!"]},
