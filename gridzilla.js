@@ -23,7 +23,7 @@ const BitmapBuffer = require("./BitmapBuffer.js");
 
 const BannerScene = require("./BannerScene.js");
 const MessageScene = require("./MessageScene.js");
-const CheersScene = require("./CheersScene.js");
+const CheerScene = require("./CheerScene.js");
 const ImageScene = require("./ImageScene.js");
 const SnakesScene = require("./SnakesScene.js");
 
@@ -250,7 +250,7 @@ const port = process.env.PORT || 8000;
 EnvConfig.loadOverrides();
 
 BitmapBuffer.initializeFonts().then( () =>  {
-  CheersScene.initialize().then( () => {
+  CheerScene.initialize().then( () => {
     ImageScene.initialize().then( () => {
       let gridzilla = TransformFactory.getTransform();
 
@@ -259,7 +259,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
       const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights." });
       const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
       messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
-      cheersScene = new CheersScene(gridzilla, onPaused, nameManager, {});
+      cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
       const imageScene = new ImageScene(gridzilla, onPaused, {});
       const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
 
