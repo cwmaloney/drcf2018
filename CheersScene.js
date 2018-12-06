@@ -5,10 +5,9 @@ const HorizontalScroller = require("./HorizontalScroller.js");
 const Font = require("./Font.js");
 const Color = require("./Color.js");
 
-//const colorNameToRgb = require("./config-colors.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
 const { teamNameToDataMap } = require("./config-teams.js");
-const {colorNameToRgb} = require("./config-colors.js");
+const { colorNameToRgb } = require("./config-colors.js");
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -135,7 +134,7 @@ class CheerScene {
       const teamData = teamNameToDataMap[this.currentCheer.teamName];
       let colors = [];
       for (let i = 0;  i < teamData.colors.length; ++i){
-        colors[i] = new Color(colorNameToRgb[teamData.colors[i]][0], colorNameToRgb[teamData.colors[i]][1], colorNameToRgb[teamData.colors[i]][2])
+        colors[i] = new Color(colorNameToRgb[teamData.colors[i]][0], colorNameToRgb[teamData.colors[i]][1], colorNameToRgb[teamData.colors[i]][2]);
       }
 
       let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
