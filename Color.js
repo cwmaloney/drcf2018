@@ -24,12 +24,8 @@ class Color {
         this.red = red;
         this.green = green;
         this.blue = blue;
-        this.alpha = 255;
+        this.alpha = alpha;
     }
-    this.red = red;
-    this.green = green;
-    this.blue = blue;
-    this.alpha = alpha;
   }
 
   /**
