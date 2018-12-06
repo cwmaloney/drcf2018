@@ -499,7 +499,7 @@ class SnakesScene {
 
   configure(configuration) {
     const {
-      gameTimeLimit = 20*1000,
+      gameTimeLimit = 100*1000,
       scenePeriod = 120*1000,
     } = configuration;
 
