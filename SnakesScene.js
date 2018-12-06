@@ -42,14 +42,16 @@ class Game {
   configure(configuration) {
     const {
       maxPlayers = 4,
-      gameTimeLimit = 50000,
-      gridHeight = 36,
-      gridWidth = 168,
+      gameTimeLimit = 20*1000,
+      scaleFactor = 3,
+      gridHeight = 12*3/scaleFactor,
+      gridWidth = 14*12/scaleFactor,
       moveInterval = 250
     } = configuration;
 
     this.maxPlayers = maxPlayers;
     this.gameTimeLimit = gameTimeLimit;
+    this.scaleFactor = scaleFactor;
     this.gridHeight = gridHeight,
     this.gridWidth = gridWidth;
     this.moveInterval = moveInterval;
@@ -141,17 +143,26 @@ class Game {
     this.addSnacks();
 
     // send status to all players
-    this.sendStatus();
+    // this.sendStatus();
+
+    // draw game board on Gridzilla
+    this.drawBoard();
 
     // is it time to stop the game?
     const nowTime = Date.now();
-    if (nowTime > this.startTime + this.gameTimeLimit) {
+    if (nowTime > this.startTime + this.gameTimeLimit || this.getLiveSnakeCount() < 1) {
       this.stop();
       this.scene.pause();
       return;
     }
     
     this.timer = setTimeout(this.onTimer.bind(this), this.moveInterval); 
+  }
+
+  getLiveSnakeCount() {
+    let count = 0;
+    this.snakes.forEach( function(snake) { if (snake.isLive()) count++; }, this);
+    return count;
   }
 
   sendStatus() {
@@ -182,6 +193,31 @@ class Game {
     // console.log("snakes.state", data);
   }
 
+  drawBoard() {
+    // console.log("SnakesScene drawBoard");
+
+    const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
+
+    for (let snake of this.snakes.values()) {
+       const color = new Color(colorNameToRgb[snake.colorName]);
+
+      frameBuffer.drawRect(snake.x*this.scaleFactor, snake.y*this.scaleFactor, this.scaleFactor, this.scaleFactor, color)
+      if (snake.tail) {
+        for (let tailIndex = 0; tailIndex < snake.tail.length; tailIndex++) {
+          let tailPart = snake.tail[tailIndex];
+          frameBuffer.drawRect(tailPart.x*this.scaleFactor, tailPart.y*this.scaleFactor, this.scaleFactor, this.scaleFactor, color)
+        }
+      }
+    }
+
+    const snackColor = new Color(colorNameToRgb["White"]);
+    for (let snack of this.snacks) {
+      frameBuffer.drawRect(snack.x*this.scaleFactor, snack.y*this.scaleFactor, this.scaleFactor, this.scaleFactor, snackColor);
+    }
+
+    this.scene.gridzilla.transformScreen(frameBuffer);
+  }
+
   getSnake(playerId) {
     return this.snakes.get(playerId);
   }
@@ -194,7 +230,18 @@ class Game {
   }
 
   reportResults() {
-    // to do
+    const players = new Array();
+    for (let snake of this.snakes.values()) {
+      players.push({
+        id : snake.playerId,
+        name: this.players.get(snake.playerId).name,
+        points: snake.tail.length+1
+      });
+    }
+    
+    const data = { gameId: this.id, players };
+    this.io.emit("snakes.gameReport", data);
+    // console.log("snakes.gameResults", data);
   }
 
   isEmpty(x, y) {
@@ -206,7 +253,7 @@ class Game {
   onPlayerDisconnected(playerId) {
     const snake = this.getSnake(playerId);
     if (snake) {
-      snake.dead = true;
+      snake.kill();
     }
   }
 }
@@ -221,6 +268,8 @@ class Snake {
     this.colorName = colorName;
     this.dead = false;
   }
+
+  isLive() { return !this.dead; }
  
   initialize() {
     const maxTries = this.game.gridWidth * this.game.gridHeight;
@@ -309,7 +358,7 @@ class Snake {
   }
 
   move() {
-    if (!this.dead) {
+    if (this.isLive()) {
       // remove the last tail segment
       for(let index = this.tail.length-1; index > 0; index--) {
         this.tail[index] = this.tail[index-1];
@@ -347,7 +396,7 @@ class Snake {
   }
 
   isTouching(x, y) {
-    if (this.dead) return false;
+    if (!this.isLive()) return false;
 
     if (this.x === x && this.y === y) {
       return true;
@@ -363,7 +412,7 @@ class Snake {
   }
 
   isHeadTouching(x, y) {
-    return (!this.dead && this.x === x && this.y === y);
+    return (this.isLive() && this.x === x && this.y === y);
   }
 
   checkTouches() {
@@ -450,30 +499,26 @@ class SnakesScene {
 
   configure(configuration) {
     const {
-      gameTimeLimit = 50000,
-      scenePeriod = 60000,
-      gridHeight = 36,
-      gridWidth = 168,
+      gameTimeLimit = 20*1000,
+      scenePeriod = 120*1000,
     } = configuration;
 
     // gameTimeLimit is a maximum, some games are shorter, but never longer
     this.gameTimeLimit = gameTimeLimit;
     this.scenePeriod = scenePeriod;
-    this.gridHeight = gridHeight;
-    this.gridWidth = gridWidth;
+
   }
 
   addPlayerToNextAvailableGame(player) {
     let resultGame = null;
-    for (let gameIndex = 0; gameIndex < this.games.size; gameIndex++) {
-      const game = this.games.get(gameIndex);
+    for (let game of this.games.values()) {
       if (!game.isStarted() && !game.isFull()) {
         resultGame = game;
         break;
       }
     }
     if (resultGame === null) {
-      resultGame = new Game(this, {});
+      resultGame = new Game(this, {gameTimeLimit: this.gameTimeLimit});
       this.games.push(resultGame);
     }
     resultGame.addPlayer(player);
@@ -524,17 +569,17 @@ class SnakesScene {
         socket.emit("snakes.registered",{
           status: "Error",
           message: "We do not recognize the name - try a common first name." });
+      } else {
+        const player = { id:socket.id, name:data.name };
+        this.players.set(player.id, player);
+        const game = this.addPlayerToNextAvailableGame(player);
+        const snake = game.getSnake(player.id);
+
+        socket.emit("snakes.registered", {
+          status: "Okay",
+          gameId: game.id,
+          colorName: snake.colorName });
       }
-
-      const player = { id:socket.id, name:data.name };
-      this.players.set(player.id, player);
-      const game = this.addPlayerToNextAvailableGame(player);
-      const snake = game.getSnake(player.id);
-
-      socket.emit("snakes.registered", {
-        status: "Okay",
-        gameId: game.id,
-        colorName: snake.colorName });
     }.bind(this));
 
     socket.on("snakes.ping", function() {
