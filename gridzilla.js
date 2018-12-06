@@ -261,6 +261,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
       messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
       cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
       const imageScene = new ImageScene(gridzilla, onPaused, {});
+      const preSnakesBanner = new BannerScene(gridzilla, onPaused, { line1: ">>> Play Snakes <<<", line2: "Visit farmsteadlights.com", line3: "to play snakes here.", period: 2000 });
       const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
 
       scenes = [
@@ -270,6 +271,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
         messagesScene,
         cheersScene,
         imageScene,
+        preSnakesBanner,
         snakeScene
       ];
 
