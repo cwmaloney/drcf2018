@@ -5,8 +5,8 @@ const fs = require('fs');
 const { FileUtilities } = require("./FileUtilities.js");
 const { Secrets } = require("./secrets.js");
 
-const censusNamesFileName = 'censusNames.txt';
-const additionalNamesFileName = 'additionalNames.txt';
+const censusNamesFileName = 'names-census.txt';
+const additionalNamesFileName = 'names-additional.txt';
 
 class NameManager {
 
