@@ -27,7 +27,7 @@ class MessageScene {
 
   configure(configuration) {
     const {
-      perMesssagePeriod = 8000,
+      perMesssagePeriod = 10000,
       period = 60000,
     } = configuration;
 
