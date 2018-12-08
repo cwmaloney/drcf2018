@@ -260,7 +260,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
       const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
       messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
       cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
-      const imageScene = new ImageScene(gridzilla, onPaused, {});
+      const imageScene = new ImageScene(gridzilla, onPaused, { period: 10000 });
       const preSnakesBanner = new BannerScene(gridzilla, onPaused, { line1: ">>> Play Snakes <<<", line2: "Visit farmsteadlights.com", line3: "to play snakes here." });
       const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
 
