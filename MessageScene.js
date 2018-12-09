@@ -1,7 +1,7 @@
 const BitmapBuffer = require("./BitmapBuffer.js");
 const Font = require("./Font.js");
 const Color = require("./Color.js");
-//const colorNameToRgb = require("./config-colors.js");
+const { colorNameToRgb } = require("./config-colors.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
 
 
@@ -79,6 +79,11 @@ class MessageScene {
     this.pause();
   }
 
+  pickColor(color, defaultColor, colorsMatch) {
+    const rgbArray = (color && !colorsMatch && colorNameToRgb[color]) ? colorNameToRgb[color] : defaultColor;
+    return new Color(rgbArray);
+  }
+
   onTimer() {
     const nowTime = Date.now();
     if (this.startTime + this.period <= nowTime) {
@@ -108,17 +113,23 @@ class MessageScene {
       }
       console.log(`MessageScene starting=${this.formatMessage(this.currentMessage)} id=${this.currentMessage.id}`);
       this.currentMessage.startTime = Date.now();
-     }
+    }
+
+    const message = this.currentMessage;
+    const colorsMatch = (message.color == message.backgroundColor);
+    const color = this.pickColor(message.color, new Color(240, 240, 240), colorsMatch);
+    const backgroundColor = this.pickColor(message.backgroundColor, new Color(0, 0, 0), colorsMatch);
 
     // redraw every time to be safe
-    let frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    frameBuffer.print3Lines("To:" + this.currentMessage.recipient,
-                            this.currentMessage.message,
-                            "From:" + this.currentMessage.sender,
-                            new Font("Littera", 11, new Color(255, 255, 255)));
+    let frameBuffer = BitmapBuffer.fromNew(168, 36, backgroundColor);
+
+    frameBuffer.print3Lines("To:" + message.recipient,
+                            message.message,
+                            "From:" + message.sender,
+                            new Font("Littera", 11, color));
     this.gridzilla.transformScreen(frameBuffer);
 
-    this.runningTimer = setTimeout(this.onTimer.bind(this), 1000);
+    this.runningTimer = setTimeout(this.onTimer.bind(this), 2000);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -140,11 +151,13 @@ class MessageScene {
       return this.fillResponse(request, response, "Error", responseMessage);
     }
    
-    // date and time are optional
-    let date = request.body.displayDate;
-    let time = request.body.displayTime;
+    // thesea are optional
+    const date = request.body.displayDate;
+    const time = request.body.displayTime;
+    const color = request.body.color;
+    const backgroundColor = request.body.backgroundColor;
    
-    console.log(`MessagesScene::addMessage: From: ${sender} To: ${recipient} Message: ${message} On: ${date} At: ${time}`);
+    console.log(`MessagesScene::addMessage: from:${sender} to:${recipient} m:${message} on:${date} at:${time} color:${color} bg:${backgroundColor}`);
 
     const overUseMessage = this.messageQueue.checkOverUse(request.body.sessionId);
     if (overUseMessage != null && overUseMessage != undefined) {
@@ -170,7 +183,7 @@ class MessageScene {
       return this.fillResponse(request, response, "Error", responseMessage);
     }
 
-    const requestObject = { sessionId: request.body.sessionId, sender, recipient, message, date, time };
+    const requestObject = { sessionId: request.body.sessionId, sender, recipient, message, date, time, color, backgroundColor};
     
     try {
       this.messageQueue.addRequest(requestObject);
