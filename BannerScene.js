@@ -19,7 +19,9 @@ class BannerScene {
 
       line1 = null,
       line2 = null,
-      line3 = null
+      line3 = null,
+      color = null,
+      backgroundColor = null
     } = configuration;
 
     this.period = period;
@@ -27,6 +29,8 @@ class BannerScene {
     this.line1 = line1;
     this.line2 = line2;
     this.line3 = line3;
+    this.color = color;
+    this.backgroundColor = backgroundColor;
  }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -54,19 +58,20 @@ class BannerScene {
   
     // console.log("bannerScene onTimer: " + this.formatMessage())
   
+    const backgroundColor = this.backgroundColor ? this.backgroundColor : new Color(0, 0, 0);
+    const color = this.color ? this.color : new Color(255, 0, 0);
+    const frameBuffer = BitmapBuffer.fromNew(168, 36, backgroundColor);
+    
     if (this.line3) {
-      const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      const font = new Font("Littera", 11, new Color(255, 0, 0));
+      const font = new Font("Littera", 11, color);
       frameBuffer.print3Lines(this.line1, this.line2, this.line3, font);
-        this.gridzilla.transformScreen(frameBuffer);
+      this.gridzilla.transformScreen(frameBuffer);
     } else if (this.line2) {
-      const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      const font = new Font("Littera", 16, new Color(255, 0, 0));
+      const font = new Font("Littera", 16, new color);
       frameBuffer.print2Lines(this.line1, this.line2, font);
       this.gridzilla.transformScreen(frameBuffer);
     } else if (this.line1) {
-      const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-      const font = new Font("Littera", 18, new Color(255, 0, 0));
+      const font = new Font("Littera", 18, color);
       frameBuffer.print1Line(this.line1, font);
       this.gridzilla.transformScreen(frameBuffer);
     }

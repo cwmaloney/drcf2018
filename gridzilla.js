@@ -12,10 +12,10 @@ const Uuidv4 = require('uuid/v4');
 const EnvConfig = require("./envConfig.js");
 const TransformFactory = require("./TransformFactory.js");
 
-// const FrameBuffer = require("./FrameBuffer.js");
-// var frame = new FrameBuffer(168, 36);
-
 const BitmapBuffer = require("./BitmapBuffer.js");
+
+const Color = require("./Color.js");
+const { colorNameToRgb } = require("./config-colors.js");
 
 //////////////////////////////////////////////////////////////////////////////
 // Scenes
@@ -255,13 +255,20 @@ BitmapBuffer.initializeFonts().then( () =>  {
       let gridzilla = TransformFactory.getTransform();
 
       // create scenes
-      const welcomeBanner = new BannerScene(gridzilla, onPaused, { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
-      const instructionsBanner = new BannerScene(gridzilla, onPaused, { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights." });
-      const instructions2Banner = new BannerScene(gridzilla, onPaused, { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
+      const welcomeBanner = new BannerScene(gridzilla, onPaused,
+        { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
+
+      const instructionsBanner = new BannerScene(gridzilla, onPaused,
+        { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights.", color: new Color(colorNameToRgb["White"]) } );
+      const instructions2Banner = new BannerScene(gridzilla, onPaused,
+        { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
+
       messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
       cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
       const imageScene = new ImageScene(gridzilla, onPaused, { period: 10000 });
-      const preSnakesBanner = new BannerScene(gridzilla, onPaused, { line1: ">>> Play Snakes <<<", line2: "Visit farmsteadlights.com", line3: "to play snakes here." });
+
+      const preSnakesBanner = new BannerScene(gridzilla, onPaused,
+        { line1: "Let's Play Snakes!", line2: "Go to farmsteadlights.com", line3: "to play snakes here.", color: new Color(colorNameToRgb["Orange"]) } );
       const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
 
       scenes = [
