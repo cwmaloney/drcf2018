@@ -21,6 +21,10 @@ class HorizontalScroller{
         this.transform = transform;
      }
 
+     static calculateImageScrollTime(bufferSize, screenSize, speed) {
+       return (bufferSize - screenSize) * speed;
+     }
+
      /**
       * Scrolls the supplied image on the destination
       * @param {Jimp} image The sorce image to scroll
