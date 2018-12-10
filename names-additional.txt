@@ -15,3 +15,6 @@ Elbert
 Santa
 Spock
 Grinch
+Dogs
+Cats
+
