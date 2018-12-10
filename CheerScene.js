@@ -143,7 +143,7 @@ class CheerScene {
           this.showColorTrees();
           break;
       }
-      timeout = Math.min(timeout, 8000);
+      timeout = Math.min(timeout, 10000);
 
     }
     
