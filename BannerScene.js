@@ -67,7 +67,7 @@ class BannerScene {
       frameBuffer.print3Lines(this.line1, this.line2, this.line3, font);
       this.gridzilla.transformScreen(frameBuffer);
     } else if (this.line2) {
-      const font = new Font("Littera", 16, new color);
+      const font = new Font("Littera", 16, color);
       frameBuffer.print2Lines(this.line1, this.line2, font);
       this.gridzilla.transformScreen(frameBuffer);
     } else if (this.line1) {
