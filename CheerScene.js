@@ -270,17 +270,30 @@ class CheerScene {
       y = 12;
     }
 
+    //Limit the maximum nubmer of colors to 20
     let treeCount = Math.min(this.currentCheer.colorNames.length, 20);
+    //Draw at least 8 trees, to fill the screen horizontally
+    if (treeCount < 8){
+      treeCount = Math.ceil(8 / this.currentCheer.colorNames.length) * this.currentCheer.colorNames.length; 
+    }
+
     let treeBuffer = BitmapBuffer.fromNew(treeCount * 21, 24, new Color(0, 0, 0));
     for (let i = 0; i < treeCount; ++i){
-      let color = Color.fromRgb(colorNameToRgb[this.currentCheer.colorNames[i]]);
+      let color = Color.fromRgb(colorNameToRgb[this.currentCheer.colorNames[i % this.currentCheer.colorNames.length]]);
       this.drawTree(treeBuffer, color, i * 21, 0);
     }
     this.scroller1 = new HorizontalScroller(0, y, frameBuffer, this.gridzilla);
-    this.scroller1.scrollImage(treeBuffer.image, null, 168);
+    this.scroller1.scrollImage(treeBuffer.image, null, 168, null, true);
 
   }
 
+  /**
+   * Draws a tree of a specific color, requires a region 21 pixels wide and 24 pixels high
+   * @param {BitmapBuffer} buffer The buffer to draw on
+   * @param {Color} color The color for the tree
+   * @param {number} x The left edge position for the tree
+   * @param {number} y The top edge position for the tree
+   */
   drawTree(buffer, color, x, y = 0){
     //draw the triangle
     buffer.drawLine(x + 3, y + 20, x + 10, y + 2, color);

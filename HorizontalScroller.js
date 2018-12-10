@@ -32,8 +32,9 @@ class HorizontalScroller{
       * @param {number} width [max available or max of the source]  
       * How much of the source image to show, use to crop the source image, a value larger than the source image will be ignored
       * @param {number} maxTime [300000] maximum time to scroll
+      * @param {boolean} forceScroll [false] set to true to scroll regardless of width
       */
-     async scrollImage(image, speed, width, maxTime){
+     async scrollImage(image, speed, width, maxTime, forceScroll = false){
         this.stop();
         if (maxTime == null) {
             maxTime = 300000; //5 minutes
@@ -42,14 +43,12 @@ class HorizontalScroller{
             speed = 40;
         }
 
-
-
         if (width == null){
             width = this.buffer.image.bitmap.width - this.destX;
         } else {
             width = Math.min(this.buffer.image.bitmap.width - this.destX, width);
         }
-        if (image.bitmap.width < width){
+        if (!forceScroll && image.bitmap.width <= width){
             this.buffer.blit(image, this.destX + (width - image.bitmap.width) / 2, this.destY);
             this.transform.transformScreen(this.buffer);
             return;
@@ -60,7 +59,6 @@ class HorizontalScroller{
         let srcX = 0;
         const srcY = 0;
         let blit1width = Math.min(width, srcWidth - srcX);
-        let blit2width = width - blit1width;
         this.buffer.image.blit(image, this.destX, this.destY, srcX++, srcY, blit1width, srcHeight);
         this.transform.transformScreen(this.buffer);
 
@@ -70,7 +68,7 @@ class HorizontalScroller{
                 this.stop();
             }
             blit1width = Math.min(width, srcWidth - srcX);
-            blit2width = width - blit1width;
+            let blit2width = Math.min(width - blit1width, image.bitmap.width - blit1width);
             this.buffer.image.blit(image, this.destX, this.destY, srcX++, srcY, blit1width, srcHeight);
             if (blit2width > 0){
                 this.buffer.image.blit(image, this.destX + blit1width, this.destY, 0, srcY, blit2width, srcHeight);
