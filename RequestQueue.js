@@ -117,7 +117,7 @@ class RequestQueue {
 
     const count = this.getRequestCountForSession(sessionId);   
     if (count >= this.maxPendingRequestsPerUser) {
-      response = `You have too many request in the queue.  Try again after your requests have been processed.`;
+      response = `You have too many requests in the queue.  Try again after your requests have been processed.`;
     }
   
     return response;
