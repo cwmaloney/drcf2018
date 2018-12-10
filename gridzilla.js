@@ -26,6 +26,7 @@ const MessageScene = require("./MessageScene.js");
 const CheerScene = require("./CheerScene.js");
 const ImageScene = require("./ImageScene.js");
 const SnakesScene = require("./SnakesScene.js");
+const ScrollingTextScene = require("./ScrollingTextScene.js");
 
 //////////////////////////////////////////////////////////////////////////////
 // Managers
@@ -271,6 +272,26 @@ BitmapBuffer.initializeFonts().then( () =>  {
         { line1: "Let's Play Snakes!", line2: "Go to farmsteadlights.com", line3: "to play snakes here.", color: new Color(colorNameToRgb["Orange"]) } );
       const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
 
+
+      const teamMembers = 
+"Mark Callegari - the creator of Holiday Lights,"
++ " Chris Callegari,"
++ " Chris & Rachel Maloney,"
++ " Jolt Lighting,"
++ " Blake Stewart,"
++ " Enerfab Midwest, Brian Jackson, Steve Bullard,"
++ " Herc Rentals,"
++ " Mike & Jody McCamon,"
++ " Ken Vrana,"
++ " Elliot Maloney,"
++ " Deanna Rose Farmsteaders: Virgil, Laura, Kathi, Jerry, Orrin, Janet, Sarah, Amanda, Brett, & Cindy,"
++ " John Webb"
++ "                 ";
+
+      const thankYouScene = new ScrollingTextScene(gridzilla, onPaused,
+        { topLine: "Thank you team!", bottomLine: teamMembers, speed: 30, frequency: 10*60*1000 });
+  
+
       scenes = [
         welcomeBanner,
         instructionsBanner,
@@ -279,7 +300,8 @@ BitmapBuffer.initializeFonts().then( () =>  {
         cheersScene,
         imageScene,
         preSnakesBanner,
-        snakeScene
+        snakeScene,
+        thankYouScene
       ];
 
       startListening();
