@@ -2,6 +2,7 @@ const BitmapBuffer = require("./BitmapBuffer.js");
 const Font = require("./Font.js");
 const Color = require("./Color.js");
 const { colorNameToRgb } = require("./config-colors.js");
+const { messages } = require("./config-messages.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
 
 
@@ -215,12 +216,10 @@ class MessageScene {
     return formattedMessage;
   }
 
-   // we should check the message to prevent hackers from displaying
-  // "unauthoriized" messages
-  
+  // check the message to prevent hackers from displaying
+  // "unauthorized" messages
   checkMessage(message) {
-    // to do
-    return true;
+    return messages.includes(message);
   }
 
   fillResponse(request, response, status, message) {

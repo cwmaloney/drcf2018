@@ -35,22 +35,37 @@ BitmapBuffer.initializeFonts().then( () => {
         }
         let messageScene = new MessageScene(transform, onPaused, nameManager, { perMessagePeriod: perMessageMs, period: 10 * 60 * 1000 });
         let sessionId = 0;
-        const response = { json: function () {} };
+
+        let responseMessage;
+        let status;
+        const response = { json: function (obj) {
+            responseMessage = obj.message;
+            status = obj.status;
+        }};
+
         
+        messageScene.addMessage(
+            { body: { recipient: "Melania", sender: "Donald", message: "Build the wall!", "sessionId": ++sessionId } },
+            response);
+
+        if (status != "Error"){
+            throw responseMessage;
+        }
+
         for (let i = 0; i < loops; ++i) {
 
-            // messages.forEach((elem) => {
-            //     messageScene.addMessage(
-            //         { body: { recipient: "Melania", sender: "Donald", message: elem, "sessionId": ++sessionId } },
-            //         response);
-            // });
+            messages.forEach((elem) => {
+                messageScene.addMessage(
+                    { body: { recipient: "Melania", sender: "Donald", message: elem, "sessionId": ++sessionId } },
+                    response);
+            });
 
-            // //add a message of each color
-            // Object.keys(colorNameToRgb).forEach((color) => {
-            //     messageScene.addMessage(
-            //         { body: { recipient: "Melania", sender: "Donald", message: messages[0], "color": color, "sessionId": ++sessionId } },
-            //         response);
-            // });
+            //add a message of each color
+            Object.keys(colorNameToRgb).forEach((color) => {
+                messageScene.addMessage(
+                    { body: { recipient: "Melania", sender: "Donald", message: messages[0], "color": color, "sessionId": ++sessionId } },
+                    response);
+            });
 
             //add a message on each background color
             Object.keys(colorNameToRgb).forEach((bgColor) => {
