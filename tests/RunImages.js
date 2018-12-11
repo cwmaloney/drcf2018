@@ -1,6 +1,5 @@
 "use strict";
 
-const envConfig = require("../envConfig.js");
 const TransformFactory = require("../TransformFactory.js");
 const BitmapBuffer = require("../BitmapBuffer.js");
 const ImageScene = require("../ImageScene.js");
