@@ -47,6 +47,12 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Run Messages",
+      "program": "${workspaceFolder}/tests/RunMessages.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Emulator Server",
       "program": "${workspaceFolder}/displayEmulatorServer.js"
     },
