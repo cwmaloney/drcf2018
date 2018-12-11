@@ -35,6 +35,18 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Run Cheers",
+      "program": "${workspaceFolder}/tests/RunCheers.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run Images",
+      "program": "${workspaceFolder}/tests/RunImages.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Emulator Server",
       "program": "${workspaceFolder}/displayEmulatorServer.js"
     },
