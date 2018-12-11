@@ -163,6 +163,9 @@ class CheerScene {
 
     //show image
     let teamImage = this.getTeamImage(teamData, colors);
+    if (teamImage.bitmap.height > frameBuffer.image.bitmap.height) {
+      teamImage.resize(Jimp.AUTO, frameBuffer.image.bitmap.height);
+    }
     frameBuffer.blit(teamImage, 0, 0);
 
     //show text
