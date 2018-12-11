@@ -27,11 +27,11 @@ class MessageScene {
 
   configure(configuration) {
     const {
-      perMesssagePeriod = 10000,
+      perMessagePeriod = 10000,
       period = 60000,
     } = configuration;
 
-    this.perMesssagePeriod = perMesssagePeriod;
+    this.perMessagePeriod = perMessagePeriod;
     this.period = period;
   }
 
@@ -98,7 +98,7 @@ class MessageScene {
         console.log(`MessageScene restarting=${this.formatMessage(this.currentMessage)} id=${this.currentMessage.id}`);
         this.currentMessage.startTime = Date.now();
       }
-      if (this.currentMessage.startTime + this.perMesssagePeriod <= nowTime) {
+      if (this.currentMessage.startTime + this.perMessagePeriod <= nowTime) {
         this.currentMessage.endTime = nowTime;
         this.currentMessage.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
         this.messageQueue.writeRequests();
