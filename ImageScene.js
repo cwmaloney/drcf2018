@@ -3,6 +3,7 @@ const Jimp = require('jimp');
 const HorizontalScroller = require("./HorizontalScroller.js");
 const fs = require('fs');
 const Color = require("./Color.js");
+const ImageManager = require("./ImageManager.js");
 
 
 class ImageScene {
@@ -12,7 +13,7 @@ class ImageScene {
     this.onPaused = onPaused;
 
     this.configure(configuration);
-  
+    this.imageIndex = 0;
     this.paused = true;
   }
 
@@ -38,8 +39,6 @@ class ImageScene {
       return;
     }
 
-    //pick a random image to start with
-    this.imageIndex = Math.floor(Math.random() * ImageScene.images.length);
     this.paused = false;
     this.startTime = Date.now();
     this.doImage();
@@ -69,12 +68,13 @@ class ImageScene {
       this.scroller1.stop();
       this.scroller1 = null;
     }
+    this.imageIndex = (this.imageIndex + 1) % ImageScene.images.length;
+
     //if we can't run the next image completely, stop this scene
     if (nowTime + this.perImagePeriod > this.startTime + this.period){
       this.pause();
       return;
     }
-    this.imageIndex = (this.imageIndex + 1) % ImageScene.images.length;
     this.doImage();
   }
 
@@ -82,7 +82,7 @@ class ImageScene {
     
     let timeout = this.perImagePeriod;
     const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    const image = ImageScene.images[this.imageIndex];
+    const image = ImageManager.get(ImageScene.images[this.imageIndex]);
     //console.log(`Showing image index [${this.imageIndex}] of ${ImageScene.images.length}`);
 
     if (image.bitmap.height > frameBuffer.image.bitmap.height) {
@@ -115,18 +115,7 @@ class ImageScene {
   
       try {
         const fileList = JSON.parse(fs.readFileSync(filename, 'utf8'));
-
-        var promises = [];
-        for (let i = 0; i < fileList.images.length; ++i) {
-          promises[i] = Jimp.read("images/" + fileList.images[i]).catch((err)=>{console.log(`ImageScene: ${err}`);});
-        }
-        var resultPromise = Promise.all(promises);
-        resultPromise.then( (results) => {
-            ImageScene.images = results.filter((elem) => elem != null);
-        });
-    
-        return resultPromise;
-
+        ImageScene.images = fileList.images.filter((elem) => elem != null);
       } catch (error) {
         if (error.code !== "ENOENT") {
           throw error;

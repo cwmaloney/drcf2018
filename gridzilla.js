@@ -32,6 +32,7 @@ const ScrollingTextScene = require("./ScrollingTextScene.js");
 // Managers
 //////////////////////////////////////////////////////////////////////////////
 
+const ImageManager = require("./ImageManager.js");
 const NameManager = require("./NameManager.js");
 
 const nameManager = new NameManager();
@@ -251,29 +252,29 @@ const port = process.env.PORT || 8000;
 EnvConfig.loadOverrides();
 
 BitmapBuffer.initializeFonts().then( () =>  {
-  CheerScene.initialize().then( () => {
-    ImageScene.initialize().then( () => {
-      let gridzilla = TransformFactory.getTransform();
+  ImageManager.initialize().then( () => {
+    ImageScene.initialize();
+    let gridzilla = TransformFactory.getTransform();
 
-      // create scenes
-      const welcomeBanner = new BannerScene(gridzilla, onPaused,
-        { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
+    // create scenes
+    const welcomeBanner = new BannerScene(gridzilla, onPaused,
+      { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
 
-      const instructionsBanner = new BannerScene(gridzilla, onPaused,
-        { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights.", color: new Color(colorNameToRgb["White"]) } );
-      const instructions2Banner = new BannerScene(gridzilla, onPaused,
-        { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
+    const instructionsBanner = new BannerScene(gridzilla, onPaused,
+      { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights.", color: new Color(colorNameToRgb["White"]) } );
+    const instructions2Banner = new BannerScene(gridzilla, onPaused,
+      { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
 
-      messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
-      cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
-      const imageScene = new ImageScene(gridzilla, onPaused, { period: 10000 });
+    messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
+    cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
+    const imageScene = new ImageScene(gridzilla, onPaused, { period: 10000 });
 
-      const preSnakesBanner = new BannerScene(gridzilla, onPaused,
-        { line1: "Let's Play Snakes!", line2: "Go to farmsteadlights.com", line3: "to play snakes here.", color: new Color(colorNameToRgb["Orange"]) } );
-      const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
+    const preSnakesBanner = new BannerScene(gridzilla, onPaused,
+      { line1: "Let's Play Snakes!", line2: "Go to farmsteadlights.com", line3: "to play snakes here.", color: new Color(colorNameToRgb["Orange"]) } );
+    const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
 
 
-      const teamMembers = 
+    const teamMembers = 
 "Mark Callegari - the creator of Holiday Lights,"
 + " Chris Callegari,"
 + " Chris & Rachel Maloney,"
@@ -288,24 +289,23 @@ BitmapBuffer.initializeFonts().then( () =>  {
 + " John Webb"
 + "                 ";
 
-      const thankYouScene = new ScrollingTextScene(gridzilla, onPaused,
-        { topLine: "Thank you team!", bottomLine: teamMembers, speed: 30, frequency: 10*60*1000 });
-  
+    const thankYouScene = new ScrollingTextScene(gridzilla, onPaused,
+      { topLine: "Thank you team!", bottomLine: teamMembers, speed: 30, frequency: 10*60*1000 });
 
-      scenes = [
-        welcomeBanner,
-        instructionsBanner,
-        instructions2Banner,
-        messagesScene,
-        cheersScene,
-        imageScene,
-        preSnakesBanner,
-        snakeScene,
-        thankYouScene
-      ];
 
-      startListening();
-    });
+    scenes = [
+      welcomeBanner,
+      instructionsBanner,
+      instructions2Banner,
+      messagesScene,
+      cheersScene,
+      imageScene,
+      preSnakesBanner,
+      snakeScene,
+      thankYouScene
+    ];
+
+    startListening();
   });
 });
 

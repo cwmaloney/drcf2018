@@ -8,6 +8,8 @@ const Color = require("./Color.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
 const { teamNameToDataMap } = require("./config-teams.js");
 const { colorNameToRgb } = require("./config-colors.js");
+const ImageManager = require("./ImageManager.js");
+
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -181,8 +183,9 @@ class CheerScene {
   }
 
   getTeamImage(teamData, colors){
-    if (teamData.images != null && Array.isArray(teamData.images) && teamData.images.length > 0){
-      return teamData.images[Math.floor(Math.random() * teamData.images.length)];
+    if (teamData.imageNames != null && Array.isArray(teamData.imageNames) && teamData.imageNames.length > 0){
+      let imageName = teamData.imageNames[Math.floor(Math.random() * teamData.imageNames.length)];
+      return ImageManager.get(imageName);
     }
     else{
       let random = Math.floor(Math.random() * 2);
@@ -190,7 +193,7 @@ class CheerScene {
         return this.getPennantImage(colors);
       }
       else {
-        let treeImage = CheerScene.REPLACE_TREE.clone();
+        let treeImage = ImageManager.get("replaceTree36.png").clone();
         let treeBuff = BitmapBuffer.fromImage(treeImage);
         treeBuff.switchColor(new Color(255, 0, 0), colors);
         return treeBuff.image;
@@ -417,26 +420,6 @@ class CheerScene {
     });
   }
 
-  static initialize(){
-    var promises = [Jimp.read("images/replaceTree36.png").then((img) => {
-      CheerScene.REPLACE_TREE = img;
-    })];
-
-    Object.keys(teamNameToDataMap).forEach((key) => {
-      if (teamNameToDataMap[key].imageNames != null && Array.isArray(teamNameToDataMap[key].imageNames)){
-        teamNameToDataMap[key].images = [];
-        for (let i = 0; i < teamNameToDataMap[key].imageNames.length; ++i){
-          let imageName = teamNameToDataMap[key].imageNames[i];
-          let p = Jimp.read("images/" + imageName).catch((err)=>{console.log(`CheerScene: ${err}`);}).then((img) => {
-            teamNameToDataMap[key].images[teamNameToDataMap[key].images.length] = img;
-          });
-          promises[promises.length] = p;
-        }
-      }
-    });
-
-    return Promise.all(promises);
-  }
 }
 
 module.exports = CheerScene;
