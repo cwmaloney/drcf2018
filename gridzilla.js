@@ -267,7 +267,11 @@ BitmapBuffer.initializeFonts().then( () =>  {
 
     messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
     cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
-    const imageScene = new ImageScene(gridzilla, onPaused, { period: 10000 });
+    //show special images
+    const imageScene1 = new ImageScene(gridzilla, onPaused, { period: 10000, images:["brown paper packages.png", "jinglebells.png"]});
+    //show standard images
+    const imageScene2 = new ImageScene(gridzilla, onPaused, { period: 10000 });
+
 
     const preSnakesBanner = new BannerScene(gridzilla, onPaused,
       { line1: "Let's Play Snakes!", line2: "Go to farmsteadlights.com", line3: "to play snakes here.", color: new Color(colorNameToRgb["Orange"]) } );
@@ -299,7 +303,8 @@ BitmapBuffer.initializeFonts().then( () =>  {
       instructions2Banner,
       messagesScene,
       cheersScene,
-      imageScene,
+      imageScene1,
+      imageScene2,
       preSnakesBanner,
       snakeScene,
       thankYouScene
