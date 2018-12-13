@@ -268,7 +268,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
     messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
     cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
     //show special images
-    const imageScene1 = new ImageScene(gridzilla, onPaused, { period: 10000, images:["brown paper packages.png", "jinglebells.png"]});
+    const imageScene1 = new ImageScene(gridzilla, onPaused, { period: 10000, images:["Go Chiefs.png"]});
     //show standard images
     const imageScene2 = new ImageScene(gridzilla, onPaused, { period: 10000 });
 
