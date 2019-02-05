@@ -21,10 +21,17 @@ class ImageScene {
     const {
       perImagePeriod = 8000,
       period = 30000,
+      images = null
     } = configuration;
 
     this.perImagePeriod = perImagePeriod;
     this.period = period;
+
+    this.images = ImageScene.images;
+
+    if (images && Array.isArray(this.images) && images.length > 0) {
+      this.images = images;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -33,7 +40,7 @@ class ImageScene {
   
   run() {
     console.log("ImageScene run");
-    if (typeof ImageScene.images == 'undefined' || !Array.isArray(ImageScene.images) || ImageScene.images.length == 0)
+    if (typeof this.images == 'undefined' || !Array.isArray(this.images) || this.images.length == 0)
     {
       this.onPaused();
       return;
@@ -68,7 +75,7 @@ class ImageScene {
       this.scroller1.stop();
       this.scroller1 = null;
     }
-    this.imageIndex = (this.imageIndex + 1) % ImageScene.images.length;
+    this.imageIndex = (this.imageIndex + 1) % this.images.length;
 
     //if we can't run the next image completely, stop this scene
     if (nowTime + this.perImagePeriod > this.startTime + this.period){
@@ -82,8 +89,8 @@ class ImageScene {
     
     let timeout = this.perImagePeriod;
     const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    const image = ImageManager.get(ImageScene.images[this.imageIndex]);
-    //console.log(`Showing image index [${this.imageIndex}] of ${ImageScene.images.length}`);
+    const image = ImageManager.get(this.images[this.imageIndex]);
+    //console.log(`Showing image index [${this.imageIndex}] of ${this.images.length}`);
 
     if (image.bitmap.height > frameBuffer.image.bitmap.height) {
       //resize it

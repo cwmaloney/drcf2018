@@ -43,7 +43,7 @@ BitmapBuffer.initializeFonts().then( () => {
             status = obj.status;
         }};
 
-        
+        //test an invalid message rejection
         messageScene.addMessage(
             { body: { recipient: "Melania", sender: "Donald", message: "Build the wall!", "sessionId": ++sessionId } },
             response);
