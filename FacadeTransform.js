@@ -2,27 +2,27 @@
  
 const { E131 } = require("./E131.js");
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // Panel and Universe Layout
-  //                   +----------+----------+
-  //                  /           |           \
-  //                 /      28    |     29     \
-  //                /             |             \
-  //	              +------+------+------+------+
-  //                |      |      |      |      |
-  //	              |  24  |  25  |  26  |  27  | 
-  //                |      |      |      |      | 
-  //	   +----------+------+------+------+------+----------+
-  //    /           |      |      |      |      |           \
-  //	 /      18    |  19  |  20  |  21  |  22  |      23    \
-  //  /             |      |      |      |      |             \
-  //	+------+------+------+------+------+------+------+------+
-  //  |      |      |      |      |      |      |      |      |
-  //	|  10  |  11  |  12  |  13  |  14  |  15  |  16  |  17  |
-  //  |      |      |      |      |      |      |      |      |
-  //	+------+------+------+------+------+------+------+------+
-  //
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Panel and Universe Layout
+//                   +----------+----------+
+//                  /           |           \
+//                 /      28    |     29     \
+//                /             |             \
+//	              +------+------+------+------+
+//                |      |      |      |      |
+//	              |  24  |  25  |  26  |  27  | 
+//                |      |      |      |      | 
+//	   +----------+------+------+------+------+----------+
+//    /           |      |      |      |      |           \
+//	 /      18    |  19  |  20  |  21  |  22  |      23    \
+//  /             |      |      |      |      |             \
+//	+------+------+------+------+------+------+------+------+
+//  |      |      |      |      |      |      |      |      |
+//	|  10  |  11  |  12  |  13  |  14  |  15  |  16  |  17  |
+//  |      |      |      |      |      |      |      |      |
+//	+------+------+------+------+------+------+------+------+
+//
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /*
 We use 5 panel maps to map a "drawing" bitmap to the facade.
@@ -75,7 +75,7 @@ const lTriMap =  [
   [  -1,  -1,  -1,  -1,  -1,  -1,  -1, 132, 131, 124, 121, 114],
   [  -1,  -1,  -1,  -1,  -1, 139, 138, 133, 130, 125, 120, 115],
   [  -1,  -1,  -1, 144, 143, 140, 137, 134, 129, 126, 119, 116],
-  [  -1, 147, 146,	145, 142, 141, 136, 135, 128, 127, 118, 117]
+  [  -1, 147, 146, 145, 142, 141, 136, 135, 128, 127, 118, 117]
 ];
 
 // left trapezoid
@@ -135,34 +135,34 @@ const rTriMap =  [
 // universeToControllerMap maps universes to controller addresses
 //  Some controllers provide server mor than one universe.
 //  Universes are unique across contorllers.
-const universes = [
-  { universe: 10, ipAddress: "192.168.1.20" },
-  { universe: 11, ipAddress: "192.168.1.20" },
-  { universe: 12, ipAddress: "192.168.1.20" },
-  { universe: 13, ipAddress: "192.168.1.20" },
-  { universe: 14, ipAddress: "192.168.1.20" },
-  { universe: 15, ipAddress: "192.168.1.20" },
+const universeToControllerMap = [
+  { universe: 10, controllerAddress: "192.168.1.20" },
+  { universe: 11, controllerAddress: "192.168.1.20" },
+  { universe: 12, controllerAddress: "192.168.1.20" },
+  { universe: 13, controllerAddress: "192.168.1.20" },
+  { universe: 14, controllerAddress: "192.168.1.20" },
+  { universe: 15, controllerAddress: "192.168.1.20" },
   //
-  { universe: 16, ipAddress: "192.168.1.21" },
-  { universe: 17, ipAddress: "192.168.1.21" },
-  { universe: 18, ipAddress: "192.168.1.21" },
-  { universe: 19, ipAddress: "192.168.1.21" },
-  { universe: 20, ipAddress: "192.168.1.21" },
-  { universe: 21, ipAddress: "192.168.1.21" },
+  { universe: 16, controllerAddress: "192.168.1.21" },
+  { universe: 17, controllerAddress: "192.168.1.21" },
+  { universe: 18, controllerAddress: "192.168.1.21" },
+  { universe: 19, controllerAddress: "192.168.1.21" },
+  { universe: 20, controllerAddress: "192.168.1.21" },
+  { universe: 21, controllerAddress: "192.168.1.21" },
   //
-  { universe: 22, ipAddress: "192.168.1.22" },
-  { universe: 23, ipAddress: "192.168.1.22" },
-  { universe: 24, ipAddress: "192.168.1.22" },
-  { universe: 25, ipAddress: "192.168.1.22" },
-  { universe: 26, ipAddress: "192.168.1.22" },
-  { universe: 27, ipAddress: "192.168.1.22" },
+  { universe: 22, controllerAddress: "192.168.1.22" },
+  { universe: 23, controllerAddress: "192.168.1.22" },
+  { universe: 24, controllerAddress: "192.168.1.22" },
+  { universe: 25, controllerAddress: "192.168.1.22" },
+  { universe: 26, controllerAddress: "192.168.1.22" },
+  { universe: 27, controllerAddress: "192.168.1.22" },
   //
-  { universe: 28, ipAddress: "192.168.1.23" },
-  { universe: 29, ipAddress: "192.168.1.23" },
-  { universe: 30, ipAddress: "192.168.1.23" },
-  { universe: 31, ipAddress: "192.168.1.23" },
-  { universe: 32, ipAddress: "192.168.1.23" },
-  { universe: 33, ipAddress: "192.168.1.23" }
+  { universe: 28, controllerAddress: "192.168.1.23" },
+  { universe: 29, controllerAddress: "192.168.1.23" },
+  { universe: 30, controllerAddress: "192.168.1.23" },
+  { universe: 31, controllerAddress: "192.168.1.23" },
+  { universe: 32, controllerAddress: "192.168.1.23" },
+  { universe: 33, controllerAddress: "192.168.1.23" }
   ];
 
   // To make this easy to read:
@@ -192,10 +192,10 @@ const universes = [
       this.universeInfos = [];
       
       //configure universes
-      for (var universeIndex = 0; universeIndex < universes.length; ++universeIndex){         
-        const universe = universes[universeIndex];
+      for (var universeIndex = 0; universeIndex < universeToControllerMap.length; ++universeIndex){         
+        const universe = universeToControllerMap[universeIndex];
         let universeInfo = {
-            "address": universe.ipAddress,
+            "address": universe.controllerAddress,
             "universe": universe.universe,
             "sourcePort": 6454,
             "sendOnlyChangeData": false,
@@ -216,55 +216,54 @@ const universes = [
     //transform each panel
     for (var panelRow = 0; panelRow < yPanels; panelRow++){
       for (var panelColumn = 0; panelColumn < xPanels; panelColumn++){
-        const panel = panels[panelRow][panelColumn];
-            this.transformPanel(
-                screen,
-                panel,
-                panelRow,
-                panelColumn);
+          this.transformPanel(
+              screen,
+              panelRow,
+              panelColumn);
         }
     }
  
     //send all universes
-    for (var universeIndex = 0; universeIndex < universeInfos.length; ++universeIndex){
-         this.e131.send(universeInfos[universeIndex].address, universeInfos[universeIndex].universe);
+    for (let universeIndex = 0; universeIndex < universeToControllerMap.length; ++universeIndex){
+      const universe = universeToControllerMap[universeIndex];
+      this.e131.send(universe.controlleraddress, universe.universe);
     }
   }
 
-    transformControllerRow(screen, xOffset, yOffset, address, universe){
-        for (var i = 0; i < GridzillaTransform.controllerWidth; ++i){
-            this.transformUniverse(screen, xOffset + GridzillaTransform.universeWidth * i, yOffset, address, universe + i);
-        }
+  getControllerAddress(universe) {
+    for (let index = 0; index < universeToControllerMap.length; index++) {
+      const entry = universeToControllerMap[index];
+      if (entry.universe == universe) {
+        return entry.controllerAddress;
+      }
     }
+    return null;
+  }
 
-    transformUniverse(screen, xOffset, yOffset, address, universe) {
-        //channels use a 1 based index
-        let channelIndex = 1;
-        let up = true;
-        //go accross the width
-        for (let x = 0; x < GridzillaTransform.universeWidth; ++x){
-            //up or down the height
-            if (up) {
-                for (let y = 0; y < GridzillaTransform.universeHeight; ++y) {
-                    //get the RGB color, invert the y axis, gridzilla coordinates start in the lower left, the screen starts in the upper left
-                    this.e131.setChannelData(address, universe, channelIndex, screen.getPixelColors(
-                        xOffset + x, 
-                        GridzillaTransform.height - (yOffset + y) - 1));
-                    channelIndex += 3;
-                }
-                up = false;
-            }
-            else {
-                for (let y = GridzillaTransform.universeHeight - 1; y >= 0; --y) {
-                    //get the RGB color, invert the y axis, gridzilla coordinates start in the lower left, the screen starts in the upper left
-                    this.e131.setChannelData(address, universe, channelIndex, screen.getPixelColors(xOffset + x, 
-                        GridzillaTransform.height - (yOffset + y) - 1));
-                    channelIndex += 3;
-                }
-                up = true;
-            }
+  transformPanel(screen, panelRow, panelColumn) {
+    const panel = panels[panelRow][panelColumn];
+
+    const xScreenOffset = panelRow * panelWidth;
+    const yScreenOffset = panelColumn * panelHeight;
+
+    const universe = panel.u;
+    const controllerAddress = this.getControllerAddress(panel.u);
+    const panelTemplate = panel.t;
+
+    for (let row = 0; row < panelWidth; row++) {
+      for (let column = 0; column < panelHeight; column++) {
+        const pixelColors = screen.getPixelColors(
+          xScreenOffset + row, yScreenOffset + column);
+
+        const channelIndex = panelTemplate[row][column];
+
+        // send data for all pixel that have channels (> -1)
+        if (channelIndex >= 0) {
+         this.e131.setChannelData(controllerAddress, universe, channelIndex, pixelColors);
         }
+      }
     }
+  }
 }
 
 FacadeTransform.width = FacadeTransform.xPanels * FacadeTransform.panelWidth;
