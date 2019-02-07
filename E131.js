@@ -41,7 +41,7 @@ class E131 extends EventEmitter {
     const { universe = 0,
             address = '10.0.0.0',
             enableBroadcast = false,
-            port = 0x1936,
+            port = 5568,
             sourcePort,
             sendOnlyChangeData = true,
             sendSequenceNumbers = true,
@@ -182,24 +182,28 @@ class E131 extends EventEmitter {
     const framingPduLength = framingHeaderLength + dmpPduLength;
     const rootPduLength = framingPduLength + rootHeaderLength;
 
+    // cid must be 16 bytes      1234567890123456
+    const cid = Uint8Array.from("Holiday Lights  ");
+
     // ACN root layer protocol header
-    const E131RootLayerHeader = [
+    const rootHeaderPart1 = [
       0x00, 0x10, // ACN root layer preamble size
       0x00, 0x00, // ACN root layer post-amble size
       0x41, 0x53, 0x43, 0x2d, 0x45, 0x31, 0x2e, 0x31, 0x37, 0x00, 0x00, 0x00, // ACN Packet Identifier
       (0x7 | ((rootPduLength & 0xff00) > 8)), rootPduLength & 0xff,
       0x00, 0x00, 0x00, 0x04, // VECTOR_ROOT_E131_DATA
     ];
-    const cid = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]; //temporary
 
     // E1.31 framing layer
-    const e131FramingLayerHeaderPart1 = [
+    const framingHeaderPart1 = [
       (0x7 | ((framingPduLength & 0xff00) > 8)), framingPduLength & 0xff,
       0x00, 0x00, 0x00, 0x02, // VECTOR_E131_DATA_PACKET
     ];
-    const sourceName = new Array(64);
 
-    const e131FramingHeaderPart3 = [
+    const sourceName = Uint8Array.from("Holiday Lights");
+    sourceName.length = 64;
+
+    const framingHeaderPart3 = [
       100, // priority; 0-200; 100 is default
       0, 0, // synchornize universe (not used)
       sequenceNumber,
@@ -219,10 +223,15 @@ class E131 extends EventEmitter {
 
     // create message
 
-    const messageLength = e131Header.length + dataLength;
+    const messageLength = rootPduLength;
     const message = new Uint8Array(messageLength);
-    message.set(artDmxHeader);
-    message.set(universeInfo.channelData.slice(0,dataLength), artDmxHeader.length);
+    let index = 0;
+    message.set(rootHeaderPart1, index);    index += rootHeaderPart1.length;
+    message.set(cid, index);                index += cid.length;
+    message.set(framingHeaderPart1, index); index += rootHeaderPart1.length;
+    message.set(sourceName,, index);        index += rootHeaderPart1.length;
+    message.set(framingHeaderPart3, index); index += rootHeaderPart1.length;
+    message.set(universeInfo.channelData.slice(0,dataLength), index);
 
     return message;
   }
