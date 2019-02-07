@@ -211,14 +211,15 @@ class E131 extends EventEmitter {
       universeLowByte, universeHighByte
     ];
  
+    const dataLenghtPlus1 = dataLength +1;
     const  dmpLayerHeader = [
-      dmpFlagsAndLengthLow, dmpFlagsAndLengthHigh,
+      (0x7 | ((dmpPduLength & 0xff00) > 8)), dmpPduLength & 0xff,
       0x02, // VECTOR_DMP_SET_PROPERTY
       0xa1, // address type and data type
       0x00, 0x00, // first channel address
       0x01, 0x00, // address increment
-      dataLengthLowByte, dataLengthHighByte,
-        // start byte
+      ((dataLenghtPlus1 & 0xff00) > 8), dataLenghtPlus1 & 0xff,
+      0 // DMX start code
     ];
 
     // create message
@@ -228,10 +229,11 @@ class E131 extends EventEmitter {
     let index = 0;
     message.set(rootHeaderPart1, index);    index += rootHeaderPart1.length;
     message.set(cid, index);                index += cid.length;
-    message.set(framingHeaderPart1, index); index += rootHeaderPart1.length;
-    message.set(sourceName,, index);        index += rootHeaderPart1.length;
-    message.set(framingHeaderPart3, index); index += rootHeaderPart1.length;
-    message.set(universeInfo.channelData.slice(0,dataLength), index);
+    message.set(framingHeaderPart1, index); index += framingHeaderPart1.length;
+    message.set(sourceName, index);         index += sourceName.length;
+    message.set(framingHeaderPart3, index); index += framingHeaderPart3.length;
+    message.set(dmpLayerHeader, index);     index += dmpLayerHeader.length;
+    message.set(universeInfo.channelData.slice(0, dataLength), index);
 
     return message;
   }
