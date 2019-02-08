@@ -10,18 +10,58 @@ const testData = [
   { channelCount: 12*14*3, data: [   0, 180,   0,   0,   0, 180, 180,   0,   0 ] },
   { channelCount: 12*14*3, data: [   0,   0, 180, 180,   0,   0,   0, 180,   0 ] },
   { channelCount: 12*14*3, data: [ 180, 180, 180 ] },
-  { channelCount: 12*14*3, data: [ 100, 100, 100 ] }
+  { channelCount: 12*14*3, data: [ 100, 100, 100 ] },
+  { channelCount: 12*14*3, data: [ 0,   0,   0 ] },
 ];
 
 const e131 = new E131();
 
-const configuration = { "universe": 22,
-                        "address": "192.168.1.22",
-                        "sourcePort": 6454,
-                        "sendOnlyChangeData": false,
-                        "refreshInterval": 1000 };
+const universeToControllerMap = [
+  { universe: 10, controllerAddress: "192.168.1.20" },
+  { universe: 11, controllerAddress: "192.168.1.20" },
+  { universe: 12, controllerAddress: "192.168.1.20" },
+  { universe: 13, controllerAddress: "192.168.1.20" },
+  { universe: 14, controllerAddress: "192.168.1.20" },
+  { universe: 15, controllerAddress: "192.168.1.20" },
+  //
+  { universe: 16, controllerAddress: "192.168.1.21" },
+  { universe: 17, controllerAddress: "192.168.1.21" },
+  { universe: 18, controllerAddress: "192.168.1.21" },
+  { universe: 19, controllerAddress: "192.168.1.21" },
+  { universe: 20, controllerAddress: "192.168.1.21" },
+  { universe: 21, controllerAddress: "192.168.1.21" },
+  //
+  { universe: 22, controllerAddress: "192.168.1.22" },
+  { universe: 23, controllerAddress: "192.168.1.22" },
+  { universe: 24, controllerAddress: "192.168.1.22" },
+  { universe: 25, controllerAddress: "192.168.1.22" },
+  { universe: 26, controllerAddress: "192.168.1.22" },
+  { universe: 27, controllerAddress: "192.168.1.22" },
+  //
+  { universe: 28, controllerAddress: "192.168.1.23" },
+  { universe: 29, controllerAddress: "192.168.1.23" },
+  { universe: 30, controllerAddress: "192.168.1.23" },
+  { universe: 31, controllerAddress: "192.168.1.23" },
+  { universe: 32, controllerAddress: "192.168.1.23" },
+  { universe: 33, controllerAddress: "192.168.1.23" }
+  ];
 
-e131.configureUniverse(configuration);
+const universeInfos = [];
+    
+//configure universes
+for (var universeIndex = 0; universeIndex < universeToControllerMap.length; ++universeIndex){         
+  const universe = universeToControllerMap[universeIndex];
+  let universeInfo = {
+      "address": universe.controllerAddress,
+      "universe": universe.universe,
+      "sourcePort": 6454,
+      "sendOnlyChangeData": false,
+      "sendSequenceNumbers": false
+  };
+  
+  universeInfos[universeIndex] = universeInfo;
+  e131.configureUniverse(universeInfo);
+}
 
 let testIndex = -1;
 
@@ -39,10 +79,14 @@ function runNextTest() {
   }
 
   console.log("--- E131::runNextText", "testIndex", testIndex, 'data: ',  channelData);
-  e131.setChannelData(configuration.address, configuration.universe, 1, channelData);
-  e131.send(configuration.address, configuration.universe);
+  for (var universeIndex = 0; universeIndex < universeToControllerMap.length; ++universeIndex) {         
+    const universeinfo = universeInfos[universeIndex];
+
+    e131.setChannelData(universeinfo.address, universeinfo.universe, 1, channelData);
+    e131.send(universeinfo.address, universeinfo.universe);
+  }
 }
 
 runNextTest();
 
-setInterval(runNextTest, 5000);
+setInterval(runNextTest, 2000);
