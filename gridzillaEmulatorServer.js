@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 const server = app.listen(port, function () {
   const host = server.address().address;
   const port = server.address().port;
-  console.log('Display emulator listening at http://' + host + ':' + port);
+  console.log('Grizilla emulator listening at http://' + host + ':' + port);
 });
 
 // accept JSON and URL encodded parameters
@@ -21,7 +21,7 @@ app.use(BodyParser.urlencoded({extended: true}));
 
 // setup routes
 app.get("/", function (req, res) {
-  res.sendFile(__dirname  + "/displayEmulator.html");
+  res.sendFile(__dirname  + "/gridzillaEmulator.html");
 });
 
 
