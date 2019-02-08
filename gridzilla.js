@@ -289,7 +289,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
 + " Mike & Jody McCamon,"
 + " Ken Vrana,"
 + " Elliot Maloney,"
-+ " Deanna Rose Farmsteaders: Virgil, Laura, Kathi, Jerry, Orrin, Janet, Sarah, Amanda, Brett, & Cindy,"
++ " Deanna Rose Farmstead Team: Virgil, Laura, Kathi, Jerry, Orrin, Janet, Sarah, Amanda, Brett, & Cindy,"
 + " John Webb"
 + "                 ";
 
