@@ -3,21 +3,20 @@
 const { E131 } = require("./E131.js");
 
 const testData = [
-  { channelCount: 12*14*3, data: [ 255,   0,   0 ] },
-  { channelCount: 12*14*3, data: [   0, 255,   0 ] },
-  { channelCount: 12*14*3, data: [   0,   0, 255 ] },
-  { channelCount: 12*14*3, data: [ 255, 0, 0,   0, 255, 0,   0, 0, 255 ] },
-  { channelCount: 12*14*3, data: [ 255, 0, 0,   0, 255, 0,   0, 0, 255 ] },
-  { channelCount: 12*14*3, data: [ 255, 255, 255 ] },
-  { channelCount: 12*14*3, data: [ 100, 100, 100 ] },
-
+  { channelCount: 12*14*3, data: [ 180,   0,   0 ] },
+  { channelCount: 12*14*3, data: [   0, 180,   0 ] },
+  { channelCount: 12*14*3, data: [   0,   0, 180 ] },
+  { channelCount: 12*14*3, data: [ 180,   0,   0,   0, 180,   0,   0,   0, 180 ] },
+  { channelCount: 12*14*3, data: [   0, 180,   0,   0,   0, 180, 180,   0,   0 ] },
+  { channelCount: 12*14*3, data: [   0,   0, 180, 180,   0,   0,   0, 180,   0 ] },
+  { channelCount: 12*14*3, data: [ 180, 180, 180 ] },
+  { channelCount: 12*14*3, data: [ 100, 100, 100 ] }
 ];
 
 const e131 = new E131();
 
-const universe = 0;
-const configuration = { "universe": universe,
-                        "address": "10.0.0.18",
+const configuration = { "universe": 22,
+                        "address": "192.168.1.22",
                         "sourcePort": 6454,
                         "sendOnlyChangeData": false,
                         "refreshInterval": 1000 };
@@ -31,7 +30,7 @@ function runNextTest() {
 
   const test = testData[testIndex];
   
-  const channelData = new Uint8Array(test.channelCount);
+  const channelData = new Array(test.channelCount);
 
   let dataIndex = 0;
   for (let channelIndex = 0; channelIndex < test.channelCount; channelIndex++) {
@@ -40,8 +39,8 @@ function runNextTest() {
   }
 
   console.log("--- E131::runNextText", "testIndex", testIndex, 'data: ',  channelData);
-  e131.setChannelData(universe, 1, channelData);
-  e131.send(universe);
+  e131.setChannelData(configuration.address, configuration.universe, 1, channelData);
+  e131.send(configuration.address, configuration.universe);
 }
 
 runNextTest();

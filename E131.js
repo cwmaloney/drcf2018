@@ -12,6 +12,11 @@
  const dgram = require('dgram');
  const EventEmitter = require('events');
  
+ function copyStringToUint8Array(str, ray, startIndex = 0) {
+   for (let index = startIndex; index < str.length; index++) {
+     ray[index] = str.charCodeAt(index);
+   }
+ }
 
 // TODO: should this emit events or only use callbacks? error, sent...
 class E131 extends EventEmitter {
@@ -183,37 +188,40 @@ class E131 extends EventEmitter {
     const rootPduLength = framingPduLength + rootHeaderLength;
 
     // cid must be 16 bytes      1234567890123456
-    const cid = Uint8Array.from("Holiday Lights  ");
+    const cid = new Uint8Array(16);
+    const cidString = "Holiday Lights";
+    copyStringToUint8Array(cidString, cid);
 
     // ACN root layer protocol header
     const rootHeaderPart1 = [
       0x00, 0x10, // ACN root layer preamble size
       0x00, 0x00, // ACN root layer post-amble size
       0x41, 0x53, 0x43, 0x2d, 0x45, 0x31, 0x2e, 0x31, 0x37, 0x00, 0x00, 0x00, // ACN Packet Identifier
-      (0x7 | ((rootPduLength & 0xff00) > 8)), rootPduLength & 0xff,
+      (0x70 | ((rootPduLength & 0x0f00) >> 8)), rootPduLength & 0xff,
       0x00, 0x00, 0x00, 0x04, // VECTOR_ROOT_E131_DATA
     ];
 
     // E1.31 framing layer
     const framingHeaderPart1 = [
-      (0x7 | ((framingPduLength & 0xff00) > 8)), framingPduLength & 0xff,
+      (0x70 | ((framingPduLength & 0x0f00) >> 8)), framingPduLength & 0xff,
       0x00, 0x00, 0x00, 0x02, // VECTOR_E131_DATA_PACKET
     ];
 
-    const sourceName = Uint8Array.from("Holiday Lights");
-    sourceName.length = 64;
+    const sourceName = new Uint8Array(64)
+    const sourceNameString = "Holiday Lights" + universe;
+    copyStringToUint8Array(sourceNameString, sourceName)
 
     const framingHeaderPart3 = [
       100, // priority; 0-200; 100 is default
       0, 0, // synchornize universe (not used)
       sequenceNumber,
       0, // options
-      universeLowByte, universeHighByte
+      universeHighByte, universeLowByte
     ];
  
-    const dataLenghtPlus1 = dataLength +1;
+    const dataLenghtPlus1 = dataLength + 1;
     const  dmpLayerHeader = [
-      (0x7 | ((dmpPduLength & 0xff00) > 8)), dmpPduLength & 0xff,
+      (0x700 | ((dmpPduLength & 0x0f00) >> 8)), dmpPduLength & 0xff,
       0x02, // VECTOR_DMP_SET_PROPERTY
       0xa1, // address type and data type
       0x00, 0x00, // first channel address
@@ -334,7 +342,7 @@ class E131 extends EventEmitter {
     universeInfo.refreshInternvalTimerId = null;
 
     if (universeInfo.changedChannelThreshold) { 
-      let message = this.createArtDmxMessage(address, universe, universeInfo.changedChannelThreshold);
+      let message = this.createE131DataMessage(address, universe, universeInfo.changedChannelThreshold);
       universeInfo.changedChannelThreshold = 0;
   
       // if (universe > 0) {
