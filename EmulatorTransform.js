@@ -12,16 +12,26 @@ const FrameBuffer = require('./FrameBuffer.js');
 class EmulatorTransform {
 
     static get width() {
-        return 168;
+        return this.width;
     }
     static get height() {
-        return 36;
+        return this.height;
+    }
+    static get name() {
+      return this.name;
+    }
+    static get port() {
+        return this.port;
     }
 
     /**
      * Use TransfomerFactory.getTransformer()
      */
-    constructor() {
+    constructor(name, width, height, port ) {
+      this.name = name;
+      this.width = width;
+      this.height = height;
+      this.port = port;
     }
 
     close(){}
@@ -32,10 +42,10 @@ class EmulatorTransform {
             buffer = screen.buffer;
         }
         else {
-            buffer = new Uint8Array(EmulatorTransform.width * EmulatorTransform.height * 3);
+            buffer = new Uint8Array(this.width * this.height * 3);
             let index = 0;
-            for (let y = 0; y < EmulatorTransform.height; ++y){
-                for (let x = 0; x < EmulatorTransform.width; ++x){
+            for (let y = 0; y < this.height; ++y){
+                for (let x = 0; x < this.width; ++x){
                     let c = screen.getPixelColors(x, y);
                     buffer[index++] = c[0];
                     buffer[index++] = c[1];

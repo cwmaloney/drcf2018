@@ -251,64 +251,96 @@ const port = process.env.PORT || 8000;
 
 EnvConfig.loadOverrides();
 
+function configureHolidayScenes(gridzilla) {
+  ImageScene.initialize();
+
+  // create scenes
+  const welcomeBanner = new BannerScene(gridzilla, onPaused,
+    { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
+
+  const instructionsBanner = new BannerScene(gridzilla, onPaused,
+    { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights.", color: new Color(colorNameToRgb["White"]) } );
+  const instructions2Banner = new BannerScene(gridzilla, onPaused,
+    { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
+
+  messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
+  cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
+  //show special images
+  const imageScene1 = new ImageScene(gridzilla, onPaused, { period: 10000, images:["Go Chiefs.png"]});
+  //show standard images
+  const imageScene2 = new ImageScene(gridzilla, onPaused, { period: 10000 });
+
+
+  const preSnakesBanner = new BannerScene(gridzilla, onPaused,
+    { line1: "Let's Play Snakes!", line2: "Go to farmsteadlights.com", line3: "to play snakes here.", color: new Color(colorNameToRgb["Orange"]) } );
+  const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
+
+
+  const teamMembers = 
+    "Mark Callegari - the creator of Holiday Lights,"
+    + " Chris Callegari,"
+    + " Chris & Rachel Maloney,"
+    + " Jolt Lighting,"
+    + " Blake Stewart,"
+    + " Enerfab Midwest, Brian Jackson, Steve Bullard,"
+    + " Herc Rentals,"
+    + " Mike & Jody McCamon,"
+    + " Ken Vrana,"
+    + " Elliot Maloney,"
+    + " Deanna Rose Farmstead Team: Virgil, Laura, Kathi, Jerry, Orrin, Janet, Sarah, Amanda, Brett, & Cindy,"
+    + " John Webb"
+    + "                    ";
+
+  const thankYouScene = new ScrollingTextScene(gridzilla, onPaused,
+    { topLine: "Thank you team!", bottomLine: teamMembers, speed: 30, frequency: 10*60*1000 });
+
+  scenes = [
+    welcomeBanner,
+    instructionsBanner,
+    instructions2Banner,
+    messagesScene,
+    cheersScene,
+    imageScene1,
+    imageScene2,
+    preSnakesBanner,
+    snakeScene,
+    thankYouScene
+  ];
+
+}
+
+function configureValentinScenes(grizilla, facade) {
+  ImageScene.initialize();
+
+  // create scenes
+  const welcomeScene = new ScrollingTextScene(facade, onPaused,
+    { topLine: "", bottomLine: "Welcome to Holiday Lights for Valentine's Day", speed: 30, frequency: 10*60*1000 });
+
+  const instructionsScene = new BannerScene(facade, onPaused,
+    { line1: "", line2: "Visit farmsteadlights.com", line3: "to display messages here.", speed: 30, frequency: 10*60*1000 });
+
+  messagesScene = new MessageScene(facade, onPaused, nameManager, {});
+
+  scenes = [
+    welcomeScene,
+    instructionsScene,
+    messagesScene,
+    cheersScene
+  ];
+
+}
+
 BitmapBuffer.initializeFonts().then( () =>  {
   ImageManager.initialize().then( () => {
-    ImageScene.initialize();
-    let gridzilla = TransformFactory.getTransform();
+    let grizilla = TransformFactory.getGridzillaTransform();
+    let facade = TransformFactory.getGridzillaTransform();
 
     // create scenes
-    const welcomeBanner = new BannerScene(gridzilla, onPaused,
-      { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
-
-    const instructionsBanner = new BannerScene(gridzilla, onPaused,
-      { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights.", color: new Color(colorNameToRgb["White"]) } );
-    const instructions2Banner = new BannerScene(gridzilla, onPaused,
-      { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
-
-    messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
-    cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
-    //show special images
-    const imageScene1 = new ImageScene(gridzilla, onPaused, { period: 10000, images:["Go Chiefs.png"]});
-    //show standard images
-    const imageScene2 = new ImageScene(gridzilla, onPaused, { period: 10000 });
-
-
-    const preSnakesBanner = new BannerScene(gridzilla, onPaused,
-      { line1: "Let's Play Snakes!", line2: "Go to farmsteadlights.com", line3: "to play snakes here.", color: new Color(colorNameToRgb["Orange"]) } );
-    const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
-
-
-    const teamMembers = 
-"Mark Callegari - the creator of Holiday Lights,"
-+ " Chris Callegari,"
-+ " Chris & Rachel Maloney,"
-+ " Jolt Lighting,"
-+ " Blake Stewart,"
-+ " Enerfab Midwest, Brian Jackson, Steve Bullard,"
-+ " Herc Rentals,"
-+ " Mike & Jody McCamon,"
-+ " Ken Vrana,"
-+ " Elliot Maloney,"
-+ " Deanna Rose Farmstead Team: Virgil, Laura, Kathi, Jerry, Orrin, Janet, Sarah, Amanda, Brett, & Cindy,"
-+ " John Webb"
-+ "                 ";
-
-    const thankYouScene = new ScrollingTextScene(gridzilla, onPaused,
-      { topLine: "Thank you team!", bottomLine: teamMembers, speed: 30, frequency: 10*60*1000 });
-
-
-    scenes = [
-      welcomeBanner,
-      instructionsBanner,
-      instructions2Banner,
-      messagesScene,
-      cheersScene,
-      imageScene1,
-      imageScene2,
-      preSnakesBanner,
-      snakeScene,
-      thankYouScene
-    ];
+    
+    if (EnvConfig.get().show === "Valentine")
+      scenes = configureValentinScenes(grizilla);
+    else
+      scenes = configureHolidayScenes(grizilla, facade);
 
     startListening();
   });
@@ -343,7 +375,7 @@ function startListening() {
 
   // ----- start the server -----
   server.listen(port, function() {
-    console.log("Gridzilla server listening on port " + port);
+    console.log("Holiday Lights server listening on port " + port);
   });
 
   startNextScene();
