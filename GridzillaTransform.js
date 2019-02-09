@@ -145,8 +145,7 @@ class GridzillaTransform {
         }
     }
 }
-//Hom many pixels are in a universe these are defined ()
+//Hom many pixels are in a universe these are defined as globals because the mocha unit tests depend on them
 GridzillaTransform.panelWidth = 14;
 GridzillaTransform.panelHeight = 12;
 module.exports = GridzillaTransform;
-
