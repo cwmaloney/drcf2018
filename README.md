@@ -98,8 +98,12 @@ Follow these steps to install test data
 1. cp testMessageQueue.json MessageQueue.json
 1. cp testCheerQueue.json CheerQueue.json
 
-Start the display emulator: node.js displayEmulatorServer.js
+1. Start the display emulators:
+* node.js gridzillaEmulatorServer.js
+* node.js facadeEmulatorServer.js
 
-Open the display emulator in a browser: localhost:3000
+1. Open the display emulators in a browser:
+* localhost:3000
+* localhost:3001
 
-Launch server with node or run the server in the debugger
+1. Launch server (holidayLights.js) with node.js or run it in the debugger
