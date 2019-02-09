@@ -63,25 +63,24 @@ VS Code is free and I used it here to gain experience.
 The npm (node package manager) will install the JavaScript packages (libraries) the project needs including:
 
 1. Express library (simple web framework)
-
-npm installs packages in the folder "node_modules" withing the project folder.
+    * npm installs packages in the folder "node_modules" withing the project folder.
 
 1. Install:
      * Open a terminal or command line window
      * "cd" to project folder
-     * npm install
+     * `npm install`
 
 ## Running the Gridzilla show server
 
 1. Update the software from github.com
     * Open a terminal or command line window
     * cd to project folder
-    * git pull
+    * `git pull`
 
 1. Start the service
     * Open a terminal or command line window
     * cd to project folder
-    * node gridzilla.js
+    * `node holidayLights.js`
 
 ## Debugging using VS Code
 
@@ -95,17 +94,20 @@ npm installs packages in the folder "node_modules" withing the project folder.
 Follow these steps to install test data
 
 1. "Install test data"
-1. cp testMessageQueue.json MessageQueue.json
-1. cp testCheerQueue.json CheerQueue.json
+    * `cp testMessageQueue.json MessageQueue.json`
+    * `cp testCheerQueue.json CheerQueue.json`
 
 1. Start the display emulators:
-    * node gridzillaEmulatorServer.js
-    * node facadeEmulatorServer.js
+    * `node gridzillaEmulatorServer.js`
+    * `node facadeEmulatorServer.js`
 
 1. Open the display emulators in a browser:
     * localhost:3000
     * localhost:3001
 
-1. Launch server (holidayLights.js) with node.js or run it in the debugger
+1. Launch server (holidayLights.js) with node or run it in the debugger
 
-There are smaller unit tests to test individual components of the drawing library in tests/GridzillaTests.js.  Run it with node or the debugger.  It takes an argument to indicate which test to run.
+There are smaller "manual" tests to visually test individual components of the drawing library in the tests folder.  GridzillaTests.js is useful, it takes an argument to indicate which of several tests to run.  Run it with node or the debugger.
+
+There are also a small set of mocha unit tests in the mochaTests folder that can be run in the debugger or by `npm test`.
+
