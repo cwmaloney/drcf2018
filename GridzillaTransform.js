@@ -29,47 +29,48 @@ const { ArtNet } = require("./ArtNet.js");
  *  [[3, 3, 3], [6, 6, 6], [9, 9, 9]]];
  */
 
-
 const controllerAddresses = ["192.168.1.140", "192.168.1.141", "192.168.1.142"];
 const universeInfos = [];
 
 //How many universes are in a controller
-// const controllerWidth = 4;
-// const controllerHeight = 3;
-//const universesPerController = controllerWidth * controllerHeight;
+const controllerWidth = 4;
+const controllerHeight = 3;
+const universesPerController = controllerWidth * controllerHeight;
 
-//Hom many pixels are in a universe
-const panelWidth = 14;
-const panelHeight = 12;
+
 const xPanels = 12;
 const yPanels = 3;
-// const width = 168;
-// const height = 36;
 
 
 class GridzillaTransform {
     
   static get name() {
-    return "Facade";
+    return "Gridzilla";
   }
+
+  /**
+   * The overall width of Gridzilla in pixels
+   */
   static get width() {
-      return panelWidth * xPanels;
+      return GridzillaTransform.panelWidth * xPanels;
   }
+  /**
+   * The overall height of Gridzilla in pixels
+   */
   static get height() {
-      return panelHeight * yPanels;
+      return GridzillaTransform.panelHeight * yPanels;
   }
 
     /**
-     * Use TransfomerFactory.getTransformer()
+     * Use TransfomerFactory.getGridzillaTransformer()
      */
     constructor() {
         this.artnet = new ArtNet();
         
         //configure universes
         for (var controllerIndex = 0; controllerIndex < controllerAddresses.length; ++controllerIndex){
-            for (var i = 0; i < GridzillaTransform.universesPerController; ++i){
+            for (var i = 0; i < universesPerController; ++i){
             
-
                 let universeInfo = {
                     "address": controllerAddresses[controllerIndex],
                     "universe": i,
@@ -93,13 +94,13 @@ class GridzillaTransform {
         //transform all universes
         for (var controllerIndex = 0; controllerIndex < controllerAddresses.length; ++controllerIndex){
           let universeIndex = 0;
-            for (var rowIndex = GridzillaTransform.controllerHeight - 1; rowIndex >= 0; --rowIndex){
+            for (var rowIndex = controllerHeight - 1; rowIndex >= 0; --rowIndex){
                 this.transformControllerRow(screen, 
-                    GridzillaTransform.panelWidth * GridzillaTransform.controllerWidth * controllerIndex, 
+                    GridzillaTransform.panelWidth * controllerWidth * controllerIndex, 
                     GridzillaTransform.panelHeight * rowIndex, 
                     controllerAddresses[controllerIndex], 
                     universeIndex);
-                universeIndex+=GridzillaTransform.controllerWidth;
+                universeIndex+=controllerWidth;
             }
         }
      
@@ -110,7 +111,7 @@ class GridzillaTransform {
     }
 
     transformControllerRow(screen, xOffset, yOffset, address, universe){
-        for (var i = 0; i < GridzillaTransform.controllerWidth; ++i){
+        for (var i = 0; i < controllerWidth; ++i){
             this.transformUniverse(screen, xOffset + GridzillaTransform.panelWidth * i, yOffset, address, universe + i);
         }
     }
@@ -144,6 +145,8 @@ class GridzillaTransform {
         }
     }
 }
-
+//Hom many pixels are in a universe these are defined ()
+GridzillaTransform.panelWidth = 14;
+GridzillaTransform.panelHeight = 12;
 module.exports = GridzillaTransform;
 
