@@ -244,19 +244,47 @@ app.get("/suggestions", function(request, response) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// the "start-up" code
+// scence configuration
 //////////////////////////////////////////////////////////////////////////////
 
-const port = process.env.PORT || 8000;
+const gridzillaDefaults = {
+  scrollSceneDefaultsWithHeader: {
+    headerTextTop: 3,
+    scrollTextTop: 18,
+    typeface: "Littera",
+    fontSize: 11,
+    speed: 30    
+  },
+  scrollSceneDefaultsNoHeader: {
+    scrollTextTop: 10,
+    typeface: "Littera",
+    fontSize: 11,
+    speed: 30
+    }
+};
 
-EnvConfig.loadOverrides();
+const facadeDefaults = {
+  scrollSceneDefaultsWithHeader: {
+    headerTextTop: 2*14 + 2,
+    scrollTextTop: 3*14 + 2,
+    typeface: "Littera",
+    fontSize: 11,
+    speed: 45
+  },
+  scrollSceneDefaultsNoHeader: {
+    scrollTextTop: 3*14 + 2,
+    typeface: "Littera",
+    fontSize: 11,
+    speed: 45
+    }
+};
 
 function configureHolidayScenes(gridzilla) {
   ImageScene.initialize();
 
   // create scenes
   const welcomeBanner = new BannerScene(gridzilla, onPaused,
-    { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane" });
+    { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane   " });
 
   const instructionsBanner = new BannerScene(gridzilla, onPaused,
     { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights.", color: new Color(colorNameToRgb["White"]) } );
@@ -288,11 +316,11 @@ function configureHolidayScenes(gridzilla) {
     + " Ken Vrana,"
     + " Elliot Maloney,"
     + " Deanna Rose Farmstead Team: Virgil, Laura, Kathi, Jerry, Orrin, Janet, Sarah, Amanda, Brett, & Cindy,"
-    + " John Webb"
-    + "                    ";
+    + " & OP IT's John Webb"
+    + "    ";
 
   const thankYouScene = new ScrollingTextScene(gridzilla, onPaused,
-    { topLine: "Thank you team!", bottomLine: teamMembers, speed: 30, frequency: 10*60*1000 });
+    { headerText: "Thank you team!", scrollText: teamMembers, minumumInterval: 10*60*1000 });
 
   scenes = [
     welcomeBanner,
@@ -314,28 +342,32 @@ function configureValentineScenes(grizilla, facade) {
 
   // create scenes
   const welcomeScene = new ScrollingTextScene(facade, onPaused,
-    { topLine: "XOXO", bottomLine: "Welcome to Holiday Lights for Valentine's Day.", speed: 30, frequency: 10*60*1000 });
+    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, { scrollText:
+      "Welcome to Holiday Lights for Valentine's Day.    Visit farmsteadlights.com to display your Valentine here.    " }));
 
-  const instructionsScene = new ScrollingTextScene(facade, onPaused,
-    { topLine: "XOXO", bottomLine: "Visit farmsteadlights.com to display messages here.", speed: 30, frequency: 10*60*1000 });
-
-  messagesScene = new MessageScene(facade, onPaused, nameManager, {});
+  //messagesScene = new MessageScene(facade, onPaused, nameManager, {});
 
   scenes = [
     welcomeScene,
-    instructionsScene,
-    messagesScene
+    //messagesScene
   ];
 
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// the "start-up" code
+//////////////////////////////////////////////////////////////////////////////
+
+const port = process.env.PORT || 8000;
+
+EnvConfig.loadOverrides();
 
 BitmapBuffer.initializeFonts().then( () =>  {
   ImageManager.initialize().then( () => {
     let grizilla = TransformFactory.getGridzillaTransform();
     let facade = TransformFactory.getFacadeTransform();
 
-    // create scenes
-    
+    // configure the scenes
     if (EnvConfig.get().show === "Valentine")
       configureValentineScenes(grizilla, facade);
     else
@@ -347,7 +379,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
 
 function startListening() {
 
-  // ----- Socket.io initialization -----
+  // Socket.io initialization
 
   io.on("connection", function(socket) {
     console.log("Socket.io user connection: " + socket.id);
@@ -372,7 +404,7 @@ function startListening() {
 
   });
 
-  // ----- start the server -----
+  // start the server
   server.listen(port, function() {
     console.log("Holiday Lights server listening on port " + port);
   });
