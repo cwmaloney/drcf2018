@@ -107,7 +107,7 @@ Follow these steps to install test data
 
 1. Launch server (holidayLights.js) with node or run it in the debugger
 
-There are smaller "manual" tests to visually test individual components of the drawing library in the tests folder.  GridzillaTests.js is useful, it takes an argument to indicate which of several tests to run.  Run it with node or the debugger.
+There are smaller "manual" tests to visually test individual components of the drawing library in the tests folder.  DrawingTests.js is useful, it takes an argument to indicate which of several tests to run.  Run it with node or the debugger.
 
 There are also a small set of mocha unit tests in the mochaTests folder that can be run in the debugger or by `npm test`.
 
