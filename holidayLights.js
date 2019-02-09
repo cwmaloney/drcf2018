@@ -309,7 +309,7 @@ function configureHolidayScenes(gridzilla) {
 
 }
 
-function configureValentinwScenes(grizilla, facade) {
+function configureValentineScenes(grizilla, facade) {
   ImageScene.initialize();
 
   // create scenes
@@ -337,7 +337,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
     // create scenes
     
     if (EnvConfig.get().show === "Valentine")
-      configureValentinwScenes(grizilla, facade);
+      configureValentineScenes(grizilla, facade);
     else
       configureHolidayScenes(grizilla);
 
