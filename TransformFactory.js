@@ -10,7 +10,7 @@ const EmulatorTransform = require("./EmulatorTransform.js");
  */
 function getGridzillaTransform(){
   if (envConfig.get().targetEnv == "Dev") {
-    return new EmulatorTransform("Gridzilla", 14*12, 12*3, 3000);
+    return new EmulatorTransform("Gridzilla Emulator", 14*12, 12*3, 3000);
   }
   else {
     return new GridzillaTransform();
@@ -22,7 +22,7 @@ function getGridzillaTransform(){
  */
 function getFacadeTransform(){
   if (envConfig.get().targetEnv == "Dev") {
-    return new EmulatorTransform("Facade", 12*8, 14*4, 3001);
+    return new EmulatorTransform("Facade Emulator", 12*8, 14*4, 3001);
   }
   else {
     return new FacadeTransform();
