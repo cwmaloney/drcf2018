@@ -183,7 +183,17 @@ const universeToControllerMap = [
 
 
   class FacadeTransform {
-
+    
+    static get name() {
+      return "Facade";
+    }
+    static get width() {
+        return panelWidth * xPanels;
+    }
+    static get height() {
+        return panelHeight * yPanels;
+    }
+  
     /**
      * Use TransfomerFactory.getTransformer()
      */
@@ -207,11 +217,11 @@ const universeToControllerMap = [
     }
   }
 
-  close(){
+  close() {
       this.e131.close();
   }
 
-  transformScreen(screen){
+  transformScreen(screen) {
       
     //transform each panel
     for (var panelRow = 0; panelRow < yPanels; panelRow++){
@@ -264,9 +274,7 @@ const universeToControllerMap = [
       }
     }
   }
-}
 
-FacadeTransform.width = FacadeTransform.xPanels * FacadeTransform.panelWidth;
-FacadeTransform.height = FacadeTransform.yPanels * FacadeTransform.panelHeight;
+}
 
 module.exports = FacadeTransform;
