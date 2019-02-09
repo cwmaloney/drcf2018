@@ -25,7 +25,7 @@ app.get("/", function (req, res) {
 });
 
 
-//ex: http://localhost:3000/echoQuery/4
+//ex: http://localhost:3001/echoQuery/4
 app.get("/echo/:input", function (req, res) {
   var input = req.params.input;
 
@@ -40,7 +40,7 @@ app.get("/echo/:input", function (req, res) {
 });
 
 
-//ex: http://localhost:3000/echoQuery?input=4
+//ex: http://localhost:3001/echoQuery?input=4
 app.get("/echoQuery", function (req, res) {
   var input = req.query.input;
 
@@ -58,15 +58,15 @@ app.get("/status", function (req, res) {
     res.status(200).send(Object.keys(socketIo.connected).length + " Client(s) connected!");
 });
 
-//http://localhost:3000/background/red
-//http://localhost:3000/background/127
+//http://localhost:3001/background/red
+//http://localhost:3001/background/127
 app.get("/background/:data", function (req, res) {
   let data = req.params.data;
   socketIo.emit("background", data);
   res.status(200).send(data);
 });
 
-//http://localhost:3000/pixel?x=1&y=1&r=255&g=255&b=0
+//http://localhost:3001/pixel?x=1&y=1&r=255&g=255&b=0
 app.get("/pixel", function (req, res) {
   let x = req.query.x;
   let y = req.query.y;
