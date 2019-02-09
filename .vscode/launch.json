@@ -58,8 +58,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Emulator Server",
-      "program": "${workspaceFolder}/displayEmulatorServer.js"
+      "name": "Grizilla Emulator Server",
+      "program": "${workspaceFolder}/grizillaEmulatorServer.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Facade Emulator Server",
+      "program": "${workspaceFolder}/facadeEmulatorServer.js"
     },
     {
       "type": "node",
