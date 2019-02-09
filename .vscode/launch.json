@@ -13,8 +13,8 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Gridzilla",
-      "program": "${workspaceFolder}/gridzilla.js"
+      "name": "holidayLights",
+      "program": "${workspaceFolder}/holidayLights.js"
     },
     {
       "type": "node",
