@@ -309,23 +309,22 @@ function configureHolidayScenes(gridzilla) {
 
 }
 
-function configureValentinScenes(grizilla, facade) {
+function configureValentinwScenes(grizilla, facade) {
   ImageScene.initialize();
 
   // create scenes
   const welcomeScene = new ScrollingTextScene(facade, onPaused,
-    { topLine: "", bottomLine: "Welcome to Holiday Lights for Valentine's Day", speed: 30, frequency: 10*60*1000 });
+    { topLine: "XOXO", bottomLine: "Welcome to Holiday Lights for Valentine's Day.", speed: 30, frequency: 10*60*1000 });
 
-  const instructionsScene = new BannerScene(facade, onPaused,
-    { line1: "", line2: "Visit farmsteadlights.com", line3: "to display messages here.", speed: 30, frequency: 10*60*1000 });
+  const instructionsScene = new ScrollingTextScene(facade, onPaused,
+    { topLine: "XOXO", bottomLine: "Visit farmsteadlights.com to display messages here.", speed: 30, frequency: 10*60*1000 });
 
   messagesScene = new MessageScene(facade, onPaused, nameManager, {});
 
   scenes = [
     welcomeScene,
     instructionsScene,
-    messagesScene,
-    cheersScene
+    messagesScene
   ];
 
 }
@@ -333,14 +332,14 @@ function configureValentinScenes(grizilla, facade) {
 BitmapBuffer.initializeFonts().then( () =>  {
   ImageManager.initialize().then( () => {
     let grizilla = TransformFactory.getGridzillaTransform();
-    let facade = TransformFactory.getGridzillaTransform();
+    let facade = TransformFactory.getFacadeTransform();
 
     // create scenes
     
     if (EnvConfig.get().show === "Valentine")
-      scenes = configureValentinScenes(grizilla);
+      configureValentinwScenes(grizilla, facade);
     else
-      scenes = configureHolidayScenes(grizilla, facade);
+      configureHolidayScenes(grizilla);
 
     startListening();
   });
