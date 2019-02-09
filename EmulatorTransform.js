@@ -54,7 +54,7 @@ class EmulatorTransform {
             }
         }
         
-        axios.post('http://localhost:3000/screen', {
+        axios.post('http://localhost:' + this.port + '/screen', {
             data: buffer
         })
         .then((res) => {
