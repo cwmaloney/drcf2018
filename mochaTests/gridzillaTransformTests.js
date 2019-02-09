@@ -92,19 +92,19 @@ function initializeUniverseMap(){
   universeMap =  [];
   var channelIndex = 0;
   var up = false;
-  for (var x = 0; x < GridzillaTransform.universeWidth; ++x){
+  for (var x = 0; x < GridzillaTransform.panelWidth; ++x){
     let column = [];
     universeMap[x] = column;
     //up or down the height
     if (up) {
-        for (let y = 0; y < GridzillaTransform.universeHeight; ++y) {
+        for (let y = 0; y < GridzillaTransform.panelHeight; ++y) {
           column[y] = channelIndex;
           channelIndex += 3;
         }
         up = false;
     }
     else {
-        for (let y = GridzillaTransform.universeHeight - 1; y >= 0; --y) {
+        for (let y = GridzillaTransform.panelHeight - 1; y >= 0; --y) {
           column[y] = channelIndex;
           channelIndex += 3;
         }
