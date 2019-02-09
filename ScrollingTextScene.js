@@ -2,67 +2,62 @@ const BitmapBuffer = require("./BitmapBuffer.js");
 const Font = require("./Font.js");
 const Color = require("./Color.js");
 //const {colorNameToRgb} = require("./config-colors.js");
-const Jimp = require('jimp');
+//const Jimp = require('jimp');
 const HorizontalScroller = require("./HorizontalScroller.js");
 // const TimestampUtilities = require("./TimestampUtilities.js");
 
 class ScrollingTextScene {
 
-  constructor(outputGrid, onPaused, configuration) {
-    this.outputGrid = outputGrid;
+  constructor(gridzilla, facade, onPaused, configuration, gridzillaConfiguration, facadeConfiguration) {
+    this.gridzilla = gridzilla;
+    this.facade = facade;
     this.onPaused = onPaused;
-    this.configure(configuration);
+    this.configure(configuration, gridzillaConfiguration, facadeConfiguration);
   
     this.paused = false;
   }
 
-  configure(configuration) {
-    const {
-      period = 60000, // time scene should run
+  configure(configuration, gridzillaConfiguration, facadeConfiguration) {
+    const defaults = {
+      period: 60000, // time scene should run
 
-      headerText = null,
-      scrollText = null,
+      headerText: null,
+      scrollText: null,
+      minimumInterval: 0, // this minumum intervale between repeating this message
+    };
 
-      color = new Color(255, 255, 255),
-      backgroundColor = new Color(0, 0, 0),
+    const defaultGridzillaConfiguration = {
+      color: new Color(255, 255, 255),
+      backgroundColor: new Color(0, 0, 0),
 
-      speed = null, // speed is ms between moves
-      minimumInterval = 0, // this minumum intervale between repeating this message
+      speed: 30, // speed is ms between moves
 
-      typeface = "Littera",
-      fontSize = 11,
+      typeface: "Littera",
+      fontSize: 11,
 
-      scrollHeaderTop = undefined,
-      scrollTextTop = undefined
+      scrollHeaderTop: undefined,
+      scrollTextTop: undefined
+    };
 
-    } = configuration;
+    const defaultFacadeConfiguration = {
+      color: new Color(255, 255, 255),
+      backgroundColor: new Color(0, 0, 0),
 
-    this.period = period;
+      speed: 30, // speed is ms between moves
 
-    this.headerText = headerText;
-    this.scrollText = scrollText;
+      typeface: "Littera",
+      fontSize: 11,
 
-    this.color = color;
-    this.backgroundColor = backgroundColor;
+      scrollHeaderTop: undefined,
+      scrollTextTop: undefined
+    };
 
-    this.speed = speed;
-    this.minimumInterval = minimumInterval;
+    this.configuration = Object.assign(defaults, configuration);
+    this.facadeConfiguration = Object.assign(defaultFacadeConfiguration, facadeConfiguration);
+    this.gridzillaConfiguration = Object.assign(defaultGridzillaConfiguration, gridzillaConfiguration);
 
-    this.typeface = typeface;
-    this.fontSize = fontSize;
-
-    this.scrollHeaderTop = scrollHeaderTop;
-    this.scrollTextTop = scrollTextTop;
-
-    if (this.headerText && this.headerText != "" && !this.headerTextTop) {
-      throw "ScrollingTextSceen missing headerTextTop"
-    }
-
-    if (!this.scrollTextTop ) {
-      throw "ScrollingTextSceen missing scrollTextTop"
-    }
-
-    this.bufferHeight = this.fontSize + 5; // TODO why 5?
+    this.facadeConfiguration.font = new Font(this.facadeConfiguration.typeface, this.facadeConfiguration.fontSize, this.facadeConfiguration.color);
+    this.gridzillaConfiguration.font = new Font(this.gridzillaConfiguration.typeface, this.gridzillaConfiguration.fontSize, this.gridzillaConfiguration.color);
  }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -77,16 +72,26 @@ class ScrollingTextScene {
   }
 
   runScene() {
-    if (this.minimumInterval) {
+    if (this.configuration.minimumInterval) {
       const nowTime = Date.now();
-      if (this.lastRunTime && (this.lastRunTime + this.minimumInterval > nowTime)){
+      if (this.lastRunTime && (this.lastRunTime + this.configuration.minimumInterval > nowTime)){
         this.pause();
         return;
       }
     this.lastRunTime = nowTime;
     }
-    const timeRequired = this.showText() + 1000; // add a second
-    const timeout = Math.min(timeRequired, this.period);
+
+    let timeRequired = 0;
+    if (this.gridzilla) {
+      this.gridzillaTextScroller = this.showText(this.gridzilla, this.gridzillaConfiguration);
+      timeRequired = Math.max(timeRequired, this.getScrollTime(this.gridzilla, this.gridzillaConfiguration) + 1000); // add a second for "rounding"
+    }
+    if (this.facade) {
+      this.facadeTextScroller = this.showText(this.facade, this.facadeConfiguration);
+      timeRequired = Math.max(timeRequired, this.getScrollTime(this.facade, this.facadeConfiguration) + 1000); // add a second for "rounding"
+    }
+
+    const timeout = Math.min(timeRequired, this.configuration.period);
     this.runningTimer = setTimeout(this.onComplete.bind(this), timeout);
   }
 
@@ -110,43 +115,40 @@ class ScrollingTextScene {
   onComplete() {
     this.lastRunTime = Date.now();
 
-    if (this.messageScroller){
-      this.messageScroller.stop();
-      this.messageScroller = null;
+    if (this.gridzillaTextScroller){
+      this.gridzillaTextScroller.stop();
+      this.gridzillaTextScroller = null;
+    }
+
+    if (this.facadeTextScroller){
+      this.facadeTextScroller.stop();
+      this.facadeTextScroller = null;
     }
 
     this.pause();
     return;
   }
 
-  showText(){
-    const frameBuffer = BitmapBuffer.fromNew(this.outputGrid.width, this.outputGrid.height, this.backgroundColor);
+  showText(output, outputConfiguration){
+    const frameBuffer = BitmapBuffer.fromNew(output.width, output.height, outputConfiguration.backgroundColor);
 
-    const font = new Font(this.typeface, this.fontSize, this.color);
-
-    if (this.headerText && this.headerText != "") {
-      frameBuffer.print1Line(this.headerText, font, this.headerTextTop);
-      this.outputGrid.transformScreen(frameBuffer);
+    if (this.configuration.headerText && this.configuration.headerText != "") {
+      frameBuffer.print1Line(this.configuration.headerText, outputConfiguration.font, outputConfiguration.headerTextTop);
+      output.transformScreen(frameBuffer);
     }
 
-    const jimpFont = BitmapBuffer.getJimpFont(font);
-    const textWidth = Jimp.measureText(jimpFont, this.scrollText) + 8; // TODO why 8
+    const scroller = new HorizontalScroller(0, outputConfiguration.scrollTextTop, frameBuffer, output);
+    scroller.scrollText(this.configuration.scrollText, outputConfiguration.font, outputConfiguration.speed);
 
-    let textBuffer = BitmapBuffer.fromNew(textWidth, this.bufferHeight, new Color(0, 0, 0));
-    textBuffer.print(this.scrollText, font, 0, 0);
+    return scroller;
+  }
 
-    this.messageScroller = new HorizontalScroller(0, this.scrollTextTop, frameBuffer, this.outputGrid);
-    this.messageScroller.scrollImage(textBuffer.image, this.speed, this.outputGrid.width);
-
-    return HorizontalScroller.calculateImageScrollTime(textWidth, this.outputGrid.width, this.speed);
+  getScrollTime(output, outputConfiguration) {
+    return HorizontalScroller.calculateImageScrollTime(this.configuration.scrollText, outputConfiguration.font, output.width, outputConfiguration.speed);
   }
  
   formatMessage() {
-    let formattedMessage = ''
-
-    formattedMessage = `${this.headerText}, ${this.scrollText}`;
-
-    return formattedMessage;
+    return (this.configuration.headerText) ? `header: ${this.configuration.headerText}, ` : "" + `${this.configuration.scrollText}`;
   }
    
 }

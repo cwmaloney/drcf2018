@@ -337,13 +337,16 @@ function configureHolidayScenes(gridzilla) {
 
 }
 
-function configureValentineScenes(grizilla, facade) {
+function configureValentineScenes(gridzilla, facade) {
   ImageScene.initialize();
 
   // create scenes
-  const welcomeScene = new ScrollingTextScene(facade, onPaused,
-    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, { scrollText:
-      "Welcome to Holiday Lights for Valentine's Day.    Visit farmsteadlights.com to display your Valentine here.    " }));
+  const welcomeScene = new ScrollingTextScene(gridzilla, facade, onPaused,
+    { scrollText:
+      "         Happy Valentine's Day!    Visit farmsteadlights.com to display your Valentine here.             " },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 0, 0)} ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 0, 0)} )
+  );
 
   //messagesScene = new MessageScene(facade, onPaused, nameManager, {});
 
@@ -364,14 +367,14 @@ EnvConfig.loadOverrides();
 
 BitmapBuffer.initializeFonts().then( () =>  {
   ImageManager.initialize().then( () => {
-    let grizilla = TransformFactory.getGridzillaTransform();
+    let gridzilla = TransformFactory.getGridzillaTransform();
     let facade = TransformFactory.getFacadeTransform();
 
     // configure the scenes
     if (EnvConfig.get().show === "Valentine")
-      configureValentineScenes(grizilla, facade);
+      configureValentineScenes(gridzilla, facade);
     else
-      configureHolidayScenes(grizilla);
+      configureHolidayScenes(gridzilla);
 
     startListening();
   });
