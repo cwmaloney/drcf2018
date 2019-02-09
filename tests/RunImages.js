@@ -17,7 +17,7 @@ BitmapBuffer.initializeFonts().then( () => {
 
         const perImageMs = 2500;
 
-        transform = TransformFactory.getTransform();
+        transform = TransformFactory.getGridzillaTransform();
 
         let imageScene = new ImageScene(transform, onPaused, { perImagePeriod: perImageMs, period: 5 * 60 * 1000 });
 

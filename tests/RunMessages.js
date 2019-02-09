@@ -28,7 +28,7 @@ BitmapBuffer.initializeFonts().then( () => {
         const perMessageMs = 250;
         const loops = 1;
 
-        transform = TransformFactory.getTransform();
+        transform = TransformFactory.getGridzillaTransform();
 
         if (envConfig.get().targetEnv == "Dev" && fs.existsSync('MessageQueue.json')) {
             fs.unlinkSync('MessageQueue.json');

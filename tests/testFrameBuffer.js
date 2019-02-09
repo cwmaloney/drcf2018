@@ -29,7 +29,7 @@ for (let i = 0; i < 16; i+=2){
 }
 //frameBuffer.drawRect(0, 0, 168, 36, new Color(255, 0, 0));
 //frameBuffer.fillRect(2, 2, 164, 32, new Color(0, 255, 0));
-var transform = TransformFactory.getTransform();
+var transform = TransformFactory.getGridzillaTransform();
 transform.transformScreen(frameBuffer);
 
 

@@ -28,7 +28,7 @@ BitmapBuffer.initializeFonts().then( () => {
         const perCheerMs = 500;
         const loops = 5;
 
-        transform = TransformFactory.getTransform();
+        transform = TransformFactory.getGridzillaTransform();
 
 
         if (envConfig.get().targetEnv == "Dev" && fs.existsSync('CheerQueue.json')) {
