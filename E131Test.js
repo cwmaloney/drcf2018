@@ -6,12 +6,20 @@ const testData = [
   { channelCount: 12*14*3, data: [ 180,   0,   0 ] },
   { channelCount: 12*14*3, data: [   0, 180,   0 ] },
   { channelCount: 12*14*3, data: [   0,   0, 180 ] },
-  { channelCount: 1, data: [ 180, 180, 180 ] },
-  { channelCount: 2, data: [ 180, 180, 180 ] },
-  { channelCount: 3, data: [ 180, 180, 180 ] },
-  { channelCount: 12*14*3, data: [ 180,   0,   0,   0, 180,   0,   0,   0, 180 ] },
-  { channelCount: 12*14*3, data: [   0, 180,   0,   0,   0, 180, 180,   0,   0 ] },
-  { channelCount: 12*14*3, data: [   0,   0, 180, 180,   0,   0,   0, 180,   0 ] },
+  { channelCount: 12*14*3, data: [ 0,   0,   0 ] },
+
+  { channelCount: 1*3,     data: [ 180, 180, 180 ] },
+  { channelCount: 2*3,     data: [ 180, 180, 180 ] },
+  { channelCount: 4*3,     data: [ 180, 180, 180 ] },
+  { channelCount: 8*3,     data: [ 180, 180, 180 ] },
+  { channelCount: 14*3,    data: [ 180, 180, 180 ] },
+  { channelCount: 3*14*3,  data: [ 180, 180, 180 ] },
+  { channelCount: 6*14*3,  data: [ 180, 180, 180 ] },
+  { channelCount: 12*14*3, data: [ 180, 180, 180 ] },
+
+  { channelCount: 12*14*3, data: [ 180,   0,   0,   0,   0,   0,   0,   0,   0 ] },
+  { channelCount: 12*14*3, data: [   0,   0,   0,   0, 180,   0,   0,   0,   0 ] },
+  { channelCount: 12*14*3, data: [   0,   0,   0,   0,   0,   0,   0,   0, 180 ] },
   { channelCount: 12*14*3, data: [ 180, 180, 180 ] },
   { channelCount: 12*14*3, data: [  90,  90, 90 ] },
   { channelCount: 12*14*3, data: [ 0,   0,   0 ] },
@@ -77,8 +85,8 @@ function runNextTest() {
 
   let dataIndex = 0;
   for (let channelIndex = 0; channelIndex < test.channelCount; channelIndex++) {
-    if (++dataIndex >= test.data.length) dataIndex = 0;
-    channelData[channelIndex] = test.data[dataIndex];
+    if (dataIndex >= test.data.length) dataIndex = 0;
+    channelData[channelIndex] = test.data[dataIndex++];
   }
 
   console.log("--- E131::runNextText", "testIndex", testIndex, 'data: ',  channelData);
@@ -92,4 +100,4 @@ function runNextTest() {
 
 runNextTest();
 
-setInterval(runNextTest, 2000);
+setInterval(runNextTest, 3000);
