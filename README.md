@@ -99,11 +99,13 @@ Follow these steps to install test data
 1. cp testCheerQueue.json CheerQueue.json
 
 1. Start the display emulators:
-* node.js gridzillaEmulatorServer.js
-* node.js facadeEmulatorServer.js
+    * node gridzillaEmulatorServer.js
+    * node facadeEmulatorServer.js
 
 1. Open the display emulators in a browser:
-* localhost:3000
-* localhost:3001
+    * localhost:3000
+    * localhost:3001
 
 1. Launch server (holidayLights.js) with node.js or run it in the debugger
+
+There are smaller unit tests to test individual components of the drawing library in tests/GridzillaTests.js.  Run it with node or the debugger.  It takes an argument to indicate which test to run.

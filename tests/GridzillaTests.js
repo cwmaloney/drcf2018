@@ -142,7 +142,7 @@ async function testCheer2(){
 }
 
 BitmapBuffer.initializeFonts().then( () => {
-    transform = TransformFactory.getTransform();
+    transform = TransformFactory.getGridzillaTransform();
     var test = "print3Lines";
     if (process.argv.length > 2){
         test = process.argv[2];

@@ -31,8 +31,8 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Bmp Test",
-      "program": "${workspaceFolder}/tests/BmpTest.js",
+      "name": "Gridzilla Test",
+      "program": "${workspaceFolder}/tests/GridzillaTests.js",
       "args": [
         "print3Lines"
       ]
