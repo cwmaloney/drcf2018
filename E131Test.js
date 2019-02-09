@@ -6,7 +6,7 @@ const testData = [
   { channelCount: 12*14*3, data: [ 180,   0,   0 ] },
   { channelCount: 12*14*3, data: [   0, 180,   0 ] },
   { channelCount: 12*14*3, data: [   0,   0, 180 ] },
-  { channelCount: 12*14*3, data: [ 0,   0,   0 ] },
+  { channelCount: 12*14*3, data: [   0,   0,   0 ] },
 
   { channelCount: 1*3,     data: [ 180, 180, 180 ] },
   { channelCount: 2*3,     data: [ 180, 180, 180 ] },
@@ -21,8 +21,8 @@ const testData = [
   { channelCount: 12*14*3, data: [   0,   0,   0,   0, 180,   0,   0,   0,   0 ] },
   { channelCount: 12*14*3, data: [   0,   0,   0,   0,   0,   0,   0,   0, 180 ] },
   { channelCount: 12*14*3, data: [ 180, 180, 180 ] },
-  { channelCount: 12*14*3, data: [  90,  90, 90 ] },
-  { channelCount: 12*14*3, data: [ 0,   0,   0 ] },
+  { channelCount: 12*14*3, data: [  90,  90,  90 ] },
+  { channelCount: 12*14*3, data: [  0,   0,    0 ] },
 ];
 
 const e131 = new E131();
