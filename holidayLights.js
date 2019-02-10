@@ -348,7 +348,7 @@ function configureValentineScenes(gridzilla, facade) {
     Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} )
   );
 
-  const messagesScene = new MessageScene(gridzilla, facade, onPaused, nameManager, {}, {}, facadeDefaults.scrollSceneDefaultsNoHeader);
+  messagesScene = new MessageScene(gridzilla, facade, onPaused, nameManager, {}, {}, facadeDefaults.scrollSceneDefaultsNoHeader);
 
   scenes = [
     welcomeScene,
