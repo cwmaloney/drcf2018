@@ -188,9 +188,15 @@ const universeToControllerMap = [
     get name() {
       return "Facade";
     }
+    /**
+     * The  width of facade in pixels
+     */
     get width() {
       return panelWidth * xPanels;
     }
+    /**
+     * The  height of facade in pixels
+     */
     get height() {
       return panelHeight * yPanels;
     }

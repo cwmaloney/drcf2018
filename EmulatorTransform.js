@@ -12,26 +12,32 @@ const FrameBuffer = require('./FrameBuffer.js');
 class EmulatorTransform {
 
   get name() {
-    return this.name;
+    return this._name;
   }
+  /**
+   * The  width of emulator in pixels
+   */
   get width() {
-      return this.width;
+    return this._width;
   }
+  /**
+   * The  height of emulator in pixels
+   */
   get height() {
-      return this.height;
+      return this._height;
   }
   get port() {
-      return this.port;
+      return this._port;
   }
 
   /**
    * Use TransfomerFactory.getTransformer()
    */
   constructor(name, width, height, port ) {
-    this.name = name;
-    this.width = width;
-    this.height = height;
-    this.port = port;
+    this._name = name;
+    this._width = width;
+    this._height = height;
+    this._port = port;
   }
 
   close(){}
