@@ -34,7 +34,7 @@
       "name": "Drawing Test",
       "program": "${workspaceFolder}/tests/DrawingTests.js",
       "args": [
-        "print3Lines"
+        "drawing"
       ]
     },
     {

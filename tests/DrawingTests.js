@@ -34,20 +34,27 @@ async function testBlit(){
 }
 
 function testDrawing() {
-    let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    bmpBuff.drawPixel(0, 0, new Color(255, 0, 0));
-    bmpBuff.drawPixel(0, 1, new Color(255, 0, 0));
-    bmpBuff.drawPixel(1, 0, new Color(255, 0, 0));
-    bmpBuff.drawPixel(1, 1, new Color(255, 0, 0));
+    let bmpBuff = BitmapBuffer.fromNew(transform.width, transform.height, new Color(0, 0, 0));
+    
+    // bottom right corner
+    bmpBuff.drawPixel(0, transform.height-2, new Color(255, 0, 0));
+    bmpBuff.drawPixel(0, transform.height-1, new Color(255, 0, 0));
+    bmpBuff.drawPixel(1, transform.height-2, new Color(255, 0, 0));
+    bmpBuff.drawPixel(1, transform.height-1, new Color(255, 0, 0));
 
-    bmpBuff.drawLine(5, 0, 40, 35, new Color(0, 255, 0));
+    bmpBuff.drawPixel(transform.width-2, transform.height-2, new Color(255, 0, 0));
+    bmpBuff.drawPixel(transform.width-2, transform.height-1, new Color(255, 0, 0));
+    bmpBuff.drawPixel(transform.width-1, transform.height-2, new Color(255, 0, 0));
+    bmpBuff.drawPixel(transform.width-1, transform.height-1, new Color(255, 0, 0));
 
-    bmpBuff.drawRect(45, 5, 5, 26, new Color(0, 0, 255));
+    bmpBuff.drawLine(2, transform.height-3, transform.width-1, 0, new Color(0, 255, 0));
 
-    bmpBuff.fillRect(55, 5, 5, 26, new Color(255, 255, 0));
+    bmpBuff.drawRect((transform.width/2)-20, transform.height-11, 40, 8, new Color(0, 0, 255));
 
-    bmpBuff.drawCircle(75, 18, 10, new Color(255, 0, 255));
-    bmpBuff.fill(75, 18, new Color(127, 255, 127));
+    bmpBuff.fillRect((transform.width/2)-4, 2, 8, 12, new Color(255, 255, 0));
+
+    bmpBuff.drawCircle(transform.width-10, transform.height-10, 8, new Color(255, 0, 255));
+    bmpBuff.fill(transform.width-10, transform.height-10, new Color(100, 100, 100));
 
     transform.transformScreen(bmpBuff);
     transform.close();
