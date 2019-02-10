@@ -231,7 +231,7 @@ const universeToControllerMap = [
   transformScreen(screen) {
       
     //transform each panel
-    for (var panelRow = 0; panelRow < yPanels; panelRow++){
+    for (var panelRow = yPanels-1; panelRow >= 0; panelRow--){
       for (var panelColumn = 0; panelColumn < xPanels; panelColumn++){
           this.transformPanel(
               screen,
@@ -263,23 +263,24 @@ const universeToControllerMap = [
 
     // the facade does not have panels for some locations
     if (panel) {
-      const xScreenOffset = panelRow * panelWidth;
-      const yScreenOffset = panelColumn * panelHeight;
+      const xScreenOffset = panelColumn * panelWidth;
+      const yScreenOffset = panelRow * panelHeight;
 
       const universe = panel.u;
       const controllerAddress = this.getControllerAddress(panel.u);
       const panelTemplate = panel.t;
 
-      for (let row = 0; row < panelWidth; row++) {
-        for (let column = 0; column < panelHeight; column++) {
+      for (let row = 0; row < panelHeight; row++) {
+        for (let column = 0; column < panelWidth; column++) {
           const pixelColors = screen.getPixelColors(
-            xScreenOffset + row, yScreenOffset + column);
+            xScreenOffset + column, yScreenOffset + row);
 
-          const channelIndex = panelTemplate[row][column];
+          const pixelIndex = panelTemplate[row][column];
 
           // send data for all pixel that have channels (> -1)
-          if (channelIndex >= 0) {
-           this.e131.setChannelData(controllerAddress, universe, channelIndex, pixelColors);
+          if (pixelIndex >= 0) {
+            const channelIndex = ((pixelIndex-1)*3) + 1;
+            this.e131.setChannelData(controllerAddress, universe, channelIndex, pixelColors);
           }
         }
       }
