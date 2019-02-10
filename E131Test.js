@@ -10,6 +10,7 @@ const testData = [
 
   { channelCount: 1*3,     data: [ 180, 180, 180 ] },
   { channelCount: 2*3,     data: [ 180, 180, 180 ] },
+  { channelCount: 3*3,     data: [ 180, 180, 180 ] },
   { channelCount: 4*3,     data: [ 180, 180, 180 ] },
   { channelCount: 8*3,     data: [ 180, 180, 180 ] },
   { channelCount: 14*3,    data: [ 180, 180, 180 ] },
@@ -100,4 +101,4 @@ function runNextTest() {
 
 runNextTest();
 
-setInterval(runNextTest, 3000);
+setInterval(runNextTest, 5000);
