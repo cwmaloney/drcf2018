@@ -129,7 +129,7 @@ class GridzillaTransform {
                     //get the RGB color, invert the y axis, gridzilla coordinates start in the lower left, the screen starts in the upper left
                     this.artnet.setChannelData(address, universe, channelIndex, screen.getPixelColors(
                         xOffset + x, 
-                        GridzillaTransform.height - (yOffset + y) - 1));
+                        this.height - (yOffset + y) - 1));
                     channelIndex += 3;
                 }
                 up = false;
@@ -138,7 +138,7 @@ class GridzillaTransform {
                 for (let y = GridzillaTransform.panelHeight - 1; y >= 0; --y) {
                     //get the RGB color, invert the y axis, gridzilla coordinates start in the lower left, the screen starts in the upper left
                     this.artnet.setChannelData(address, universe, channelIndex, screen.getPixelColors(xOffset + x, 
-                        GridzillaTransform.height - (yOffset + y) - 1));
+                      this.height - (yOffset + y) - 1));
                     channelIndex += 3;
                 }
                 up = true;
