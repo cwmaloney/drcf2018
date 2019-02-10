@@ -171,9 +171,9 @@ const universeToControllerMap = [
   //  We use short elemnt names - t for template and u for universe.
   //  This follows physical order top of the facad is at the top in the source.
   const panels = [
-    [ null,                 null,               {t: rTriMap, u: 28}, {t: rTrpMap, u: 28}, {t: lTrpMap, u: 29}, {t: lTriMap, u: 29}, null,                null                ],
+    [ null,                 null,               {t: lTriMap, u: 28}, {t: lTrpMap, u: 28}, {t: rTrpMap, u: 29}, {t: rTriMap, u: 29}, null,                null                ],
     [ null,                 null,               {t: rectMap, u: 24}, {t: rectMap, u: 25}, {t: rectMap, u: 26}, {t: rectMap, u: 27}, null,                null                ],
-    [ {t: rTriMap, u: 18}, {t: rTrpMap, u: 18}, {t: rectMap, u: 19}, {t: rectMap, u: 20}, {t: rectMap, u: 21}, {t: rectMap, u: 22}, {t: lTrpMap, u: 23}, {t: lTriMap, u: 23} ],
+    [ {t: lTriMap, u: 18}, {t: lTrpMap, u: 18}, {t: rectMap, u: 19}, {t: rectMap, u: 20}, {t: rectMap, u: 21}, {t: rectMap, u: 22}, {t: rTrpMap, u: 23}, {t: rTriMap, u: 23} ],
     [ {t: rectMap, u: 10}, {t: rectMap, u: 11}, {t: rectMap, u: 12}, {t: rectMap, u: 13}, {t: rectMap, u: 14}, {t: rectMap, u: 15}, {t: rectMap, u: 16}, {t: rectMap, u: 17} ]
   ];
 
