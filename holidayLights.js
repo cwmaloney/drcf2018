@@ -265,17 +265,17 @@ const gridzillaDefaults = {
 
 const facadeDefaults = {
   scrollSceneDefaultsWithHeader: {
-    headerTextTop: 2*14 + 2,
-    scrollTextTop: 3*14 + 2,
+    headerTextTop: 2*14 -2,
+    scrollTextTop: 3*14 -4,
     typeface: "Littera",
-    fontSize: 11,
-    speed: 45
+    fontSize: 12,
+    speed: 60
   },
   scrollSceneDefaultsNoHeader: {
-    scrollTextTop: 3*14 + 2,
+    scrollTextTop: 3*14 - 2,
     typeface: "Littera",
-    fontSize: 11,
-    speed: 45
+    fontSize: 14,
+    speed: 60
     }
 };
 
@@ -344,8 +344,8 @@ function configureValentineScenes(gridzilla, facade) {
   const welcomeScene = new ScrollingTextScene(gridzilla, facade, onPaused,
     { scrollText:
       "             Happy Valentine's Day!    Visit farmsteadlights.com to display your Valentine here.             " },
-    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 0, 0)} ),
-    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 0, 0)} )
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} )
   );
 
   const messagesScene = new MessageScene(gridzilla, facade, onPaused, nameManager, {}, {}, facadeDefaults.scrollSceneDefaultsNoHeader);
