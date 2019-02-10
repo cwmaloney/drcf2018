@@ -11,16 +11,16 @@ const FrameBuffer = require('./FrameBuffer.js');
 
 class EmulatorTransform {
 
-  static get name() {
+  get name() {
     return this.name;
   }
-  static get width() {
+  get width() {
       return this.width;
   }
-  static get height() {
+  get height() {
       return this.height;
   }
-  static get port() {
+  get port() {
       return this.port;
   }
 

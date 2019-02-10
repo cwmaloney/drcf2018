@@ -44,21 +44,22 @@ const yPanels = 3;
 
 class GridzillaTransform {
     
-  static get name() {
+  get name() {
     return "Gridzilla";
   }
 
   /**
    * The overall width of Gridzilla in pixels
    */
-  static get width() {
-      return GridzillaTransform.panelWidth * xPanels;
+  get width() {
+    return GridzillaTransform.panelWidth * xPanels;
   }
+  
   /**
    * The overall height of Gridzilla in pixels
    */
-  static get height() {
-      return GridzillaTransform.panelHeight * yPanels;
+  get height() {
+    return GridzillaTransform.panelHeight * yPanels;
   }
 
     /**

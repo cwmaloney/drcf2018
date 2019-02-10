@@ -82,9 +82,10 @@ const lTriMap =  [
 const lTrpMap =  [ 
   //  1    2    3    4    5    6    7    8    9   10   11   12   
   [  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1],
+  [  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1],
   [  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 100],
   [  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  79,  80, 101],
-  [  -1,  -1,  -1,  -1,  -1,  -1,   0,  58,  59,  78,  81, 100],
+  [  -1,  -1,  -1,  -1,  -1,  -1,  -2,  58,  59,  78,  81, 100],
   [  -1,  -1,  -1,  -1,  -1,  39,  40,  57,  60,  77,  82,  99],
   [  -1,  -1,  -1,  22,  23,  38,  41,  56,  61,  76,  83,  98],
   [  -1,   7,   8,  21,  24,  37,  42,  55,  62,  75,  84,  97],
@@ -184,14 +185,14 @@ const universeToControllerMap = [
 
   class FacadeTransform {
     
-    static get name() {
+    get name() {
       return "Facade";
     }
-    static get width() {
-        return panelWidth * xPanels;
+    get width() {
+      return panelWidth * xPanels;
     }
-    static get height() {
-        return panelHeight * yPanels;
+    get height() {
+      return panelHeight * yPanels;
     }
   
     /**
@@ -236,7 +237,7 @@ const universeToControllerMap = [
     //send all universes
     for (let universeIndex = 0; universeIndex < universeToControllerMap.length; ++universeIndex){
       const universe = universeToControllerMap[universeIndex];
-      this.e131.send(universe.controlleraddress, universe.universe);
+      this.e131.send(universe.controllerAddress, universe.universe);
     }
   }
 
@@ -251,25 +252,29 @@ const universeToControllerMap = [
   }
 
   transformPanel(screen, panelRow, panelColumn) {
-    const panel = panels[panelRow][panelColumn];
+    const rowPanels = panels[panelRow];
+    const panel = rowPanels[panelColumn];
 
-    const xScreenOffset = panelRow * panelWidth;
-    const yScreenOffset = panelColumn * panelHeight;
+    // the facade does not have panels for some locations
+    if (panel) {
+      const xScreenOffset = panelRow * panelWidth;
+      const yScreenOffset = panelColumn * panelHeight;
 
-    const universe = panel.u;
-    const controllerAddress = this.getControllerAddress(panel.u);
-    const panelTemplate = panel.t;
+      const universe = panel.u;
+      const controllerAddress = this.getControllerAddress(panel.u);
+      const panelTemplate = panel.t;
 
-    for (let row = 0; row < panelWidth; row++) {
-      for (let column = 0; column < panelHeight; column++) {
-        const pixelColors = screen.getPixelColors(
-          xScreenOffset + row, yScreenOffset + column);
+      for (let row = 0; row < panelWidth; row++) {
+        for (let column = 0; column < panelHeight; column++) {
+          const pixelColors = screen.getPixelColors(
+            xScreenOffset + row, yScreenOffset + column);
 
-        const channelIndex = panelTemplate[row][column];
+          const channelIndex = panelTemplate[row][column];
 
-        // send data for all pixel that have channels (> -1)
-        if (channelIndex >= 0) {
-         this.e131.setChannelData(controllerAddress, universe, channelIndex, pixelColors);
+          // send data for all pixel that have channels (> -1)
+          if (channelIndex >= 0) {
+           this.e131.setChannelData(controllerAddress, universe, channelIndex, pixelColors);
+          }
         }
       }
     }
