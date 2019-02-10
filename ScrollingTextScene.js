@@ -99,10 +99,16 @@ class ScrollingTextScene {
     // console.log("scrollingTextScene pause: " + this.formatMessage())
     clearTimeout(this.runningTimer);
 
-    if (this.messageScroller){
-      this.messageScroller.stop();
-      this.messageScroller = null;
+    if (this.gridzillaTextScroller){
+      this.gridzillaTextScroller.stop();
+      this.gridzillaTextScroller = null;
     }
+
+    if (this.facadeTextScroller){
+      this.facadeTextScroller.stop();
+      this.facadeTextScroller = null;
+    }
+
     this.paused = true;
     this.onPaused();
   }
@@ -114,17 +120,6 @@ class ScrollingTextScene {
 
   onComplete() {
     this.lastRunTime = Date.now();
-
-    if (this.gridzillaTextScroller){
-      this.gridzillaTextScroller.stop();
-      this.gridzillaTextScroller = null;
-    }
-
-    if (this.facadeTextScroller){
-      this.facadeTextScroller.stop();
-      this.facadeTextScroller = null;
-    }
-
     this.pause();
     return;
   }

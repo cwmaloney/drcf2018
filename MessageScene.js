@@ -4,19 +4,27 @@ const Color = require("./Color.js");
 const { colorNameToRgb } = require("./config-colors.js");
 const { messages } = require("./config-messages.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
+const HorizontalScroller = require("./HorizontalScroller.js");
 
+const sampleMessages = [
+  { sample: true, recipient: "Sheldon", message: "I love you.", sender: "Amy" },
+  { sample: true, recipient: "Lucy", message: "Will you be my Valentine?", sender: "Charlie Brown" },
+  { sample: true, recipient: "Penny", message: "Will you be my Valentine?", sender: "Leonard" }, 
+  { sample: true, recipient: "Bernadette", message: "Will you marry me?", sender: "Howard" }
+];
 
 //////////////////////////////////////////////////////////////////////////////
 const RequestQueue = require("./RequestQueue.js");
 
 class MessageScene {
 
-  constructor(gridzilla, onPaused, nameManager, configuration) {
+  constructor(gridzilla, facade, onPaused, nameManager, configuration, gridzillaConfiguration, facadeConfiguration) {
     this.gridzilla = gridzilla;
+    this.facade = facade;
     this.onPaused = onPaused;
     this.nameManager = nameManager;
 
-    this.configure(configuration);
+    this.configure(configuration, gridzillaConfiguration, facadeConfiguration);
   
     console.log(`loading message queue  @${new Date()} ...`);
     this.messageQueue = new RequestQueue("Message");
@@ -26,16 +34,41 @@ class MessageScene {
     this.paused = true;
   }
 
-  configure(configuration) {
-    const {
-      perMessagePeriod = 10000,
-      period = 60000,
-    } = configuration;
 
-    this.perMessagePeriod = perMessagePeriod;
-    this.period = period;
-  }
+  configure(configuration, gridzillaConfiguration, facadeConfiguration) {
+    const defaults = {
+      period: 60000,          // time scene should run
+      perMessagePeriod: 12000 // time a message should "run"  
+    };
 
+    const defaultGridzillaConfiguration = {
+      color: new Color(255, 255, 255),
+      backgroundColor: new Color(0, 0, 0),
+
+      speed: 30, // speed is ms between moves
+
+      typeface: "Littera",
+      fontSize: 11,
+    };
+
+    const defaultFacadeConfiguration = {
+      color: new Color(255, 255, 255),
+      backgroundColor: new Color(0, 0, 0),
+
+      speed: 30, // speed is ms between moves
+
+      typeface: "Littera",
+      fontSize: 11,
+    };
+
+    this.configuration = Object.assign(defaults, configuration);
+    this.facadeConfiguration = Object.assign(defaultFacadeConfiguration, facadeConfiguration);
+    this.gridzillaConfiguration = Object.assign(defaultGridzillaConfiguration, gridzillaConfiguration);
+
+    this.facadeConfiguration.font = new Font(this.facadeConfiguration.typeface, this.facadeConfiguration.fontSize, this.facadeConfiguration.color);
+    this.gridzillaConfiguration.font = new Font(this.gridzillaConfiguration.typeface, this.gridzillaConfiguration.fontSize, this.gridzillaConfiguration.color);
+ }
+  
   getRequestCount() {
     return this.messageQueue.nextId;
   }
@@ -60,6 +93,7 @@ class MessageScene {
     console.log("MessageScene run");
     this.paused = false;
     this.startTime = Date.now();
+    this.messageCountForThisPeriod = 0;
     this.onTimer();
   }
 
@@ -71,6 +105,17 @@ class MessageScene {
       // when the scene restarts
       this.currentMessage.startTime = undefined;
     }
+
+    // if (this.gridzillaTextScroller){
+    //   this.gridzillaTextScroller.stop();
+    //   this.gridzillaTextScroller = null;
+    // }
+
+    if (this.facadeTextScroller){
+      this.facadeTextScroller.stop();
+      this.facadeTextScroller = null;
+    }
+
     this.paused = true;
     this.onPaused();
   }
@@ -98,39 +143,81 @@ class MessageScene {
       if (!this.currentMessage.startTime) {
         console.log(`MessageScene restarting=${this.formatMessage(this.currentMessage)} id=${this.currentMessage.id}`);
         this.currentMessage.startTime = Date.now();
+        this.displayMessage();
       }
-      if (this.currentMessage.startTime + this.perMessagePeriod <= nowTime) {
-        this.currentMessage.endTime = nowTime;
-        this.currentMessage.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
-        this.messageQueue.writeRequests();
+      if (this.currentMessage.startTime + this.configuration.perMessagePeriod <= nowTime) {
+        if (!this.currentMessage.sample) {
+          this.currentMessage.endTime = nowTime;
+          this.currentMessage.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
+          this.messageQueue.writeRequests();
+        }
         this.currentMessage = null;
       }
     }
     if (!this.currentMessage) {
       this.currentMessage = this.messageQueue.getNextRequest();
       if (this.currentMessage == null) {
-        this.pause();
-        return;
+        if (this.messageCountForThisPeriod === 0) {
+          const index = Math.floor(Math.random()*4);
+          this.currentMessage = sampleMessages[index];
+        } else {
+          this.pause();
+          return;
+        }
       }
       console.log(`MessageScene starting=${this.formatMessage(this.currentMessage)} id=${this.currentMessage.id}`);
       this.currentMessage.startTime = Date.now();
+      this.displayMessage();
     }
+  }
+
+  displayMessage() {
+    this.messageCountForThisPeriod++;
 
     const message = this.currentMessage;
     const colorsMatch = (message.color == message.backgroundColor);
     const color = this.pickColor(message.color, new Color(240, 240, 240), colorsMatch);
     const backgroundColor = this.pickColor(message.backgroundColor, new Color(0, 0, 0), colorsMatch);
 
-    // redraw every time to be safe
-    let frameBuffer = BitmapBuffer.fromNew(168, 36, backgroundColor);
+    let timeRequired = 0;
+    if (this.gridzilla) {
+      this.displayMessageOnGridzilla(message, color, backgroundColor);
+      timeRequired = Math.max(timeRequired, this.configuration.perMessagePeriod);
+    }
+    if (this.facade) {
+      const text = "              " + message.recipient + ", " + message.message + "  " + message.sender + "     ";
+
+      this.facadeTextScroller = this.displayMessageOnFacade(text, color, backgroundColor, this.facade, this.facadeConfiguration);
+      const scrollTime = this.getScrollTime(text, this.facadeConfiguration.font, this.facade, this.facadeConfiguration)
+      // for the timer required, add 2 seconds (for safety) and display message twice
+      timeRequired = Math.max(timeRequired, (scrollTime + 2000)*2.5);
+    }
+
+    const timeout = Math.min(timeRequired, this.configuration.period);
+    this.runningTimer = setTimeout(this.onTimer.bind(this), timeout);
+  }
+
+  displayMessageOnGridzilla(message, color, backgroundColor) {
+    let frameBuffer = BitmapBuffer.fromNew(this.gridzilla.width, this.gridzilla.height, backgroundColor);
 
     frameBuffer.print3Lines("To:" + message.recipient,
                             message.message,
                             "From:" + message.sender,
                             new Font("Littera", 11, color));
     this.gridzilla.transformScreen(frameBuffer);
+  }
 
-    this.runningTimer = setTimeout(this.onTimer.bind(this), 2000);
+  displayMessageOnFacade(text, color, backgroundColor, output, outputConfiguration) {
+    const frameBuffer = BitmapBuffer.fromNew(output.width, output.height, outputConfiguration.backgroundColor);
+
+    const scroller = new HorizontalScroller(0, outputConfiguration.scrollTextTop, frameBuffer, output);
+    scroller.scrollText(text, outputConfiguration.font, outputConfiguration.speed);
+
+    return scroller;
+  }
+
+  getScrollTime(message, font, output, outputConfiguration) {
+    return HorizontalScroller.calculateImageScrollTime(message, font, output.width, outputConfiguration.speed);
   }
 
   //////////////////////////////////////////////////////////////////////////////

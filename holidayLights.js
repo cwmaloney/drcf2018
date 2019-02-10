@@ -343,16 +343,16 @@ function configureValentineScenes(gridzilla, facade) {
   // create scenes
   const welcomeScene = new ScrollingTextScene(gridzilla, facade, onPaused,
     { scrollText:
-      "         Happy Valentine's Day!    Visit farmsteadlights.com to display your Valentine here.             " },
+      "             Happy Valentine's Day!    Visit farmsteadlights.com to display your Valentine here.             " },
     Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 0, 0)} ),
     Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 0, 0)} )
   );
 
-  //messagesScene = new MessageScene(facade, onPaused, nameManager, {});
+  const messagesScene = new MessageScene(gridzilla, facade, onPaused, nameManager, {}, {}, facadeDefaults.scrollSceneDefaultsNoHeader);
 
   scenes = [
     welcomeScene,
-    //messagesScene
+    messagesScene
   ];
 
 }
