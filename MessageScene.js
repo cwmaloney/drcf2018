@@ -108,6 +108,13 @@ class MessageScene {
       this.currentMessage.startTime = undefined;
     }
 
+    this.killScrollers();
+
+    this.paused = true;
+    this.onPaused();
+  }
+
+  killScrollers() {
     // if (this.gridzillaTextScroller){
     //   this.gridzillaTextScroller.stop();
     //   this.gridzillaTextScroller = null;
@@ -117,9 +124,6 @@ class MessageScene {
       this.facadeTextScroller.stop();
       this.facadeTextScroller = null;
     }
-
-    this.paused = true;
-    this.onPaused();
   }
 
   forcePause() {
@@ -153,6 +157,7 @@ class MessageScene {
           this.currentMessage.processedTimestamp = TimestampUtilities.getNowTimestampNumber();
           this.messageQueue.writeRequests();
         }
+        this.killScrollers();
         this.currentMessage = null;
       }
     }
@@ -189,7 +194,7 @@ class MessageScene {
     if (this.facade) {
       const text = "              " + message.recipient + ", " + message.message + "  " + message.sender + "     ";
 
-      this.facadeTextScroller = this.displayMessageOnFacade(text, color, backgroundColor, this.facade, this.facadeConfiguration);
+      this.facadeTextScroller = this.displayMessageOnFacade(text, color, backgroundColor);
       const scrollTime = this.getScrollTime(text, this.facadeConfiguration.font, this.facade, this.facadeConfiguration)
       // for the timer required, add 2 seconds (for safety) and display message twice
       timeRequired = Math.max(timeRequired, (scrollTime + 2000)*2.5);
@@ -209,8 +214,8 @@ class MessageScene {
     this.gridzilla.transformScreen(frameBuffer);
   }
 
-  displayMessageOnFacade(text, color, backgroundColor, output, outputConfiguration) {
-    const frameBuffer = BitmapBuffer.fromNew(output.width, output.height, outputConfiguration.backgroundColor);
+  displayMessageOnFacade(text, color, backgroundColor) {
+    const frameBuffer = BitmapBuffer.fromNew(this.facade.width, this.facade.height, backgroundColor);
 
     if (this.configuration.imageNames && this.configuration.imageNames.length) {
       const index = Math.floor(Math.random()*this.configuration.imageNames.length)
@@ -220,8 +225,8 @@ class MessageScene {
           frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2 - 6);
     }
  
-    const scroller = new HorizontalScroller(0, outputConfiguration.scrollTextTop, frameBuffer, output);
-    scroller.scrollText(text, outputConfiguration.font, outputConfiguration.speed);
+    const scroller = new HorizontalScroller(0, this.facadeConfiguration.scrollTextTop, frameBuffer, this.facade);
+    scroller.scrollText(text, this.facadeConfiguration.font, this.facadeConfiguration.speed);
 
     return scroller;
   }
