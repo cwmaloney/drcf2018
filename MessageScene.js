@@ -5,6 +5,7 @@ const { colorNameToRgb } = require("./config-colors.js");
 const { messages } = require("./config-messages.js");
 const TimestampUtilities = require("./TimestampUtilities.js");
 const HorizontalScroller = require("./HorizontalScroller.js");
+const ImageManager = require("./ImageManager.js");
 
 const sampleMessages = [
   { sample: true, recipient: "Sheldon", message: "I love you.", sender: "Amy" },
@@ -37,8 +38,9 @@ class MessageScene {
 
   configure(configuration, gridzillaConfiguration, facadeConfiguration) {
     const defaults = {
-      period: 60000,          // time scene should run
-      perMessagePeriod: 12000 // time a message should "run"  
+      period: 60000,            // time scene should run
+      perMessagePeriod: 12000,  // time a message should "run"
+      imagesNames: []
     };
 
     const defaultGridzillaConfiguration = {
@@ -210,6 +212,14 @@ class MessageScene {
   displayMessageOnFacade(text, color, backgroundColor, output, outputConfiguration) {
     const frameBuffer = BitmapBuffer.fromNew(output.width, output.height, outputConfiguration.backgroundColor);
 
+    if (this.configuration.imageNames && this.configuration.imageNames.length) {
+      const index = Math.floor(Math.random()*this.configuration.imageNames.length)
+      const image = ImageManager.get(this.configuration.imageNames[index]);
+    
+      frameBuffer.blit(image, frameBuffer.image.bitmap.width / 2 - image.bitmap.width / 2, 
+          frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2 - 6);
+    }
+ 
     const scroller = new HorizontalScroller(0, outputConfiguration.scrollTextTop, frameBuffer, output);
     scroller.scrollText(text, outputConfiguration.font, outputConfiguration.speed);
 

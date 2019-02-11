@@ -18,7 +18,10 @@ const messages = [
   "Live Long and Prosper",
   "Happy Festivus",
   "Happy New Year",
-  "You are my BFF"];
+  "You are my BFF",
+  "Will you be my Valentine?",
+  "Happy Valentine's Day"
+];
 
 
 
