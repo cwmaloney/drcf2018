@@ -316,7 +316,7 @@ function configureHolidayScenes(gridzilla) {
     + " Ken Vrana,"
     + " Elliot Maloney,"
     + " Deanna Rose Farmstead Team: Virgil, Laura, Kathi, Jerry, Orrin, Janet, Sarah, Amanda, Brett, & Cindy,"
-    + " & OP IT's John Webb"
+    + " & John Webb"
     + "    ";
 
   const thankYouScene = new ScrollingTextScene(gridzilla, onPaused,
