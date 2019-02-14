@@ -229,7 +229,9 @@ class MessageScene {
     }
  
     const scroller = new HorizontalScroller(0, this.facadeConfiguration.scrollTextTop, frameBuffer, this.facade);
-    scroller.scrollText(text, this.facadeConfiguration.font, this.facadeConfiguration.speed);
+    const font = this.facadeConfiguration.font;
+    const textFont = new Font(font.typeface, font.size, color);
+    scroller.scrollText(text, textFont, this.facadeConfiguration.speed);
 
     return scroller;
   }
