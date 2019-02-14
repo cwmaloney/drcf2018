@@ -17,12 +17,15 @@ class NameManager {
 
   // isNameValid supports comma separated names
   isNameValid(nameInput) {
-    const names = nameInput.split(',');
-    for (let name of names) {
-      let temp = name.trim();
-      if ((this.additionalNames.get(temp) === undefined)
-        && (this.censusNames.get(temp) === undefined)) {
-          return false;
+    const list1 = nameInput.split(',');
+    for (let element1 of list1) {
+      const list2 = element1.split(" and ");
+      for (let name of list2) {
+        let temp = name.trim();
+        if ((this.additionalNames.get(temp) === undefined)
+          && (this.censusNames.get(temp) === undefined)) {
+            return false;
+          }
         }
     }
     return true;

@@ -5,6 +5,7 @@ const Color = require("./Color.js");
 //const Jimp = require('jimp');
 const HorizontalScroller = require("./HorizontalScroller.js");
 // const TimestampUtilities = require("./TimestampUtilities.js");
+const ImageManager = require("./ImageManager.js");
 
 class ScrollingTextScene {
 
@@ -21,6 +22,7 @@ class ScrollingTextScene {
     const defaults = {
       period: 60000, // time scene should run
 
+      imageNames: [],
       headerText: null,
       scrollText: null,
       minimumInterval: 0, // this minumum intervale between repeating this message
@@ -81,33 +83,61 @@ class ScrollingTextScene {
     this.lastRunTime = nowTime;
     }
 
-    let timeRequired = 0;
-    if (this.gridzilla) {
-      this.gridzillaTextScroller = this.showText(this.gridzilla, this.gridzillaConfiguration);
-      timeRequired = Math.max(timeRequired, this.getScrollTime(this.gridzilla, this.gridzillaConfiguration) + 1000); // add a second for "rounding"
-    }
-    if (this.facade) {
-      this.facadeTextScroller = this.showText(this.facade, this.facadeConfiguration);
-      timeRequired = Math.max(timeRequired, this.getScrollTime(this.facade, this.facadeConfiguration) + 1000); // add a second for "rounding"
-    }
+    const facadeTimeRequired = this.displayTextOnFacade();
+    const gridzillaTimeRequired = this.displayTextOnGridzilla();
+    const timeRequired = Math.max(facadeTimeRequired, gridzillaTimeRequired);
 
     const timeout = Math.min(timeRequired, this.configuration.period);
     this.runningTimer = setTimeout(this.onComplete.bind(this), timeout);
+  }
+
+  displayTextOnFacade() {
+    let timeRequired = 0;
+    if (this.facade) {
+      const frameBuffer = BitmapBuffer.fromNew(this.facade.width, this.facade.height, this.facadeConfiguration.backgroundColor);
+
+      if (this.configuration.imageNames && this.configuration.imageNames.length) {
+        const index = Math.floor(Math.random()*this.configuration.imageNames.length)
+        const image = ImageManager.get(this.configuration.imageNames[index]);
+      
+        frameBuffer.blit(image, frameBuffer.image.bitmap.width / 2 - image.bitmap.width / 2, 
+            frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2 - 6);
+      }
+  
+      this.facadeTextScroller = this.showText(this.facade, this.facadeConfiguration, frameBuffer);
+      timeRequired = this.getScrollTime(this.facade, this.facadeConfiguration) + 1000; // add a second for "rounding"
+    }
+    return timeRequired;
+  }
+
+  displayTextOnGridzilla() {
+    let timeRequired = 0;
+    if (this.gridzilla) {
+      const frameBuffer = BitmapBuffer.fromNew(this.gridzilla.width, this.gridzilla.height, this.gridzillaConfiguration.backgroundColor);
+
+      this.gridzillaTextScroller = this.showText(this.gridzilla, this.gridzillaConfiguration, frameBuffer);
+      timeRequired = this.getScrollTime(this.gridzilla, this.gridzillaConfiguration) + 1000; // add a second for "rounding"
+    }
+    return timeRequired;   
+  }
+
+  showText(output, outputConfiguration, frameBuffer){
+    if (this.configuration.headerText && this.configuration.headerText != "") {
+      frameBuffer.print1Line(this.configuration.headerText, outputConfiguration.font, outputConfiguration.headerTextTop);
+      output.transformScreen(frameBuffer);
+    }
+
+    const scroller = new HorizontalScroller(0, outputConfiguration.scrollTextTop, frameBuffer, output);
+    scroller.scrollText(this.configuration.scrollText, outputConfiguration.font, outputConfiguration.speed);
+
+    return scroller;
   }
 
   pause() {
     // console.log("scrollingTextScene pause: " + this.formatMessage())
     clearTimeout(this.runningTimer);
 
-    if (this.gridzillaTextScroller){
-      this.gridzillaTextScroller.stop();
-      this.gridzillaTextScroller = null;
-    }
-
-    if (this.facadeTextScroller){
-      this.facadeTextScroller.stop();
-      this.facadeTextScroller = null;
-    }
+    this.killScrollers();
 
     this.paused = true;
     this.onPaused();
@@ -118,24 +148,22 @@ class ScrollingTextScene {
     this.pause();
   }
 
+  killScrollers() {
+    if (this.gridzillaTextScroller){
+      this.gridzillaTextScroller.stop();
+      this.gridzillaTextScroller = null;
+    }
+
+    if (this.facadeTextScroller){
+      this.facadeTextScroller.stop();
+      this.facadeTextScroller = null;
+    }
+  }
+
   onComplete() {
     this.lastRunTime = Date.now();
     this.pause();
     return;
-  }
-
-  showText(output, outputConfiguration){
-    const frameBuffer = BitmapBuffer.fromNew(output.width, output.height, outputConfiguration.backgroundColor);
-
-    if (this.configuration.headerText && this.configuration.headerText != "") {
-      frameBuffer.print1Line(this.configuration.headerText, outputConfiguration.font, outputConfiguration.headerTextTop);
-      output.transformScreen(frameBuffer);
-    }
-
-    const scroller = new HorizontalScroller(0, outputConfiguration.scrollTextTop, frameBuffer, output);
-    scroller.scrollText(this.configuration.scrollText, outputConfiguration.font, outputConfiguration.speed);
-
-    return scroller;
   }
 
   getScrollTime(output, outputConfiguration) {

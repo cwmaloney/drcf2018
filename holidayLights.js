@@ -340,22 +340,25 @@ function configureHolidayScenes(gridzilla) {
 function configureValentineScenes(gridzilla, facade) {
   ImageScene.initialize();
 
+  const vdayImageNames = [
+    "couple and hearts.png",
+    "heart 25x20.png",
+    "rose 38x38.png",
+    "woodstock 38x38.png"
+  ];
+
   // create scenes
   const welcomeScene = new ScrollingTextScene(gridzilla, facade, onPaused,
-    { scrollText:
+    { imageNames: vdayImageNames,
+      scrollText:
       "             Happy Valentine's Day!    Visit farmsteadlights.com to display your Valentine here.             " },
-    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} ),
-    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} )
+      Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} ),
+      Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} )
   );
 
   messagesScene = new MessageScene(gridzilla, facade, onPaused, nameManager,
     {
-      imageNames: [
-        "couple and hearts.png",
-        "heart 25x20.png",
-        "rose 38x38.png",
-        "woodstock 38x38.png"
-      ]
+      imageNames: vdayImageNames
     },
     {}, facadeDefaults.scrollSceneDefaultsNoHeader);
 

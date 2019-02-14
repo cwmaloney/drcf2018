@@ -10,8 +10,8 @@ const ImageManager = require("./ImageManager.js");
 const sampleMessages = [
   { sample: true, recipient: "Sheldon", message: "I love you.", sender: "Amy" },
   { sample: true, recipient: "Lucy", message: "Will you be my Valentine?", sender: "Charlie Brown" },
-  { sample: true, recipient: "Penny", message: "Will you be my Valentine?", sender: "Leonard" }, 
-  { sample: true, recipient: "Bernadette", message: "Will you marry me?", sender: "Howard" }
+  { sample: true, recipient: "Everyone", message: "Live Long and Propsper", sender: "Spock" }, 
+  { sample: true, recipient: "Sally", message: "Will you be my Valentine?", sender: "Harry" }
 ];
 
 //////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ class MessageScene {
     const defaults = {
       period: 60000,            // time scene should run
       perMessagePeriod: 12000,  // time a message should "run"
-      imagesNames: []
+      imageNames: []
     };
 
     const defaultGridzillaConfiguration = {
@@ -182,9 +182,11 @@ class MessageScene {
     this.messageCountForThisPeriod++;
 
     const message = this.currentMessage;
-    const colorsMatch = (message.color == message.backgroundColor);
-    const color = this.pickColor(message.color, new Color(240, 240, 240), colorsMatch);
-    const backgroundColor = this.pickColor(message.backgroundColor, new Color(0, 0, 0), colorsMatch);
+    let color = message.color;
+    let backgroundColor = new Color(0, 0, 0);
+    //const backgroundColor = this.pickColor(message.backgroundColor, new Color(0, 0, 0), colorsMatch);
+    const colorsMatch = (color == backgroundColor);
+    color = this.pickColor(message.color, new Color(240, 240, 240), colorsMatch);
 
     let timeRequired = 0;
     if (this.gridzilla) {
@@ -192,7 +194,8 @@ class MessageScene {
       timeRequired = Math.max(timeRequired, this.configuration.perMessagePeriod);
     }
     if (this.facade) {
-      const text = "              " + message.recipient + ", " + message.message + "  " + message.sender + "     ";
+      const separator = (message.message.endsWith("?")) ? " " : ", "
+      const text = "              " + message.recipient + ", " + message.message + separator + message.sender + "     ";
 
       this.facadeTextScroller = this.displayMessageOnFacade(text, color, backgroundColor);
       const scrollTime = this.getScrollTime(text, this.facadeConfiguration.font, this.facade, this.facadeConfiguration)
