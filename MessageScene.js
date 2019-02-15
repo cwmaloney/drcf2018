@@ -11,7 +11,7 @@ const sampleMessages = [
   { sample: true, recipient: "Rachel", message: "Will you be my Valentine?", sender: "Chris" },
   { sample: true, recipient: "Sheldon", message: "I love you", sender: "Amy" },
   { sample: true, recipient: "Lucy", message: "Will you be my Valentine?", sender: "Charlie" },
-  { sample: true, recipient: "Everyone", message: "Live Long and Propsper", sender: "Spock" }, 
+  { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock" }, 
   { sample: true, recipient: "Mom", message: "Happy Valentine's Day", sender: "Kyle" }
 ];
 
