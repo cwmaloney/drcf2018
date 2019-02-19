@@ -122,7 +122,7 @@ class ScrollingTextScene {
   }
 
   showText(output, outputConfiguration, frameBuffer){
-    if (this.configuration.headerText && this.configuration.headerText != "") {
+    if (outputConfiguration.headerTextTop && this.configuration.headerText) {
       frameBuffer.print1Line(this.configuration.headerText, outputConfiguration.font, outputConfiguration.headerTextTop);
       output.transformScreen(frameBuffer);
     }
