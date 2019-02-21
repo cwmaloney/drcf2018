@@ -391,7 +391,7 @@ function configureEosScenes(gridzilla, facade) {
 
   const thankYouScene = new ScrollingTextScene(gridzilla, facade, onPaused,
     {
-      headerText: "Thanks!", scrollText: teamMembers, minumumInterval: 5*60*1000
+      period: 180*60*1000, headerText: "Thanks!", scrollText: teamMembers, minimumInterval: 5*60*1000
     },
     Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader, {color: new Color(255, 200, 200)} ),
     Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader, {color: new Color(255, 200, 200)} )
