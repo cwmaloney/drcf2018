@@ -15,7 +15,7 @@
     "test": "mocha ./mochaTests/**/*.js"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "jimp": "^0.5.6",
