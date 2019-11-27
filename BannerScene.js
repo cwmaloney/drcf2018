@@ -15,7 +15,7 @@ class BannerScene {
 
   configure(configuration) {
     const {
-      period = 3000,
+      period = 5000,
 
       line1 = null,
       line2 = null,

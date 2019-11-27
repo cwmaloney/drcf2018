@@ -25,7 +25,7 @@ const BannerScene = require("./BannerScene.js");
 const MessageScene = require("./MessageScene.js");
 const CheerScene = require("./CheerScene.js");
 const ImageScene = require("./ImageScene.js");
-const SnakesScene = require("./SnakesScene.js");
+// const SnakesScene = require("./SnakesScene.js");
 const ScrollingTextScene = require("./ScrollingTextScene.js");
 
 //////////////////////////////////////////////////////////////////////////////
@@ -280,17 +280,19 @@ const facadeDefaults = {
 };
 
 const teamMembers = 
-"   Mark Callegari - the creator of Holiday Lights,"
+"   Mark Callegari - The Creator of Holiday Lights,"
 + " Chris Callegari,"
-+ " Chris & Rachel Maloney,"
-+ " Jolt Lighting,"
 + " Blake Stewart,"
-+ " Enerfab Midwest, Brian Jackson, Steve Bullard,"
-+ " Herc Rentals,"
-+ " Mike & Jody McCamon,"
-+ " Ken Vrana,"
-+ " Elliot Maloney,"
-+ " Deanna Rose Farmstead Team: Virgil, Laura, Kathi, Jerry, Orrin, Janet, Sarah, Amanda, Brett, & Cindy,"
++ " Chris & Rachel Maloney,"
++ " Ken & Min Vrana,"
++ " Kyle Weafer,"
++ " Foley Equipment"
++ " Pretech Precast Concrete"
++ " Enerfab Midwest (Brian Jackson, Steve Bullard),"
++ " Jolt Lighting,"
++ " Gieske Custom Metal Fabricators,"
++ " The Farmstead Team:"
++ " Jerry, Walt, Virgil, Kathi, Laurie, Orrin, Matt"
 + " & John Webb"
 + "    ";
 
@@ -299,39 +301,83 @@ function configureHolidayScenes(gridzilla) {
 
   // create scenes
   const welcomeBanner = new BannerScene(gridzilla, onPaused,
-    { line1: "Welcome to", line2: "Holiday Lights", line3: "on Farmstead Lane   " });
+    {
+      line1: "Welcome to",
+      line2: "Holiday Lights",
+      line3: "on Farmstead Lane   ",
+      color: new Color(colorNameToRgb["White"])
+    });
 
   const instructionsBanner = new BannerScene(gridzilla, onPaused,
-    { line1: "Tune to 90.5", line2: "to hear the music.", line3: "Please turn off your lights.", color: new Color(colorNameToRgb["White"]) } );
-  const instructions2Banner = new BannerScene(gridzilla, onPaused,
-    { line1: ">>> Gridzilla <<<", line2: "Visit farmsteadlights.com", line3: "to display messages here." });
+    {
+      line1: "Tune to 90.5",
+      line2: "to hear the music.",
+      line3: "Please turn off your lights.",
+      color: new Color(colorNameToRgb["White"])
+    });
 
-  messagesScene = new MessageScene(gridzilla, onPaused, nameManager, {});
+  const instructions2Banner = new BannerScene(gridzilla, onPaused,
+    {
+      line1: "Visit farmsteadlights.com",
+      line2: "to display messages here.",
+      line3: "Thanks for coming!",
+      color: new Color(colorNameToRgb["White"])
+    });
+
+    
+  const holidaySampleMessages = [
+    { sample: true, recipient: "Everyone", message: "Happy Holidays", sender: "the Holiday Lights Team" },
+    { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock" }, 
+    { sample: true, recipient: "Mila and Emmy", message: "Merry Christmas", sender: "Rachel and Chris" }, 
+  ];
+
+  messagesScene = new MessageScene(gridzilla, null, onPaused, nameManager,
+    {
+      sampleMessages: holidaySampleMessages
+    });
+
   cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
   //show special images
-  const imageScene1 = new ImageScene(gridzilla, onPaused, { period: 10000, images:["Go Chiefs.png"]});
+
+  // const imageScene1 = new ImageScene(gridzilla, onPaused,
+  //   { period: 10000, images:["Go Chiefs.png"]});
+
   //show standard images
-  const imageScene2 = new ImageScene(gridzilla, onPaused, { period: 10000 });
+  const imageScene2 = new ImageScene(gridzilla, onPaused,
+    { period: 10000 });
 
 
-  const preSnakesBanner = new BannerScene(gridzilla, onPaused,
-    { line1: "Let's Play Snakes!", line2: "Go to farmsteadlights.com", line3: "to play snakes here.", color: new Color(colorNameToRgb["Orange"]) } );
-  const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
+  // const preSnakesBanner = new BannerScene(gridzilla, onPaused,
+  //   {
+  //     line1: "Let's Play Snakes!",
+  //     line2: "Go to farmsteadlights.com",
+  //     line3: "to play snakes here.",
+  //     color: new Color(colorNameToRgb["Orange"])
+  //   } );
+  // const snakeScene = new SnakesScene(gridzilla, onPaused, nameManager, io, {});
 
 
   const thankYouScene = new ScrollingTextScene(gridzilla, null, onPaused,
-    { headerText: "Thank you team!", scrollText: teamMembers, minumumInterval: 10*60*1000 });
-
+    {
+      period: 180*60*1000, headerText: "Thanks!",
+      scrollText: teamMembers, minimumInterval: 5*60*1000
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      {color: new Color(255, 200, 200)} ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      {color: new Color(255, 200, 200)} )
+  );
+  
   scenes = [
     welcomeBanner,
     instructionsBanner,
     instructions2Banner,
     messagesScene,
     cheersScene,
-    imageScene1,
+    // imageScene1,
     imageScene2,
-    preSnakesBanner,
-    snakeScene,
+    // preSnakesBanner,
+    // snakeScene,
     thankYouScene
   ];
 
@@ -340,26 +386,40 @@ function configureHolidayScenes(gridzilla) {
 function configureValentineScenes(gridzilla, facade) {
   ImageScene.initialize();
 
-  const vdayImageNames = [
+  const vDayImageNames = [
     "couple and hearts.png",
     "heart 25x20.png",
     "rose 38x38.png",
     "woodstock 38x38.png"
   ];
 
+  const vDaySampleMessages = [
+    { sample: true, recipient: "Rachel", message: "Will you be my Valentine?", sender: "Chris" },
+    { sample: true, recipient: "Sheldon", message: "I love you", sender: "Amy" },
+    { sample: true, recipient: "Lucy", message: "Will you be my Valentine?", sender: "Charlie" },
+    { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock" }, 
+    { sample: true, recipient: "Mom", message: "Happy Valentine's Day", sender: "Kyle" }
+  ];
+  
   // create scenes
   const welcomeScene = new ScrollingTextScene(gridzilla, facade, onPaused,
     {
-      imageNames: vdayImageNames,
-      scrollText: "             Happy Valentine's Day!    Visit farmsteadlights.com to display your Valentine here.             "
+      imageNames: vDayImageNames,
+      scrollText: "             "
+        + " Happy Valentine's Day!    "
+        + " Visit farmsteadlights.com to display your Valentine here."
+        + "             "
     },
-    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} ),
-    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} )
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader,
+      {color: new Color(255, 200, 200)} ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader,
+      {color: new Color(255, 200, 200)} )
   );
 
   messagesScene = new MessageScene(gridzilla, facade, onPaused, nameManager,
     {
-      imageNames: vdayImageNames
+      imageNames: vDayImageNames,
+      sampleMessages: vDaySampleMessages    
     },
     {},
     facadeDefaults.scrollSceneDefaultsNoHeader
@@ -383,18 +443,27 @@ function configureEosScenes(gridzilla, facade) {
   const eosMessageScene = new ScrollingTextScene(gridzilla, facade, onPaused,
     {
       imageNames: eosImageNames,
-      scrollText: "             Thank you for visiting the Holiday Lights show.  The show has ended but Deanna Rose Children's Farmstead will reopen April 1st!                "
+      scrollText: "             "
+       + "Thank you for visiting the Holiday Lights show.  "
+       + "The show has ended for the season. "
+       + "Deanna Rose Children's Farmstead will reopen April 1st!"
+       + "                "
     },
-    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} ),
-    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader, {color: new Color(255, 200, 200)} )
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader,
+      {color: new Color(255, 200, 200)} ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader,
+      {color: new Color(255, 200, 200)} )
   );
 
   const thankYouScene = new ScrollingTextScene(gridzilla, facade, onPaused,
     {
-      period: 180*60*1000, headerText: "Thanks!", scrollText: teamMembers, minimumInterval: 5*60*1000
+      period: 180*60*1000, headerText: "Thanks!",
+      scrollText: teamMembers, minimumInterval: 5*60*1000
     },
-    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader, {color: new Color(255, 200, 200)} ),
-    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader, {color: new Color(255, 200, 200)} )
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      {color: new Color(255, 200, 200)} ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      {color: new Color(255, 200, 200)} )
   );
 
   scenes = [
@@ -419,7 +488,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
     // configure the scenes
     let show = EnvConfig.get().show;
     if (!show) {
-      show = "EOS";
+      show = "Holiday";
     }
     if (show === "Valentine")
       configureValentineScenes(gridzilla, facade);

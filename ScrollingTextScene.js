@@ -25,7 +25,7 @@ class ScrollingTextScene {
       imageNames: [],
       headerText: null,
       scrollText: null,
-      minimumInterval: 0, // this minimum intervale between repeating this message
+      minimumInterval: 0, // this minimum interval between repeating this message
     };
 
     const defaultGridzillaConfiguration = {

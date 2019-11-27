@@ -7,14 +7,6 @@ const TimestampUtilities = require("./TimestampUtilities.js");
 const HorizontalScroller = require("./HorizontalScroller.js");
 const ImageManager = require("./ImageManager.js");
 
-const sampleMessages = [
-  { sample: true, recipient: "Rachel", message: "Will you be my Valentine?", sender: "Chris" },
-  { sample: true, recipient: "Sheldon", message: "I love you", sender: "Amy" },
-  { sample: true, recipient: "Lucy", message: "Will you be my Valentine?", sender: "Charlie" },
-  { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock" }, 
-  { sample: true, recipient: "Mom", message: "Happy Valentine's Day", sender: "Kyle" }
-];
-
 //////////////////////////////////////////////////////////////////////////////
 const RequestQueue = require("./RequestQueue.js");
 
@@ -41,7 +33,8 @@ class MessageScene {
     const defaults = {
       period: 60000,            // time scene should run
       perMessagePeriod: 12000,  // time a message should "run"
-      imageNames: []
+      imageNames: [],
+      sampleMessages: []
     };
 
     const defaultGridzillaConfiguration = {
@@ -166,8 +159,8 @@ class MessageScene {
       this.currentMessage = this.messageQueue.getNextRequest();
       if (this.currentMessage == null) {
         if (this.messageCountForThisPeriod === 0) {
-          const index = Math.floor(Math.random()*4);
-          this.currentMessage = sampleMessages[index];
+          const index = Math.floor(Math.random()*this.configuration.sampleMessages.length);
+          this.currentMessage = this.configuration.sampleMessages[index];
         } else {
           this.pause();
           return;
