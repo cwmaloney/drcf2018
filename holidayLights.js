@@ -280,7 +280,7 @@ const facadeDefaults = {
 };
 
 const teamMembers = 
-"   Mark Callegari - The Creator of Holiday Lights,"
+  "   Mark Callegari - The Creator of Holiday Lights,"
 + " Chris Callegari,"
 + " Blake Stewart,"
 + " Chris & Rachel Maloney,"
@@ -289,6 +289,7 @@ const teamMembers =
 + " Foley Equipment"
 + " Pretech Precast Concrete"
 + " Enerfab Midwest (Brian Jackson, Steve Bullard),"
++ " T.J. Kilian and KJO Media, "
 + " Jolt Lighting,"
 + " Gieske Custom Metal Fabricators,"
 + " The Farmstead Team:"
