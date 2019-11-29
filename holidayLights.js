@@ -327,9 +327,20 @@ function configureHolidayScenes(gridzilla) {
 
     
   const holidaySampleMessages = [
-    { sample: true, recipient: "Everyone", message: "Happy Holidays", sender: "the Holiday Lights Team" },
-    { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock" }, 
-    { sample: true, recipient: "Mila and Emmy", message: "Merry Christmas", sender: "Rachel and Chris" }, 
+    { sample: true,
+      recipient: "Everyone",
+      message: "Happy Holidays",
+      sender: "the Holiday Lights Team" },
+    { sample: true,
+      recipient: "Everyone",
+      message: "Live Long and Prosper",
+      sender: "Spock",
+      color: new Color(colorNameToRgb["Green"])}, 
+    { sample: true,
+      recipient: "Mila and Emmy",
+      message: "Merry Christmas",
+      sender: "Rachel & Chris",
+      color: new Color(colorNameToRgb["Pink"])}, 
   ];
 
   messagesScene = new MessageScene(gridzilla, null, onPaused, nameManager,
