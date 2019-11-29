@@ -29,7 +29,7 @@ class HorizontalScroller{
 
      /**
       * Scrolls the supplied image on the destination
-      * @param {Jimp} image The sorce image to scroll
+      * @param {Jimp} image The source image to scroll
       * @param {number} speed [40] The speed to scroll at, in ms between refreshes
       * @param {number} width [max available or max of the source]  
       * How much of the source image to show, use to crop the source image, a value larger than the source image will be ignored
