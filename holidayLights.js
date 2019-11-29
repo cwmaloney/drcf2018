@@ -335,12 +335,12 @@ function configureHolidayScenes(gridzilla) {
       recipient: "Everyone",
       message: "Live Long and Prosper",
       sender: "Spock",
-      color: new Color(colorNameToRgb["Green"])}, 
+      color: "Green"}, 
     { sample: true,
       recipient: "Mila and Emmy",
       message: "Merry Christmas",
       sender: "Rachel & Chris",
-      color: new Color(colorNameToRgb["Pink"])}, 
+      color: "Pink"}, 
   ];
 
   messagesScene = new MessageScene(gridzilla, null, onPaused, nameManager,

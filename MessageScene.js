@@ -176,11 +176,12 @@ class MessageScene {
     this.messageCountForThisPeriod++;
 
     const message = this.currentMessage;
-    let color = message.color;
-    let backgroundColor = new Color(0, 0, 0);
+    const colorName = message.color;
+    const backgroundColorName = "Black";
+    const colorsMatch = (colorName === backgroundColorName);
+    const backgroundColor = new Color(0, 0, 0);
     //const backgroundColor = this.pickColor(message.backgroundColor, new Color(0, 0, 0), colorsMatch);
-    const colorsMatch = (color == backgroundColor);
-    color = this.pickColor(message.color, new Color(240, 240, 240), colorsMatch);
+    const color = this.pickColor(message.color, new Color(240, 240, 240), colorsMatch);
 
     let timeRequired = 0;
     if (this.gridzilla) {
