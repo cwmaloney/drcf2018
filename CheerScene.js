@@ -174,7 +174,7 @@ class CheerScene {
     let message;
     if (teamData.cheers.length == 0)
     {
-      message = this.currentCheer.sender ? "From " + this.currentCheer.sender : "Hooray!";
+      message = this.currentCheer.sender ? "From " + this.currentCheer.sender : " Hooray!";
     }
     else{
       message = this.currentCheer.sender ? this.currentCheer.sender + " says: " : "";
