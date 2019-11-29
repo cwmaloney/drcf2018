@@ -32,7 +32,7 @@ class MessageScene {
   configure(configuration, gridzillaConfiguration, facadeConfiguration) {
     const defaults = {
       period: 60000,            // time scene should run
-      perMessagePeriod: 12000,  // time a message should "run"
+      perMessagePeriod: 10000,  // time a message should "run"
       imageNames: [],
       sampleMessages: []
     };
