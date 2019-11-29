@@ -172,8 +172,7 @@ class CheerScene {
     this.scroller1 = new HorizontalScroller(teamImage.bitmap.width + 2, 10, frameBuffer, this.gridzilla);
 
     let message;
-    if (teamData.cheers.length == 0)
-    {
+    if (teamData.cheers.length == 0) {
       message = this.currentCheer.sender ? "From " + this.currentCheer.sender : " Hooray!";
     }
     else{
