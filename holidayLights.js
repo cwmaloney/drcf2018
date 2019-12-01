@@ -280,14 +280,14 @@ const facadeDefaults = {
 };
 
 const teamMembers = 
-  "   Mark Callegari - The Creator of Holiday Lights,"
+  "   Mark Callegari (The Creator of Holiday Lights),"
 + " Chris Callegari,"
 + " Blake Stewart,"
 + " Chris & Rachel Maloney,"
 + " Ken & Min Vrana,"
 + " Kyle Weafer,"
-+ " Foley Equipment"
-+ " Pretech Precast Concrete"
++ " Foley Equipment,"
++ " Pretech Precast Concrete,"
 + " Enerfab Midwest (Brian Jackson, Steve Bullard),"
 + " T.J. Kilian and KJO Media, "
 + " Jolt Lighting,"
@@ -306,15 +306,15 @@ function configureHolidayScenes(gridzilla) {
       line1: "Welcome to",
       line2: "Holiday Lights",
       line3: "on Farmstead Lane   ",
-      color: new Color(colorNameToRgb["White"])
+      color: new Color(colorNameToRgb["Red"])
     });
 
   const instructionsBanner = new BannerScene(gridzilla, onPaused,
     {
       line1: "Tune to 90.5",
       line2: "to hear the music.",
-      line3: "Please turn off your lights.",
-      color: new Color(colorNameToRgb["White"])
+      line3: "Please turn off your headlights.",
+      color: new Color(colorNameToRgb["Blue"])
     });
 
   const instructions2Banner = new BannerScene(gridzilla, onPaused,
@@ -322,7 +322,7 @@ function configureHolidayScenes(gridzilla) {
       line1: "Visit farmsteadlights.com",
       line2: "to display messages here.",
       line3: "Thanks for coming!",
-      color: new Color(colorNameToRgb["White"])
+      color: new Color(colorNameToRgb["Blue"])
     });
 
     
@@ -330,8 +330,14 @@ function configureHolidayScenes(gridzilla) {
     { sample: true,
       recipient: "Everyone",
       message: "Happy Holidays",
-      sender: "the Holiday Lights Team" },
-    { sample: true,
+      sender: "Team Holiday Lights",
+      color: "Red"},
+      { sample: true,
+        recipient: "Santa",
+        message: "Merry Christmas",
+        sender: "Buddy",
+        color: "Red"},
+      { sample: true,
       recipient: "Everyone",
       message: "Live Long and Prosper",
       sender: "Spock",
@@ -340,7 +346,7 @@ function configureHolidayScenes(gridzilla) {
       recipient: "Mila and Emmy",
       message: "Merry Christmas",
       sender: "Rachel & Chris",
-      color: "Pink"}, 
+      color: "Blue"}, 
   ];
 
   messagesScene = new MessageScene(gridzilla, null, onPaused, nameManager,
@@ -375,9 +381,9 @@ function configureHolidayScenes(gridzilla) {
       scrollText: teamMembers, minimumInterval: 5*60*1000
     },
     Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
-      {color: new Color(255, 200, 200)} ),
+      {color: new Color(0, 0, 200)} ),
     Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
-      {color: new Color(255, 200, 200)} )
+      {color: new Color(0, 0, 200)} )
   );
   
   scenes = [
