@@ -20,7 +20,9 @@ const messages = [
   "Happy New Year",
   "You are my BFF",
   "Will you be my Valentine?",
-  "Happy Valentine's Day"
+  "Happy Valentine's Day",
+  "Happy Birthday",
+  "Happy Winter Solstice"
 ];
 
 

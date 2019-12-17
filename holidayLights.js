@@ -311,7 +311,7 @@ function configureHolidayScenes(gridzilla) {
 
   const instructionsBanner = new BannerScene(gridzilla, onPaused,
     {
-      line1: "Tune to 90.5",
+      line1: "Tune to 90.5 FM",
       line2: "to hear the music.",
       line3: "Please turn off your headlights.",
       color: new Color(colorNameToRgb["Blue"])
@@ -320,33 +320,19 @@ function configureHolidayScenes(gridzilla) {
   const instructions2Banner = new BannerScene(gridzilla, onPaused,
     {
       line1: "Visit farmsteadlights.com",
-      line2: "to display messages here.",
-      line3: "Thanks for coming!",
+      line2: "to display messages",
+      line3: "and see the song list.",
       color: new Color(colorNameToRgb["Blue"])
     });
 
     
   const holidaySampleMessages = [
-    { sample: true,
-      recipient: "Everyone",
-      message: "Happy Holidays",
-      sender: "Team Holiday Lights",
-      color: "Red"},
-      { sample: true,
-        recipient: "Santa",
-        message: "Merry Christmas",
-        sender: "Buddy",
-        color: "Red"},
-      { sample: true,
-      recipient: "Everyone",
-      message: "Live Long and Prosper",
-      sender: "Spock",
-      color: "Green"}, 
-    { sample: true,
-      recipient: "Mila and Emmy",
-      message: "Merry Christmas",
-      sender: "Rachel & Chris",
-      color: "Blue"}, 
+    { sample: true, recipient: "Everyone", message: "Happy Holidays", sender: "Team Holiday Lights", color: "Red" },
+    { sample: true, recipient: "Amy", message: "Happy Winter Solstice", sender: "Sheldon", color: "Blue" },
+    { sample: true, recipient: "Lucy", message: "Happy Holidays", sender: "Charlie", color: "Blue" },
+    { sample: true, recipient: "Santa", message: "Merry Christmas", sender: "Buddy", color: "Red" },
+    { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock", color: "Green"}, 
+    { sample: true, recipient: "Mila and Emmy", message: "Merry Christmas", sender: "Rachel & Chris", color: "Blue"}, 
   ];
 
   messagesScene = new MessageScene(gridzilla, null, onPaused, nameManager,
