@@ -16,6 +16,7 @@ const colorNameToRgb = {
   //crimson: [ 220, 20, 60 ],
   "Dark Red": [139, 0, 0],
   Scarlet: [ 204, 0 , 0 ],
+  Cardinal: [ 0x9D, 0x22, 0x35],
 
   Pink: [ 255, 102, 178 ],
   "Dark Pink": [ 231, 84, 128 ],

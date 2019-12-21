@@ -4,6 +4,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 const teamNameToDataMap = {
+  Arkansas: {name: "Arkansas", colors: ["White", "Cardinal"], mascot: "Tusks", cheers: ["Woo Pig Sooie!"]},
   Baylor: {name: "Baylor", colors: ["Green", "Gold"], mascot: "Bears", cheers: ["Go Bears!"]},
   BVNW: {name: "BVNW", colors: ["Purple", "White"], mascot: "Huskies", cheers: ["Go Huskies!"]},
   Chiefs: {name: "Chiefs", colors: ["Red", "Yellow"], mascot: "Chiefs", cheers: ["Go Chiefs!"]},
