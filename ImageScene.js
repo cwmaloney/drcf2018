@@ -90,7 +90,7 @@ class ImageScene {
     let timeout = this.perImagePeriod;
     const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     const image = ImageManager.get(this.images[this.imageIndex]);
-    //console.log(`Showing image index [${this.imageIndex}] of ${this.images.length}`);
+    console.log(`Showing image [${this.images[this.imageIndex]}]`);
 
     if (image.bitmap.height > frameBuffer.image.bitmap.height) {
       //resize it
@@ -107,7 +107,7 @@ class ImageScene {
       frameBuffer.blit(image, frameBuffer.image.bitmap.width / 2 - image.bitmap.width / 2, 
           frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2);
       this.gridzilla.transformScreen(frameBuffer);
-      timeout = this.perImagePeriod / 2;
+      timeout = this.perImagePeriod;
     }
     
     this.runningTimer = setTimeout(this.onImageComplete.bind(this), timeout);
