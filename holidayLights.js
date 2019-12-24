@@ -295,7 +295,7 @@ const teamMembers =
 + " The Farmstead Team:"
 + " Jerry, Walt, Virgil, Kathi, Laurie, Orrin, Matt"
 + " & John Webb"
-+ "    ";
++ "         ";
 
 function configureHolidayScenes(gridzilla) {
   ImageScene.initialize();
@@ -306,7 +306,8 @@ function configureHolidayScenes(gridzilla) {
       line1: "Welcome to",
       line2: "Holiday Lights",
       line3: "on Farmstead Lane   ",
-      color: new Color(colorNameToRgb["Red"])
+      color: new Color(colorNameToRgb["Red"]),
+      period: 2000
     });
 
   const instructionsBanner = new BannerScene(gridzilla, onPaused,
@@ -325,6 +326,13 @@ function configureHolidayScenes(gridzilla) {
       color: new Color(colorNameToRgb["Blue"])
     });
 
+  const hashtagBanner = new BannerScene(gridzilla, onPaused,
+    {
+      line1: "#farmsteadlights",
+      line2: "Post photos & selfies",
+      color: new Color(colorNameToRgb["Red"])
+    });
+  
     
   const holidaySampleMessages = [
     { sample: true, recipient: "Everyone", message: "Happy Holidays", sender: "Team Holiday Lights", color: "Red" },
@@ -363,8 +371,10 @@ function configureHolidayScenes(gridzilla) {
 
   const thankYouScene = new ScrollingTextScene(gridzilla, null, onPaused,
     {
-      period: 180*60*1000, headerText: "Thanks!",
-      scrollText: teamMembers, minimumInterval: 5*60*1000
+      period: 180*60*1000,
+      headerText: "Thanks!",
+      scrollText: teamMembers,
+      minimumInterval: 9*60*1000
     },
     Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
       {color: new Color(0, 0, 200)} ),
@@ -376,6 +386,7 @@ function configureHolidayScenes(gridzilla) {
     welcomeBanner,
     instructionsBanner,
     instructions2Banner,
+    hashtagBanner,
     messagesScene,
     cheersScene,
     // imageScene1,
