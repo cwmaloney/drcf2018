@@ -270,12 +270,12 @@ class MessageScene {
     // check names
     let senderOkay = this.nameManager.isNameValid(sender);
     if (!senderOkay) {
-      let responseMessage = "We do not recognize the sender name - try a common first name.";
+      let responseMessage = "We do not recognize the sender name. Use first names only and separate names with commas.";
       return this.fillResponse(request, response, "Error", responseMessage);
     }
     let recipientOkay = this.nameManager.isNameValid(recipient);
     if (!recipientOkay) {
-      let responseMessage = "We do not recognize the recipient name - try a common first name";
+      let responseMessage = "We do not recognize the recipient name. Use first names only and separate names with commas";
       return this.fillResponse(request, response, "Error", responseMessage);
     }
 
