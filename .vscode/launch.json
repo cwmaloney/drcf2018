@@ -59,7 +59,7 @@
       "type": "node",
       "request": "launch",
       "name": "Grizilla Emulator Server",
-      "program": "${workspaceFolder}/grizillaEmulatorServer.js"
+      "program": "${workspaceFolder}/gridzillaEmulatorServer.js"
     },
     {
       "type": "node",
