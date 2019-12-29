@@ -8,7 +8,7 @@ class FileUtilities {
    */
   static forEachLine (fd, onLine) {
     const bufferSize = 64 * 1024;
-    const buffer = new Buffer(bufferSize);
+    const buffer = Buffer.alloc(bufferSize);
     let leftOver = '';
     let lineIndex = 0;
     let bytesRead;
