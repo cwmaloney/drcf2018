@@ -43,7 +43,7 @@ class MessageScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "Littera",
+      typeface: "*default*",
       fontSize: 11,
     };
 
@@ -53,7 +53,7 @@ class MessageScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "Littera",
+      typeface: "*default*",
       fontSize: 11,
     };
 
@@ -96,6 +96,7 @@ class MessageScene {
   pause() {
     console.log("MessageScene pause");
     clearTimeout(this.runningTimer);
+    
     if (this.currentMessage) {
       // message did not finish so we will restart the message
       // when the scene restarts
@@ -208,7 +209,7 @@ class MessageScene {
     frameBuffer.print3Lines("To:" + message.recipient,
                             message.message,
                             "From:" + message.sender,
-                            new Font("Littera", 11, color));
+                            new Font("*default*", 11, color));
     this.gridzilla.transformScreen(frameBuffer);
   }
 
@@ -232,7 +233,7 @@ class MessageScene {
   }
 
   getScrollTime(message, font, output, outputConfiguration) {
-    return HorizontalScroller.calculateImageScrollTime(message, font, output.width, outputConfiguration.speed);
+    return HorizontalScroller.calculateImageScrollTimeForText(message, font, output.width, outputConfiguration.speed);
   }
 
   //////////////////////////////////////////////////////////////////////////////

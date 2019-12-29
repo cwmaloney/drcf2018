@@ -3,7 +3,6 @@
 const Jimp = require('jimp');
 const Color = require('./Color.js');
 
-
 /**
  * BitmapBuffer.js
  * A simple wrapper around a Jimp bitmap.
@@ -299,15 +298,36 @@ class BitmapBuffer {
     }
 
     static getJimpFont(font) {
-        let size = font.size;
-        if (size < 8) {
-            size = 8;
-        }
-        else if (size > 18) {
-            size = 18;
-        }
+      const size = font.size;
 
-        return BitmapBuffer.litteraFonts[size - 8];
+      let adjustedSize = size;
+      if (size < 8) {
+        adjustedSize = 8;
+      }
+      else if (size > 18) {
+        adjustedSize = 18;
+      }
+
+      // if (size < 8) {
+      //   adjustedSize = 8;
+      // }
+      // else if (size < 20) {
+      //   adjustedSize = size;
+      // }
+      // else if (size <= 22) {
+      //   adjustedSize = 22;
+      // }
+      // else if (size <= 24) {
+      //   adjustedSize = 22;
+      // }
+      // else if (size <= 32) {
+      //   adjustedSize = 22;
+      // }
+      // else {
+      //   adjustedSize = 34;
+      // }
+
+      return BitmapBuffer.defaultFonts[adjustedSize - 8];
     }
 
     /**
@@ -326,13 +346,39 @@ class BitmapBuffer {
         textImage.print(jimpFont, 0, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });   
         if (font.color)
         {
-            let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, font.color.alpha);
-            textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
-                let p = textImage.getPixelColor(x, y);
-                if (p > 0xFF){
-                    textImage.setPixelColor((p & c) >>> 0, x, y);
-                }
-            });
+          let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, font.color.alpha);
+          textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
+              let p = textImage.getPixelColor(x, y);
+              if (p > 0xFF){
+                  textImage.setPixelColor((p & c) >>> 0, x, y);
+              }
+          });
+
+          //textImage.color( [ { apply: 'mix', params: [ {r: font.color.red, g: font.color.green, b:font.color.blue}, 1] } ] );
+            // let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, font.color.alpha);
+            // textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
+            //   const red     = textImage.bitmap.data[idx + 0];
+            //   const green   = textImage.bitmap.data[idx + 1];
+            //   const blue    = textImage.bitmap.data[idx + 2];
+            //   const alpha   = textImage.bitmap.data[idx + 3];
+            //   const p = textImage.getPixelColor(x, y);
+            //   // if (p > 0xFF){
+            //   //  textImage.setPixelColor((p & c) >>> 0, x, y);
+            //   // }
+            //   if (alpha !== 255) {
+            //     console.log("alpha=" + alpha);
+            //   }
+            //   if ( red !== blue || red !== green || blue !== green) {
+            //     console.log(`non-gray color red=${red} green=${green} blue=${blue}`)
+            //   }
+            //   if (alpha > 0 && (red > 0 || green > 0 || blue > 0)) {
+            //     // if ( red !== 255 || green !== 255 || blue !== 255) {
+            //     //   console.log(`red=${red} green=${green} blue=${blue}`)
+            //     // }
+            //     textImage.setPixelColor((p & c) >>> 0, x, y);
+            //     //textImage.setPixelColor(c, x, y);
+            //     }
+            //   });
         }
         this.image.blit(textImage, x, y, 0, 0, textWidth, textHeight);
 
@@ -340,17 +386,45 @@ class BitmapBuffer {
     }
 
     static initializeFonts(){
-        var promises = [Jimp.loadFont("fonts/litteraWhite8.fnt"), Jimp.loadFont("fonts/litteraWhite9.fnt"), Jimp.loadFont("fonts/litteraWhite10.fnt"),
-            Jimp.loadFont("fonts/litteraWhite11.fnt"), Jimp.loadFont("fonts/litteraWhite12.fnt"), Jimp.loadFont("fonts/litteraWhite13.fnt"),
-            Jimp.loadFont("fonts/litteraWhite14.fnt"), Jimp.loadFont("fonts/litteraWhite15.fnt"), Jimp.loadFont("fonts/litteraWhite16.fnt"),
-            Jimp.loadFont("fonts/litteraWhite17.fnt"), Jimp.loadFont("fonts/litteraWhite18.fnt")]
-        
-        var resultPromise = Promise.all(promises);
-        resultPromise.then( (results) => {
-            BitmapBuffer.litteraFonts = results;
-        });
+      var promises = [
+        Jimp.loadFont("fonts/litteraWhite8.fnt"),
+        Jimp.loadFont("fonts/litteraWhite9.fnt"),
+        Jimp.loadFont("fonts/litteraWhite10.fnt"),
+        Jimp.loadFont("fonts/litteraWhite11.fnt"),
+        Jimp.loadFont("fonts/litteraWhite12.fnt"),
+        Jimp.loadFont("fonts/litteraWhite13.fnt"),
+        Jimp.loadFont("fonts/litteraWhite14.fnt"),
+        Jimp.loadFont("fonts/litteraWhite15.fnt"),
+        Jimp.loadFont("fonts/litteraWhite16.fnt"),
+        Jimp.loadFont("fonts/litteraWhite17.fnt"),
+        Jimp.loadFont("fonts/litteraWhite18.fnt")
+      ];
+      // var promises = [
+      //   Jimp.loadFont("fonts/opensans-8.fnt"),
+      //   Jimp.loadFont("fonts/opensans-9.fnt"),
+      //   Jimp.loadFont("fonts/opensans-10.fnt"),
+      //   Jimp.loadFont("fonts/opensans-11.fnt"),
+      //   Jimp.loadFont("fonts/opensans-12.fnt"),
+      //   Jimp.loadFont("fonts/opensans-13.fnt"),
+      //   Jimp.loadFont("fonts/opensans-14.fnt"),
+      //   Jimp.loadFont("fonts/opensans-15.fnt"),
+      //   Jimp.loadFont("fonts/opensans-16.fnt"),
+      //   Jimp.loadFont("fonts/opensans-17.fnt"),
+      //   Jimp.loadFont("fonts/opensans-18.fnt"),
+      //   Jimp.loadFont("fonts/opensans-19.fnt"),
+      //   Jimp.loadFont("fonts/opensans-20.fnt"),
+      //   Jimp.loadFont("fonts/opensans-22.fnt"),
+      //   Jimp.loadFont("fonts/opensans-24.fnt"),
+      //   Jimp.loadFont("fonts/opensans-32.fnt"),
+      //   Jimp.loadFont("fonts/opensans-34.fnt")
+      // ];
+      
+      var resultPromise = Promise.all(promises);
+      resultPromise.then( (results) => {
+          BitmapBuffer.defaultFonts = results;
+      });
 
-        return resultPromise;
+      return resultPromise;
     }
 }
 

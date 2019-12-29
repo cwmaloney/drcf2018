@@ -1,7 +1,6 @@
 const BitmapBuffer = require("./BitmapBuffer.js");
 const Jimp = require('jimp');
 const HorizontalScroller = require("./HorizontalScroller.js");
-const fs = require('fs');
 const Color = require("./Color.js");
 const ImageManager = require("./ImageManager.js");
 
@@ -19,19 +18,14 @@ class ImageScene {
 
   configure(configuration) {
     const {
-      perImagePeriod = 8000,
-      period = 30000,
-      images = null
+      period = 30000,         // time scene should run
+      perImagePeriod = 8000,  // time image should be "run""
+      imagesConfiguration = null
     } = configuration;
 
     this.perImagePeriod = perImagePeriod;
     this.period = period;
-
-    this.images = ImageScene.images;
-
-    if (images && Array.isArray(this.images) && images.length > 0) {
-      this.images = images;
-    }
+    this.imagesConfiguration = imagesConfiguration;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -40,7 +34,9 @@ class ImageScene {
   
   run() {
     console.log("ImageScene run");
-    if (typeof this.images == 'undefined' || !Array.isArray(this.images) || this.images.length == 0)
+    if (typeof this.imagesConfiguration == 'undefined'
+        || !Array.isArray(this.imagesConfiguration)
+        || this.imagesConfiguration.length == 0)
     {
       this.onPaused();
       return;
@@ -48,19 +44,29 @@ class ImageScene {
 
     this.paused = false;
     this.startTime = Date.now();
-    this.doImage();
+    this.displayImage();
   }
 
   pause() {
     console.log("ImageScene pause");
     clearTimeout(this.runningTimer);
     
-    if (this.scroller1){
-      this.scroller1.stop();
-      this.scroller1 = null;
-    }
+    this.killScrollers();
+    
     this.paused = true;
     this.onPaused();
+  }
+
+  killScrollers() {
+    if (this.gridzillaScroller){
+      this.gridzillaScroller.stop();
+      this.gridzillaScroller = null;
+    }
+
+    // if (this.facadeScroller){
+    //   this.facadeScroller.stop();
+    //   this.facadeScroller = null;
+    // }
   }
 
   forcePause() {
@@ -68,29 +74,37 @@ class ImageScene {
     this.pause();
   }
 
-  onImageComplete() {
 
+  onImageComplete() {
     const nowTime = Date.now();
-    if (this.scroller1){
-      this.scroller1.stop();
-      this.scroller1 = null;
-    }
-    this.imageIndex = (this.imageIndex + 1) % this.images.length;
+    this.killScrollers();
+    this.imageIndex = (this.imageIndex + 1) % this.imagesConfiguration.length;
 
     //if we can't run the next image completely, stop this scene
     if (nowTime + this.perImagePeriod > this.startTime + this.period){
       this.pause();
       return;
     }
-    this.doImage();
+
+    this.displayImage();
   }
 
-  doImage() {
-    
+ displayImage() {   
     let timeout = this.perImagePeriod;
     const frameBuffer = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    const image = ImageManager.get(this.images[this.imageIndex]);
-    console.log(`Showing image [${this.images[this.imageIndex]}]`);
+    const imagesConfiguration = this.imagesConfiguration[this.imageIndex];
+    const imageName = imagesConfiguration.name;
+    if (imagesConfiguration.period) {
+      timeout = imagesConfiguration.period;
+    }
+    const image = ImageManager.get(imageName);
+    if (!image) {
+      console.log(`*** Missing image [${imageName}]`);
+      this.onImageComplete();
+      return;
+    }
+
+    console.log(`Showing image [${imageName}]`);
 
     if (image.bitmap.height > frameBuffer.image.bitmap.height) {
       //resize it
@@ -99,13 +113,14 @@ class ImageScene {
 
     if (image.bitmap.width > frameBuffer.image.bitmap.width) {
       //scroll it
-      this.scroller1 = new HorizontalScroller(0, frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2, frameBuffer, this.gridzilla);
-      this.scroller1.scrollImage(image);
+      this.gridzillaScroller = new HorizontalScroller(0, frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2, frameBuffer, this.gridzilla);
+      this.gridzillaScroller.scrollImage(image);
     }
     else {
       //show it
-      frameBuffer.blit(image, frameBuffer.image.bitmap.width / 2 - image.bitmap.width / 2, 
-          frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2);
+      frameBuffer.blit(image,
+                       frameBuffer.image.bitmap.width / 2 - image.bitmap.width / 2, 
+                       frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2);
       this.gridzilla.transformScreen(frameBuffer);
       timeout = this.perImagePeriod;
     }
@@ -113,23 +128,6 @@ class ImageScene {
     this.runningTimer = setTimeout(this.onImageComplete.bind(this), timeout);
   }
 
-
-  static initialize(){
-
-    const filename = "imageScene.json";
-    if (fs.existsSync(filename)) {
-      console.log(`loading ImageScene file list from ${filename}...`);
-  
-      try {
-        const fileList = JSON.parse(fs.readFileSync(filename, 'utf8'));
-        ImageScene.images = fileList.images.filter((elem) => elem != null);
-      } catch (error) {
-        if (error.code !== "ENOENT") {
-          throw error;
-        }
-      }  
-    }
-  }
 }
 
 module.exports = ImageScene;

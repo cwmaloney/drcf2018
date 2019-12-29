@@ -179,7 +179,7 @@ class CheerScene {
       message = this.currentCheer.sender ? this.currentCheer.sender + " says: " : "";
       message = message + teamData.cheers[Math.floor(Math.random() * teamData.cheers.length)];
     }
-    const font16 = new Font("Littera", 16, colors[0]);
+    const font16 = new Font("*default*", 16, colors[0]);
     this.scroller1.scrollText(message, font16, null, null);
     
   }
@@ -240,14 +240,14 @@ class CheerScene {
 
     let y = 10;
     if (this.currentCheer.sender != null && this.currentCheer.sender != "") {
-      const font11 = new Font("Littera", 11, new Color(255, 255, 255));
+      const font11 = new Font("*default*", 11, new Color(255, 255, 255));
       frameBuffer.print1Line(this.currentCheer.sender + " cheers for:", font11, 0);
       this.gridzilla.transformScreen(frameBuffer);
       y = 16;
     }
 
     let length = 0;
-    let font = new Font("Littera", 16, new Color(255, 255, 255));
+    let font = new Font("*default*", 16, new Color(255, 255, 255));
     let jimpFont = BitmapBuffer.getJimpFont(font);
     for (let i = 0; i < this.currentCheer.colorNames.length && i < 10; ++i) {
       length += Jimp.measureText(jimpFont, this.currentCheer.colorNames[i]) + 4;
@@ -256,7 +256,7 @@ class CheerScene {
     let x = 0;
     let textBuffer = BitmapBuffer.fromNew(length, 18, new Color(0, 0, 0));
     for (let i = 0; i < this.currentCheer.colorNames.length && i < 10; ++i) {
-      font = new Font("Littera", 16, Color.fromRgb(colorNameToRgb[this.currentCheer.colorNames[i]]));
+      font = new Font("*default*", 16, Color.fromRgb(colorNameToRgb[this.currentCheer.colorNames[i]]));
       x = x + textBuffer.print(this.currentCheer.colorNames[i], font, x, 0)[0] + 4;
     }
 
@@ -269,7 +269,7 @@ class CheerScene {
 
     let y = 6;
     if (this.currentCheer.sender != null && this.currentCheer.sender != "") {
-      const font11 = new Font("Littera", 11, new Color(255, 255, 255));
+      const font11 = new Font("*default*", 11, new Color(255, 255, 255));
       frameBuffer.print1Line(this.currentCheer.sender + " cheers for:", font11, 0);
       this.gridzilla.transformScreen(frameBuffer);
       y = 12;

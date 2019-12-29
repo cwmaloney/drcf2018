@@ -251,13 +251,13 @@ const gridzillaDefaults = {
   scrollSceneDefaultsWithHeader: {
     headerTextTop: 3,
     scrollTextTop: 18,
-    typeface: "Littera",
+    typeface: "*default*",
     fontSize: 11,
     speed: 30    
   },
   scrollSceneDefaultsNoHeader: {
     scrollTextTop: 10,
-    typeface: "Littera",
+    typeface: "*default*",
     fontSize: 11,
     speed: 30
     }
@@ -267,13 +267,13 @@ const facadeDefaults = {
   scrollSceneDefaultsWithHeader: {
     headerTextTop: 2*14 - 2,
     scrollTextTop: 3*14 - 2,
-    typeface: "Littera",
+    typeface: "*default*",
     fontSize: 14,
     speed: 60
   },
   scrollSceneDefaultsNoHeader: {
     scrollTextTop: 3*14 - 2,
-    typeface: "Littera",
+    typeface: "*default*",
     fontSize: 14,
     speed: 60
     }
@@ -298,7 +298,6 @@ const teamMembers =
 + "         ";
 
 function configureHolidayScenes(gridzilla) {
-  ImageScene.initialize();
 
   // create scenes
   const welcomeBanner = new BannerScene(gridzilla, onPaused,
@@ -341,6 +340,12 @@ function configureHolidayScenes(gridzilla) {
     { sample: true, recipient: "Santa", message: "Merry Christmas", sender: "Buddy", color: "Red" },
     { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock", color: "Green"}, 
     { sample: true, recipient: "Mila and Emmy", message: "Merry Christmas", sender: "Rachel & Chris", color: "Blue"}, 
+    // { sample: true, recipient: "Everyone", message: "Happy Holidays", sender: "Team Holiday Lights", color: "Teal" },
+    // { sample: true, recipient: "Amy", message: "Happy Winter Solstice", sender: "Sheldon", color: "Cornflower Blue" },
+    // { sample: true, recipient: "Lucy", message: "Happy Holidays", sender: "Charlie", color: "Purple" },
+    // { sample: true, recipient: "Santa", message: "Merry Christmas", sender: "Buddy", color: "Purple" },
+    // { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock", color: "Lime"}, 
+    // { sample: true, recipient: "Mila and Emmy", message: "Merry Christmas", sender: "Rachel & Chris", color: "Pink"}, 
   ];
 
   messagesScene = new MessageScene(gridzilla, null, onPaused, nameManager,
@@ -354,9 +359,29 @@ function configureHolidayScenes(gridzilla) {
   // const imageScene1 = new ImageScene(gridzilla, onPaused,
   //   { period: 10000, images:["Go Chiefs.png"]});
 
-  //show standard images
-  const imageScene2 = new ImageScene(gridzilla, onPaused,
-    { period: 10000 });
+  //show holiday images
+  const holidayImageScene = new ImageScene(gridzilla, onPaused,
+    {
+      period: 10000,
+      perImagePeriod: 9000,
+      imagesConfiguration: [
+        { name: "Christmas Train 830x36 (2019 V7).png", period: 29000 },
+        { name: "Sleigh 168x36 (2019 V3).png" },
+        { name: "Snow Landscape 168x36 (2019 V3 Blue Background).png" },
+        { name: "Snow Landscape Red 168x36 (2019 V1).png" },
+        { name: "Winter Wonderland 168x36 (2019 V3 Blue Background).png" },
+        { name: "Christmas Snoopy Tree 168x36 (2019 V1).png" },
+        { name: "Like Christmas 168x36 (2019 V1).png" },
+        { name: "Sleigh Ride 268x36 (2019 V1).png" },
+    
+        { name: "brown paper packages.png" },
+        { name: "jinglebells.png" },
+    
+        { name: "Enerfab Logo 36x168.gif" },
+        { name: "Foley Logo 36x168.gif" },
+        { name: "Jolt Lighting Logo 36x106.gif" },
+        { name: "Pretech Logo 36x168.gif" }
+      ]});
 
 
   // const preSnakesBanner = new BannerScene(gridzilla, onPaused,
@@ -390,7 +415,7 @@ function configureHolidayScenes(gridzilla) {
     messagesScene,
     cheersScene,
     // imageScene1,
-    imageScene2,
+    holidayImageScene,
     // preSnakesBanner,
     // snakeScene,
     thankYouScene

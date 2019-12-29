@@ -34,7 +34,7 @@ class ScrollingTextScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "Littera",
+      typeface: "*default*",
       fontSize: 11,
 
       scrollHeaderTop: undefined,
@@ -47,7 +47,7 @@ class ScrollingTextScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "Littera",
+      typeface: "*default*",
       fontSize: 11,
 
       scrollHeaderTop: undefined,
@@ -167,7 +167,7 @@ class ScrollingTextScene {
   }
 
   getScrollTime(output, outputConfiguration) {
-    return HorizontalScroller.calculateImageScrollTime(this.configuration.scrollText, outputConfiguration.font, output.width, outputConfiguration.speed);
+    return HorizontalScroller.calculateImageScrollTimeForText(this.configuration.scrollText, outputConfiguration.font, output.width, outputConfiguration.speed);
   }
  
   formatMessage() {
