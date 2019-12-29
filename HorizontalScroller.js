@@ -24,7 +24,7 @@ class HorizontalScroller{
      static calculateImageScrollTimeForText(text, font, screenSize, speed) {
       const jimpFont = BitmapBuffer.getJimpFont(font);
       const textWidth = Jimp.measureText(jimpFont, text);
-      return (textWidth - screenSize) * speed;
+      return (textWidth - screenSize) * speed * 1.05;
      }
 
      static calculateImageScrollTimeForImage(imageWidth, screenSize, speed) {

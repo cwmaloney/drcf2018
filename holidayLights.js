@@ -280,7 +280,7 @@ const facadeDefaults = {
 };
 
 const teamMembers = 
-  "   Mark Callegari (The Creator of Holiday Lights),"
+  ".                             Mark Callegari (The Creator of Holiday Lights),"
 + " Chris Callegari,"
 + " Blake Stewart,"
 + " Chris & Rachel Maloney,"
@@ -295,7 +295,7 @@ const teamMembers =
 + " The Farmstead Team:"
 + " Jerry, Walt, Virgil, Kathi, Laurie, Orrin, Matt"
 + " & John Webb"
-+ "         ";
++ "                           .";
 
 function configureHolidayScenes(gridzilla) {
 
@@ -365,12 +365,12 @@ function configureHolidayScenes(gridzilla) {
       period: 10000,
       perImagePeriod: 9000,
       imagesConfiguration: [
+        { name: "Christmas Snoopy Tree 168x36 (2019 V1).png" },
         { name: "Christmas Train 830x36 (2019 V7).png", period: 29000 },
         { name: "Sleigh 168x36 (2019 V3).png" },
         { name: "Snow Landscape 168x36 (2019 V3 Blue Background).png" },
         { name: "Snow Landscape Red 168x36 (2019 V1).png" },
         { name: "Winter Wonderland 168x36 (2019 V3 Blue Background).png" },
-        { name: "Christmas Snoopy Tree 168x36 (2019 V1).png" },
         { name: "Like Christmas 168x36 (2019 V1).png" },
         { name: "Sleigh Ride 268x36 (2019 V1).png" },
     
@@ -396,7 +396,7 @@ function configureHolidayScenes(gridzilla) {
 
   const thankYouScene = new ScrollingTextScene(gridzilla, null, onPaused,
     {
-      period: 180*60*1000,
+      period: 4*60*1000,
       headerText: "Thanks!",
       scrollText: teamMembers,
       minimumInterval: 9*60*1000
