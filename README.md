@@ -86,8 +86,8 @@ The npm (node package manager) will install the JavaScript packages (libraries) 
 
 1. In VS Code, open the project folder (File/Open)
 1. On the left navigation pane (Activity bar), click the debug icon
-1. Choose Grizilla as the debug configuration (next to the green arrow)
-1. Click the green arrow icon in the debug view to start node.js running grizilla.js and attach the debugger
+1. Choose holidaylights.js Server as the debug configuration (next to the green arrow)
+1. Click the green arrow icon in the debug view to start node.js running holidaylights.js and attach the debugger
 
 ## Quick tests
 
@@ -96,6 +96,9 @@ Follow these steps to install test data
 1. "Install test data"
     * `cp testMessageQueue.json MessageQueue.json`
     * `cp testCheerQueue.json CheerQueue.json`
+
+1. To use the emulators
+  * cp envConfigOverrides.dev.json envConfigOverrides.json
 
 1. Start the display emulators:
     * `node gridzillaEmulatorServer.js`
