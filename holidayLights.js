@@ -344,10 +344,15 @@ function configureHolidayScenes(gridzilla) {
     });
 
   cheersScene = new CheerScene(gridzilla, onPaused, nameManager, {});
-  //show special images
 
-  // const imageScene1 = new ImageScene(gridzilla, onPaused,
-  //   { period: 10000, images:["Go Chiefs.png"]});
+
+  const goChiefsScene = new ImageScene(gridzilla, onPaused,
+    {
+      period: 10000,
+      imagesConfiguration: [
+        { name: "Go Chiefs.png" }
+      ]
+    });
 
   //show holiday images
   const holidayImageScene = new ImageScene(gridzilla, onPaused,
@@ -371,7 +376,8 @@ function configureHolidayScenes(gridzilla) {
         { name: "Foley Logo 36x168.gif" },
         { name: "Jolt Lighting Logo 36x106.gif" },
         { name: "Pretech Logo 36x168.gif" }
-      ]});
+      ]
+    });
 
 
   // const preSnakesBanner = new BannerScene(gridzilla, onPaused,
@@ -403,9 +409,9 @@ function configureHolidayScenes(gridzilla) {
     instructionsBanner,
     instructions2Banner,
     hashtagBanner,
+    goChiefsScene,
     messagesScene,
     cheersScene,
-    // imageScene1,
     holidayImageScene,
     // preSnakesBanner,
     // snakeScene,
