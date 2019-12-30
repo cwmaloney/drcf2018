@@ -43,8 +43,7 @@ class MessageScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "*default*",
-      fontSize: 11,
+      typeface: "*default*", fontSize: 11,
     };
 
     const defaultFacadeConfiguration = {
@@ -53,8 +52,7 @@ class MessageScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "*default*",
-      fontSize: 11,
+      typeface: "*default*", fontSize: 11,
     };
 
     this.configuration = Object.assign(defaults, configuration);

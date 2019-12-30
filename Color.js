@@ -1,5 +1,8 @@
 "use strict";
 
+const tinycolor = require('tinycolor2');
+
+
 class Color {
   constructor(red, green, blue, alpha = 255) {
     if (Array.isArray(red)) {
@@ -34,6 +37,25 @@ class Color {
    */
   static fromRgb(rgb) {
     return new Color(rgb[0], rgb[1], rgb[2]);
+  }
+
+
+  static createTinyColor(color) {
+    return new tinycolor( { r: color.red, g: color.green, b: color.blue, a: color.alpha} );
+  }
+
+  static fromTinyColor(tinyColor) {
+    const rgb = tinyColor.toRgb();
+    return new Color( { red: rgb.r, green: rgb.g, blue: rgb.b, alpha: rgb.a*255 } );
+  }
+
+  static adjustColor(color, gray) {
+    const c = Color.createTinyColor(color);
+    const g = Color.createTinyColor(gray);
+    const cHsl = c.toHsl();
+    const gHsl = g.toHsl();
+    const adjusted = new tinycolor( { h:cHsl.h, s:cHsl.s, l: (gHsl.l/2), a:gHsl.a} );
+    return Color.fromTinyColor(adjusted);
   }
 
   get r() { return this.red; }

@@ -2,6 +2,7 @@
 
 const Jimp = require('jimp');
 const BitmapBuffer = require("./BitmapBuffer.js");
+const Color = require('./Color.js');
 
 class HorizontalScroller{
 
@@ -134,13 +135,16 @@ class HorizontalScroller{
         textImage.print(jimpFont, 0, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });
         if (font.color)
         {
-            let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, font.color.alpha);
-            textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
-                let p = textImage.getPixelColor(x, y);
-                if (p > 0xFF){
-                    textImage.setPixelColor((p & c) >>> 0, x, y);
-                }
-            });
+          textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
+            const red     = textImage.bitmap.data[idx + 0];
+            const green   = textImage.bitmap.data[idx + 1];
+            const blue    = textImage.bitmap.data[idx + 2];
+            const alpha   = textImage.bitmap.data[idx + 3];
+          if (red !== 0 && green !== 0 &&  blue !==0) { 
+            const adjusted = Color.adjustColor(font.color, new Color( { red, green, blue, alpha }));
+            textImage.setPixelColor(Jimp.rgbaToInt(adjusted.red, adjusted.green, adjusted.blue, adjusted.alpha), x, y);
+          }
+        });
         }
         this.scrollImage(textImage, speed, width, maxTime);
      }

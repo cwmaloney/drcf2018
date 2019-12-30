@@ -338,51 +338,28 @@ class BitmapBuffer {
      * @param {number} y Where to print
      */
     print(text, font, x = 0, y = 0) {
-        const jimpFont = BitmapBuffer.getJimpFont(font);
-        var textWidth = Jimp.measureText(jimpFont, text);
-        var textHeight = Jimp.measureTextHeight(jimpFont, text);
+      const jimpFont = BitmapBuffer.getJimpFont(font);
+      const textWidth = Jimp.measureText(jimpFont, text);
+      const textHeight = Jimp.measureTextHeight(jimpFont, text);
 
-        let textImage = new Jimp(textWidth, textHeight, Jimp.rgbaToInt(0, 0, 0, 255));        
-        textImage.print(jimpFont, 0, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });   
-        if (font.color)
-        {
-          let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, font.color.alpha);
-          textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
-              let p = textImage.getPixelColor(x, y);
-              if (p > 0xFF){
-                  textImage.setPixelColor((p & c) >>> 0, x, y);
-              }
-          });
+      let textImage = new Jimp(textWidth, textHeight, Jimp.rgbaToInt(0, 0, 0, 255));        
+      textImage.print(jimpFont, 0, 0, { text: text, alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT, alignmentY: Jimp.VERTICAL_ALIGN_TOP });   
+      if (font.color)
+      {
+        textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
+            const red     = textImage.bitmap.data[idx + 0];
+            const green   = textImage.bitmap.data[idx + 1];
+            const blue    = textImage.bitmap.data[idx + 2];
+            const alpha   = textImage.bitmap.data[idx + 3];
+          if (red !== 0 && green !== 0 &&  blue !==0) { 
+            const adjusted = Color.adjustColor(font.color, new Color( { red, green, blue, alpha }));
+            textImage.setPixelColor(Jimp.rgbaToInt(adjusted.red, adjusted.green, adjusted.blue, adjusted.alpha), x, y);
+          }
+        });
+      }
+      this.image.blit(textImage, x, y, 0, 0, textWidth, textHeight);
 
-          //textImage.color( [ { apply: 'mix', params: [ {r: font.color.red, g: font.color.green, b:font.color.blue}, 1] } ] );
-            // let c = Jimp.rgbaToInt(font.color.red, font.color.green, font.color.blue, font.color.alpha);
-            // textImage.scan(0, 0, textWidth, textHeight, (x, y, idx) => {
-            //   const red     = textImage.bitmap.data[idx + 0];
-            //   const green   = textImage.bitmap.data[idx + 1];
-            //   const blue    = textImage.bitmap.data[idx + 2];
-            //   const alpha   = textImage.bitmap.data[idx + 3];
-            //   const p = textImage.getPixelColor(x, y);
-            //   // if (p > 0xFF){
-            //   //  textImage.setPixelColor((p & c) >>> 0, x, y);
-            //   // }
-            //   if (alpha !== 255) {
-            //     console.log("alpha=" + alpha);
-            //   }
-            //   if ( red !== blue || red !== green || blue !== green) {
-            //     console.log(`non-gray color red=${red} green=${green} blue=${blue}`)
-            //   }
-            //   if (alpha > 0 && (red > 0 || green > 0 || blue > 0)) {
-            //     // if ( red !== 255 || green !== 255 || blue !== 255) {
-            //     //   console.log(`red=${red} green=${green} blue=${blue}`)
-            //     // }
-            //     textImage.setPixelColor((p & c) >>> 0, x, y);
-            //     //textImage.setPixelColor(c, x, y);
-            //     }
-            //   });
-        }
-        this.image.blit(textImage, x, y, 0, 0, textWidth, textHeight);
-
-        return [textWidth, textHeight];
+      return [textWidth, textHeight];
     }
 
     static initializeFonts(){

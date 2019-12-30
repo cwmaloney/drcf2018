@@ -251,14 +251,12 @@ const gridzillaDefaults = {
   scrollSceneDefaultsWithHeader: {
     headerTextTop: 3,
     scrollTextTop: 18,
-    typeface: "*default*",
-    fontSize: 11,
+    typeface: "*default*", fontSize: 11,
     speed: 30    
   },
   scrollSceneDefaultsNoHeader: {
     scrollTextTop: 10,
-    typeface: "*default*",
-    fontSize: 11,
+    typeface: "*default*", fontSize: 11,
     speed: 30
     }
 };
@@ -267,14 +265,12 @@ const facadeDefaults = {
   scrollSceneDefaultsWithHeader: {
     headerTextTop: 2*14 - 2,
     scrollTextTop: 3*14 - 2,
-    typeface: "*default*",
-    fontSize: 14,
+    typeface: "*default*", fontSize: 14,
     speed: 60
   },
   scrollSceneDefaultsNoHeader: {
     scrollTextTop: 3*14 - 2,
-    typeface: "*default*",
-    fontSize: 14,
+    typeface: "*default*", fontSize: 14,
     speed: 60
     }
 };
@@ -334,18 +330,12 @@ function configureHolidayScenes(gridzilla) {
   
     
   const holidaySampleMessages = [
-    { sample: true, recipient: "Everyone", message: "Happy Holidays", sender: "Team Holiday Lights", color: "Red" },
-    { sample: true, recipient: "Amy", message: "Happy Winter Solstice", sender: "Sheldon", color: "Blue" },
-    { sample: true, recipient: "Lucy", message: "Happy Holidays", sender: "Charlie", color: "Blue" },
+    { sample: true, recipient: "Everyone", message: "Happy Holidays", sender: "Team Holiday Lights", color: "Teal" },
+    { sample: true, recipient: "Amy", message: "Happy Winter Solstice", sender: "Sheldon", color: "Cornflower Blue" },
+    { sample: true, recipient: "Lucy", message: "Happy Holidays", sender: "Charlie", color: "Purple" },
     { sample: true, recipient: "Santa", message: "Merry Christmas", sender: "Buddy", color: "Red" },
-    { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock", color: "Green"}, 
-    { sample: true, recipient: "Mila and Emmy", message: "Merry Christmas", sender: "Rachel & Chris", color: "Blue"}, 
-    // { sample: true, recipient: "Everyone", message: "Happy Holidays", sender: "Team Holiday Lights", color: "Teal" },
-    // { sample: true, recipient: "Amy", message: "Happy Winter Solstice", sender: "Sheldon", color: "Cornflower Blue" },
-    // { sample: true, recipient: "Lucy", message: "Happy Holidays", sender: "Charlie", color: "Purple" },
-    // { sample: true, recipient: "Santa", message: "Merry Christmas", sender: "Buddy", color: "Purple" },
-    // { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock", color: "Lime"}, 
-    // { sample: true, recipient: "Mila and Emmy", message: "Merry Christmas", sender: "Rachel & Chris", color: "Pink"}, 
+    { sample: true, recipient: "Everyone", message: "Live Long and Prosper", sender: "Spock", color: "Lime"}, 
+    { sample: true, recipient: "Mila and Emmy", message: "Merry Christmas", sender: "Rachel & Chris", color: "Pink"}, 
   ];
 
   messagesScene = new MessageScene(gridzilla, null, onPaused, nameManager,
