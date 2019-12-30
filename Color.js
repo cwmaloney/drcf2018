@@ -54,7 +54,7 @@ class Color {
     const g = Color.createTinyColor(gray);
     const cHsl = c.toHsl();
     const gHsl = g.toHsl();
-    const adjusted = new tinycolor( { h:cHsl.h, s:cHsl.s, l: (gHsl.l/2), a:gHsl.a} );
+    const adjusted = new tinycolor( { h:cHsl.h, s:cHsl.s, l: (cHsl.l * gHsl.l), a:gHsl.a} );
     return Color.fromTinyColor(adjusted);
   }
 

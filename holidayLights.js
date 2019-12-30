@@ -301,7 +301,7 @@ function configureHolidayScenes(gridzilla) {
       line1: "Welcome to",
       line2: "Holiday Lights",
       line3: "on Farmstead Lane   ",
-      color: new Color(colorNameToRgb["Red"]),
+      color: new Color(colorNameToRgb["Dark Red"]),
       period: 2000
     });
 
@@ -310,7 +310,7 @@ function configureHolidayScenes(gridzilla) {
       line1: "Tune to 90.5 FM",
       line2: "to hear the music.",
       line3: "Please turn off your headlights.",
-      color: new Color(colorNameToRgb["Blue"])
+      color: new Color(colorNameToRgb["Dark Red"])
     });
 
   const instructions2Banner = new BannerScene(gridzilla, onPaused,
@@ -318,14 +318,14 @@ function configureHolidayScenes(gridzilla) {
       line1: "Visit farmsteadlights.com",
       line2: "to display messages",
       line3: "and see the song list.",
-      color: new Color(colorNameToRgb["Blue"])
+      color: new Color(colorNameToRgb["Dark Red"])
     });
 
   const hashtagBanner = new BannerScene(gridzilla, onPaused,
     {
       line1: "#farmsteadlights",
       line2: "Post photos & selfies",
-      color: new Color(colorNameToRgb["Red"])
+      color: new Color(colorNameToRgb["Dark Red"])
     });
   
     
@@ -389,12 +389,13 @@ function configureHolidayScenes(gridzilla) {
       period: 4*60*1000,
       headerText: "Thanks!",
       scrollText: teamMembers,
-      minimumInterval: 9*60*1000
+      minimumInterval: 9*60*1000,
+      color: new Color(colorNameToRgb["Dark Red"])
     },
     Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
-      {color: new Color(0, 0, 200)} ),
+      { color: new Color(colorNameToRgb["Dark Red"]) } ),
     Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
-      {color: new Color(0, 0, 200)} )
+      { color: new Color(colorNameToRgb["Dark Red"]) } )
   );
   
   scenes = [
