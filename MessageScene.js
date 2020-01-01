@@ -43,7 +43,7 @@ class MessageScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "*default*", fontSize: 11,
+      typeface: "*default*", fontSize: 12,
     };
 
     const defaultFacadeConfiguration = {
@@ -52,7 +52,7 @@ class MessageScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "*default*", fontSize: 11,
+      typeface: "*default*", fontSize: 12,
     };
 
     this.configuration = Object.assign(defaults, configuration);
@@ -207,7 +207,7 @@ class MessageScene {
     frameBuffer.print3Lines("To:" + message.recipient,
                             message.message,
                             "From:" + message.sender,
-                            new Font("*default*", 11, color));
+                            new Font("*default*", 12, color));
     this.gridzilla.transformScreen(frameBuffer);
   }
 

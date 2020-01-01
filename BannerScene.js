@@ -63,15 +63,15 @@ class BannerScene {
     const frameBuffer = BitmapBuffer.fromNew(168, 36, backgroundColor);
     
     if (this.line3) {
-      const font = new Font("*default*", 11, color);
+      const font = new Font("*default*", 12, color);
       frameBuffer.print3Lines(this.line1, this.line2, this.line3, font);
       this.gridzilla.transformScreen(frameBuffer);
     } else if (this.line2) {
-      const font = new Font("*default*", 16, color);
+      const font = new Font("*default*", 18, color);
       frameBuffer.print2Lines(this.line1, this.line2, font);
       this.gridzilla.transformScreen(frameBuffer);
     } else if (this.line1) {
-      const font = new Font("*default*", 18, color);
+      const font = new Font("*default*", 20, color);
       frameBuffer.print1Line(this.line1, font);
       this.gridzilla.transformScreen(frameBuffer);
     }
