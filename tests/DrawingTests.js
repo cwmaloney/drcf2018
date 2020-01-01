@@ -62,9 +62,9 @@ function testDrawing() {
 
 function testPrint3Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    let font1 = new Font("*default*", 12, new Color(255, 0, 0));
+    let font1 = new Font("*default*", 11, new Color(255, 0, 0));
     let font2 = new Font("*default*", 10, new Color(0, 255, 0));
-    let font3 = new Font("*default*", 10, new Color(0, 0, 255));
+    let font3 = new Font("*default*", 9, new Color(0, 0, 255));
     bmpBuff.print3Lines("Welcome to", "Deanna Rose", "Children's Farmstead", font1, font2, font3);
     transform.transformScreen(bmpBuff);
     transform.close();
@@ -72,8 +72,8 @@ function testPrint3Lines() {
 
 function testPrint2Lines() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    let font1 = new Font("*default*", 17, new Color(255, 255, 0));
-    let font2 = new Font("*default*", 13, new Color(0, 255, 255));
+    let font1 = new Font("*default*", 15, new Color(255, 255, 0));
+    let font2 = new Font("*default*", 12, new Color(0, 255, 255));
     bmpBuff.print2Lines("Deanna Rose", "Children's Farmstead", font1, font2);
     transform.transformScreen(bmpBuff);
     transform.close();
@@ -81,7 +81,7 @@ function testPrint2Lines() {
 
 function testPrint1Line() {
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    let font = new Font("*default*", 20, new Color(0, 255, 0));
+    let font = new Font("*default*", 18, new Color(0, 255, 0));
     bmpBuff.print1Line("Deanna Rose", font);
     transform.transformScreen(bmpBuff);
     transform.close();
@@ -101,12 +101,12 @@ async function testHorizontalScrollText(){
 async function testScrollStop(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
-    let font1 = new Font("*default*", 18, new Color(0, 255, 0));
+    let font1 = new Font("*default*", 16, new Color(0, 255, 0));
 
     let promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font1, null, null, 30000);
     //telling the scroller to scroll before it finishes will call stop
     setTimeout(() => {
-        let font2 = new Font("*default*", 18, new Color(255, 255, 0));
+        let font2 = new Font("*default*", 16, new Color(255, 255, 0));
         promise = scroller1.scrollText("Welcome to Deanna Rose Children's Farmstead", font2, null, null, 10000);
     }, 10000);
     promise.then(() => {transform.close()});
@@ -115,7 +115,7 @@ async function testScrollStop(){
 
 function testPrint(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
-    let font = new Font("*default*", 20, new Color(0, 255, 0));
+    let font = new Font("*default*", 18, new Color(0, 255, 0));
     bmpBuff.print("Deanna Rose Children's Farmstead", font, 50, 5);
     transform.transformScreen(bmpBuff);
     transform.close();
@@ -125,7 +125,7 @@ function testPrint(){
 async function testCheer1(){
     let bmpBuff = BitmapBuffer.fromNew(168, 36, new Color(0, 0, 0));
     let scroller1 = new HorizontalScroller(0, 0, bmpBuff, transform);
-    let font = new Font("*default*", 12, new Color(255, 255, 255));
+    let font = new Font("*default*", 11, new Color(255, 255, 255));
     scroller1.scrollText("Blake says: Go Cyclones!", font, null, null, 20000);
     let srcImage = await Jimp.read("tests/pennant24.png");
     let scroller2 = new HorizontalScroller(0, 12, bmpBuff, transform);
@@ -143,7 +143,7 @@ async function testCheer2(){
     bmpBuff.blit(treeBuff.image, 0, 0);
     bmpBuff.blit(treeBuff.image, 144, 0);
     let scroller1 = new HorizontalScroller(24, 10, bmpBuff, transform);
-    let font = new Font("*default*", 18, new Color(255, 0, 0));
+    let font = new Font("*default*", 16, new Color(255, 0, 0));
     await scroller1.scrollText("Blake says: Go Cyclones!", font, null, 120, 8000);
     transform.close();
 }

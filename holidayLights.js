@@ -251,12 +251,12 @@ const gridzillaDefaults = {
   scrollSceneDefaultsWithHeader: {
     headerTextTop: 3,
     scrollTextTop: 18,
-    typeface: "*default*", fontSize: 12,
+    typeface: "*default*", fontSize: 11,
     speed: 30    
   },
   scrollSceneDefaultsNoHeader: {
     scrollTextTop: 10,
-    typeface: "*default*", fontSize: 12,
+    typeface: "*default*", fontSize: 11,
     speed: 30
     }
 };
@@ -265,12 +265,12 @@ const facadeDefaults = {
   scrollSceneDefaultsWithHeader: {
     headerTextTop: 2*14 - 2,
     scrollTextTop: 3*14 - 2,
-    typeface: "*default*", fontSize: 16,
+    typeface: "*default*", fontSize: 14,
     speed: 60
   },
   scrollSceneDefaultsNoHeader: {
     scrollTextTop: 3*14 - 2,
-    typeface: "*default*", fontSize: 16,
+    typeface: "*default*", fontSize: 14,
     speed: 60
     }
 };
@@ -301,7 +301,7 @@ function configureHolidayScenes(gridzilla) {
       line1: "Welcome to",
       line2: "Holiday Lights",
       line3: "on Farmstead Lane   ",
-      color: new Color(colorNameToRgb["White"]),
+      color: new Color(colorNameToRgb["Dark Red"]),
       period: 2000
     });
 
