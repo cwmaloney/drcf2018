@@ -34,7 +34,7 @@ class ScrollingTextScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "*default*", fontSize: 11,
+      typeface: "*default*", fontSize: 12,
 
       scrollHeaderTop: undefined,
       scrollTextTop: undefined
@@ -46,7 +46,7 @@ class ScrollingTextScene {
 
       speed: 30, // speed is ms between moves
 
-      typeface: "*default*", fontSize: 11,
+      typeface: "*default*", fontSize: 12,
 
       scrollHeaderTop: undefined,
       scrollTextTop: undefined

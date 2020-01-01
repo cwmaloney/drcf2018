@@ -297,39 +297,6 @@ class BitmapBuffer {
         return this.image.bitmap.height / 2 - height / 2;
     }
 
-    static getJimpFont(font) {
-      const size = font.size;
-
-      let adjustedSize = size;
-      if (size < 8) {
-        adjustedSize = 8;
-      }
-      else if (size > 18) {
-        adjustedSize = 18;
-      }
-
-      // if (size < 8) {
-      //   adjustedSize = 8;
-      // }
-      // else if (size < 20) {
-      //   adjustedSize = size;
-      // }
-      // else if (size <= 22) {
-      //   adjustedSize = 22;
-      // }
-      // else if (size <= 24) {
-      //   adjustedSize = 22;
-      // }
-      // else if (size <= 32) {
-      //   adjustedSize = 22;
-      // }
-      // else {
-      //   adjustedSize = 34;
-      // }
-
-      return BitmapBuffer.defaultFonts[adjustedSize - 8];
-    }
-
     /**
      * Print text at an exact coordinate
      * @param {string} text the text to print
@@ -362,46 +329,69 @@ class BitmapBuffer {
       return [textWidth, textHeight];
     }
 
-    static initializeFonts(){
-      var promises = [
-        Jimp.loadFont("fonts/litteraWhite8.fnt"),
-        Jimp.loadFont("fonts/litteraWhite9.fnt"),
-        Jimp.loadFont("fonts/litteraWhite10.fnt"),
-        Jimp.loadFont("fonts/litteraWhite11.fnt"),
-        Jimp.loadFont("fonts/litteraWhite12.fnt"),
-        Jimp.loadFont("fonts/litteraWhite13.fnt"),
-        Jimp.loadFont("fonts/litteraWhite14.fnt"),
-        Jimp.loadFont("fonts/litteraWhite15.fnt"),
-        Jimp.loadFont("fonts/litteraWhite16.fnt"),
-        Jimp.loadFont("fonts/litteraWhite17.fnt"),
-        Jimp.loadFont("fonts/litteraWhite18.fnt")
+    static initializeFonts() {
+
+      BitmapBuffer.defaultFonts = [
+        { size: 8,  name: "fonts/font8.fnt" },
+        { size: 9,  name: "fonts/font9.fnt" },
+        { size: 11, name: "fonts/font11.fnt" },
+        { size: 12, name: "fonts/font12.fnt" },
+        { size: 13, name: "fonts/font13.fnt" },
+        { size: 14, name: "fonts/font14.fnt" },
+        { size: 15, name: "fonts/font15.fnt" },
+        { size: 17, name: "fonts/font17.fnt" },
+        { size: 18, name: "fonts/font18.fnt" },
+        { size: 19, name: "fonts/font19.fnt" },
+        { size: 20, name: "fonts/font20.fnt" },
+        { size: 21, name: "fonts/font21.fnt" },
+        { size: 22, name: "fonts/font22.fnt" },
+        { size: 24, name: "fonts/font24.fnt" },
+        { size: 25, name: "fonts/font25.fnt" },
+        { size: 26, name: "fonts/font26.fnt" }
       ];
-      // var promises = [
-      //   Jimp.loadFont("fonts/opensans-8.fnt"),
-      //   Jimp.loadFont("fonts/opensans-9.fnt"),
-      //   Jimp.loadFont("fonts/opensans-10.fnt"),
-      //   Jimp.loadFont("fonts/opensans-11.fnt"),
-      //   Jimp.loadFont("fonts/opensans-12.fnt"),
-      //   Jimp.loadFont("fonts/opensans-13.fnt"),
-      //   Jimp.loadFont("fonts/opensans-14.fnt"),
-      //   Jimp.loadFont("fonts/opensans-15.fnt"),
-      //   Jimp.loadFont("fonts/opensans-16.fnt"),
-      //   Jimp.loadFont("fonts/opensans-17.fnt"),
-      //   Jimp.loadFont("fonts/opensans-18.fnt"),
-      //   Jimp.loadFont("fonts/opensans-19.fnt"),
-      //   Jimp.loadFont("fonts/opensans-20.fnt"),
-      //   Jimp.loadFont("fonts/opensans-22.fnt"),
-      //   Jimp.loadFont("fonts/opensans-24.fnt"),
-      //   Jimp.loadFont("fonts/opensans-32.fnt"),
-      //   Jimp.loadFont("fonts/opensans-34.fnt")
-      // ];
+  
+      let promises = [];
+      for (let f of BitmapBuffer.defaultFonts) {
+        promises.push(Jimp.loadFont(f.name));
+      }
       
       var resultPromise = Promise.all(promises);
       resultPromise.then( (results) => {
-          BitmapBuffer.defaultFonts = results;
+        for (let index = 0; index < results.length; index++) {
+          BitmapBuffer.defaultFonts[index].font = results[index];
+        }
       });
 
       return resultPromise;
+    }
+
+    static getJimpFont(font) {
+      const size = font.size;
+
+      let adjustedSize = size;
+      if (size == 10) {
+        adjustedSize = 9;
+      }
+      else if (size == 16) {
+        adjustedSize = 15;
+      }
+      else if (size < 8) {
+        adjustedSize = 8;
+      }
+      else if (size == 23) {
+        adjustedSize = 22;
+      }
+      else if (size > 26) {
+        adjustedSize = 26;
+      }
+
+      for (let f of BitmapBuffer.defaultFonts) {
+        if (adjustedSize === f.size) {
+          return f.font;
+        }
+      }
+
+      return BitmapBuffer.defaultFonts[0].font;
     }
 }
 
