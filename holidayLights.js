@@ -470,45 +470,103 @@ function configureValentineScenes(gridzilla, facade) {
 }
 
 function configureEosScenes(gridzilla, facade) {
-  ImageScene.initialize();
 
-  const eosImageNames = [
-    "rose 38x38.png"
-  ];
+  // const eosImageNames = [
+  //   "rose 38x38.png"
+  // ];
+
+  
+  const goChiefsScene = new ImageScene(gridzilla, onPaused,
+    {
+      period: 10000,
+      imagesConfiguration: [
+        { name: "Go Chiefs.png" }
+      ]
+    });
 
   // create scenes
-  const eosMessageScene = new ScrollingTextScene(gridzilla, facade, onPaused,
+  const eosMessageScene = new ScrollingTextScene(gridzilla, null, onPaused,
     {
-      imageNames: eosImageNames,
+      // imageNames: eosImageNames,
+      headerText: "Thanks for visiting!",
       scrollText: "             "
-       + "Thank you for visiting the Holiday Lights show.  "
-       + "The show has ended for the season. "
+       + "The Holiday Lights show has ended."
+       + "Join us in February to display your Valentines! "
        + "Deanna Rose Children's Farmstead will reopen April 1st!"
        + "                "
     },
-    Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader,
-      {color: new Color(255, 200, 200)} ),
-    Object.assign(facadeDefaults.scrollSceneDefaultsNoHeader,
-      {color: new Color(255, 200, 200)} )
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      {color: new Color(255, 255, 255)} ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      {color: new Color(255, 255, 255)} )
   );
 
-  const thankYouScene = new ScrollingTextScene(gridzilla, facade, onPaused,
+  const thankYouScene = new ScrollingTextScene(gridzilla, null, onPaused,
     {
-      period: 180*60*1000, headerText: "Thanks!",
-      scrollText: teamMembers, minimumInterval: 5*60*1000
+      period: 180*60*1000,
+      headerText: "Thanks!",
+      scrollText: teamMembers,
+      minimumInterval: 5*60*1000
     },
     Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
-      {color: new Color(255, 200, 200)} ),
+      {color: new Color(255, 255, 255)} ),
     Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
-      {color: new Color(255, 200, 200)} )
+      {color: new Color(255, 255, 255)} )
   );
 
   scenes = [
     eosMessageScene,
+    goChiefsScene,
     thankYouScene
   ];
 
 }
+
+function configureFontTestScenes(gridzilla, facade) {
+
+  const test1 = new BannerScene(gridzilla, onPaused,
+    {
+      line1: "abcdefghijklmnopqrstuvwxyz",
+      line2: "ABCDEFGHIJKLM",
+      line3: "NOPQRSTUVWXYZ",
+      color: new Color(colorNameToRgb["White"]),
+      period: 12000
+    });
+
+    const test2 = new BannerScene(gridzilla, onPaused,
+      {
+        line1: "0123456789",
+        line2: "\"'`^@#$%^&*=+-~_",
+        line3: "()[]{}<>|\\/.,;:?!",
+        color: new Color(colorNameToRgb["White"]),
+        period: 12000
+      });
+  
+  const messageScene = new ScrollingTextScene(gridzilla, null, onPaused,
+    {
+      headerText: "abcdefghijklmnopqrstuvwxyz",
+      scrollText: "             "
+       + "abcdefghijklmnopqrstuvwxyz"
+       + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+       + "0123456789"
+       + "\"'`^@#$%^&*=+-~_"
+       + "()[]{}<>|\\/.,;:?!"
+       + "                "
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Dark Red"]) } ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Dark Red"]) } )
+  );
+
+  scenes = [
+    test1,
+    test2,
+    messageScene
+  ];
+
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // the "start-up" code
 //////////////////////////////////////////////////////////////////////////////
@@ -525,14 +583,16 @@ BitmapBuffer.initializeFonts().then( () =>  {
     // configure the scenes
     let show = EnvConfig.get().show;
     if (!show) {
-      show = "Holiday";
+      show = "EOS";
     }
     if (show === "Valentine")
       configureValentineScenes(gridzilla, facade);
     else if (show === "Holiday")
       configureHolidayScenes(gridzilla);
     else if (show === "EOS")
-    configureEosScenes(gridzilla, facade);
+      configureEosScenes(gridzilla, facade);
+    else if (show == "fontTest")
+      configureFontTestScenes(gridzilla, facade);
 
     startListening();
   });
