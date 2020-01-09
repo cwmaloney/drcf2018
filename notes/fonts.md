@@ -1,5 +1,12 @@
 # Fonts
 
+1. The naming convenction for fonts supplied by Jimp uses a
+size that is rough height of the glyplhs and does not include
+space for line height. The line height incresases with typeface height.
+
+1. I perfer that the name matches the line height so I know how
+many pixels a string will include. My font names follow this convention.
+
 ## Notes
 
 1. Jimp uses bitmap fonts in the “AngelCode”, aka BMFont, format
@@ -63,9 +70,15 @@ at the sizes we need are not very good.
 * Blake created fonts using Littera and the "default" font. I
 do not know what Littera uses as the default font.
 
-
 ### Littera with Comfortaa from Google Fonts
 
 1. See screen shots for configuration
 1. Similar to Blake's fonts
-1. Too much gray scale
+1. Too much dithering (anti-aliasing)
+1. These are not great
+
+### Current "production" fonts
+1. I used Gimp to create bitmap fonts
+1. Handcoded the .fnt files
+1. Font names are based on line height.
+1. Currently we have hand crafted: 12, 16
