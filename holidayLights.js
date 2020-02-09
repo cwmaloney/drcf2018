@@ -244,7 +244,7 @@ app.get("/suggestions", function(request, response) {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// scence configuration
+// scene configuration
 //////////////////////////////////////////////////////////////////////////////
 
 const gridzillaDefaults = {
@@ -583,7 +583,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
     // configure the scenes
     let show = EnvConfig.get().show;
     if (!show) {
-      show = "EOS";
+      show = "Valentine";
     }
     if (show === "Valentine")
       configureValentineScenes(gridzilla, facade);
