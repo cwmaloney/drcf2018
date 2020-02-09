@@ -421,7 +421,6 @@ function configureHolidayScenes(gridzilla) {
 }
 
 function configureValentineScenes(gridzilla, facade) {
-  ImageScene.initialize();
 
   const vDayImageNames = [
     "couple and hearts.png",
@@ -444,7 +443,7 @@ function configureValentineScenes(gridzilla, facade) {
       imageNames: vDayImageNames,
       scrollText: "             "
         + " Happy Valentine's Day!    "
-        + " Visit farmsteadlights.com to display your Valentine here."
+        + " Visit farmsteadlights.com to display your Valentine."
         + "             "
     },
     Object.assign(gridzillaDefaults.scrollSceneDefaultsNoHeader,
