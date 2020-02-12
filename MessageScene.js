@@ -181,6 +181,7 @@ class MessageScene {
     const backgroundColor = new Color(0, 0, 0);
     //const backgroundColor = this.pickColor(message.backgroundColor, new Color(0, 0, 0), colorsMatch);
     const color = this.pickColor(message.color, new Color(240, 240, 240), colorsMatch);
+    const imageName = message.imageName;
 
     let timeRequired = 0;
     if (this.gridzilla) {
@@ -191,7 +192,7 @@ class MessageScene {
       const separator = (message.message.endsWith("?")) ? " " : ", "
       const text = "              " + message.recipient + ", " + message.message + separator + message.sender + "     ";
 
-      this.facadeTextScroller = this.displayMessageOnFacade(text, color, backgroundColor);
+      this.facadeTextScroller = this.displayMessageOnFacade(text, color, backgroundColor, imageName);
       const scrollTime = this.getScrollTime(text, this.facadeConfiguration.font, this.facade, this.facadeConfiguration)
       // for the timer required, add 2 seconds (for safety) and display message twice
       timeRequired = Math.max(timeRequired, (scrollTime + 2000)*2.5);
@@ -201,7 +202,7 @@ class MessageScene {
     this.runningTimer = setTimeout(this.onTimer.bind(this), timeout);
   }
 
-  displayMessageOnGridzilla(message, color, backgroundColor) {
+  displayMessageOnGridzilla(message, color, backgroundColor, imageName) {
     let frameBuffer = BitmapBuffer.fromNew(this.gridzilla.width, this.gridzilla.height, backgroundColor);
 
     frameBuffer.print3Lines("To:" + message.recipient,
@@ -211,15 +212,40 @@ class MessageScene {
     this.gridzilla.transformScreen(frameBuffer);
   }
 
-  displayMessageOnFacade(text, color, backgroundColor) {
+  displayMessageOnFacade(text, color, backgroundColor, imageName) {
     const frameBuffer = BitmapBuffer.fromNew(this.facade.width, this.facade.height, backgroundColor);
 
     if (this.configuration.imageNames && this.configuration.imageNames.length) {
-      const index = Math.floor(Math.random()*this.configuration.imageNames.length)
-      const image = ImageManager.get(this.configuration.imageNames[index]);
-    
-      frameBuffer.blit(image, frameBuffer.image.bitmap.width / 2 - image.bitmap.width / 2, 
+      let image;
+      if (imageName) {
+        switch (imageName)
+        {
+          case "rose":
+            image = ImageManager.get("rose 38x38.png");
+            break;
+          case "couple":
+            image = ImageManager.get("couple and hearts.png");
+            break;
+          case "heart":
+            image = ImageManager.get("heart 25x20.png");
+            break;
+          case "birdy":
+            image = ImageManager.get("woodstock 38x38.png");
+            break;
+          case "rainbow":
+            break;
+          case "pumpkin":
+            break;
+        }
+      }
+      if (!image) {
+        const index = Math.floor(Math.random()*this.configuration.imageNames.length)
+        image = ImageManager.get(this.configuration.imageNames[index]);
+      }
+      if (image) {
+        frameBuffer.blit(image, frameBuffer.image.bitmap.width / 2 - image.bitmap.width / 2, 
           frameBuffer.image.bitmap.height / 2 - image.bitmap.height / 2 - 6);
+      }
     }
  
     const scroller = new HorizontalScroller(0, this.facadeConfiguration.scrollTextTop, frameBuffer, this.facade);
@@ -258,8 +284,9 @@ class MessageScene {
     const time = request.body.displayTime;
     const color = request.body.color;
     const backgroundColor = request.body.backgroundColor;
+    const imageName = request.body.imageName;
    
-    console.log(`MessagesScene::addMessage: from:${sender} to:${recipient} m:${message} on:${date} at:${time} color:${color} bg:${backgroundColor}`);
+    console.log(`MessagesScene::addMessage: from:${sender} to:${recipient} m:${message} i:${imageName} on:${date} at:${time} color:${color} bg:${backgroundColor}`);
 
     const overUseMessage = this.messageQueue.checkOverUse(request.body.sessionId);
     if (overUseMessage != null && overUseMessage != undefined) {
@@ -285,7 +312,7 @@ class MessageScene {
       return this.fillResponse(request, response, "Error", responseMessage);
     }
 
-    const requestObject = { sessionId: request.body.sessionId, sender, recipient, message, date, time, color, backgroundColor};
+    const requestObject = { sessionId: request.body.sessionId, sender, recipient, message, imageName, date, time, color, backgroundColor};
     
     try {
       this.messageQueue.addRequest(requestObject);
