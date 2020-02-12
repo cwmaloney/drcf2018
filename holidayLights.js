@@ -129,11 +129,14 @@ app.get("/status", function(request, response) {
       requests: messagesScene.getRequestCount()
     };
 
-    const cheers = {
-      ready: cheersScene.getActiveRequestCount(),
-      queued: cheersScene.getQueuedRequestCount(),
-      requests: cheersScene.getRequestCount()
-    };
+    let cheers;
+    if (cheersScene) {
+      cheers = {
+        ready: cheersScene.getActiveRequestCount(),
+        queued: cheersScene.getQueuedRequestCount(),
+        requests: cheersScene.getRequestCount()
+      };
+    }
 
     const suggestions = { count: suggestionManager.getSuggestions().length }
 
