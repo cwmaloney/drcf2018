@@ -544,7 +544,7 @@ function configureFontTestScenes(gridzilla, facade) {
         period: 12000
       });
   
-  const messageScene = new ScrollingTextScene(gridzilla, null, onPaused,
+  const messageScene = new ScrollingTextScene(gridzilla, facade, onPaused,
     {
       headerText: "abcdefghijklmnopqrstuvwxyz",
       scrollText: "             "
