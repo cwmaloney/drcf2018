@@ -421,7 +421,6 @@ function configureHolidayScenes(gridzilla) {
 }
 
 function configureValentineScenes(gridzilla, facade) {
-  ImageScene.initialize();
 
   const vDayImageNames = [
     "couple and hearts.png",
@@ -583,7 +582,7 @@ BitmapBuffer.initializeFonts().then( () =>  {
     // configure the scenes
     let show = EnvConfig.get().show;
     if (!show) {
-      show = "Valentine";
+      show = "Holiday";
     }
     if (show === "Valentine")
       configureValentineScenes(gridzilla, facade);
