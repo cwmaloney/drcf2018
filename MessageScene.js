@@ -218,25 +218,35 @@ class MessageScene {
     if (this.configuration.imageNames && this.configuration.imageNames.length) {
       let image;
       if (imageName) {
-        switch (imageName)
-        {
-          case "rose":
+        switch (imageName) {
+          case "Rose":
             image = ImageManager.get("rose 38x38.png");
             break;
-          case "couple":
-            image = ImageManager.get("couple and hearts.png");
-            break;
-          case "heart":
+          case "Heart":
             image = ImageManager.get("heart 25x20.png");
             break;
-          case "birdy":
+          case "Couple":
+            image = ImageManager.get("couple and hearts.png");
+            break;
+          case "Birdy":
             image = ImageManager.get("woodstock 38x38.png");
             break;
-          case "rainbow":
+          case "Pumpkin":
+            image = ImageManager.get("pumpkin.png");
             break;
-          case "pumpkin":
+          case "Snowflake":
+            image = ImageManager.get("snowflake.png");
             break;
-        }
+          case "Snowman":
+            image = ImageManager.get("snowman.png");
+            break;
+          case "Ghost":           
+            image = ImageManager.get("ghost.png");
+            break;
+          case "Rainbow":           
+            image = ImageManager.get("rainbow.png");
+            break;
+          }
       }
       if (!image) {
         const index = Math.floor(Math.random()*this.configuration.imageNames.length)
