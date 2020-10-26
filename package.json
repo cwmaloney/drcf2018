@@ -5,8 +5,8 @@
   "private": true,
   "author": "Chris Maloney",
   "engines": {
-    "node": ">= 8.11.0",
-    "npm": ">= 6.0.0"
+    "node": ">= 12.19.0",
+    "npm": ">= 6.14.8"
   },
   "scripts": {
     "lint": "eslint \"**/*.js\"",
@@ -15,22 +15,22 @@
     "test": "mocha ./mochaTests/**/*.js"
   },
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "jimp": "^0.9.3",
-    "mocha": "^6.2.2",
+    "jimp": "^0.16.1",
+    "mocha": "^8.2.0",
     "socket.io": "^2.3.0",
-    "tinycolor2": "^1.4.1",
-    "uuid": "^3.3.3"
+    "tinycolor2": "^1.4.2",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-semistandard": "^15.0.0",
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.19.1",
-    "eslint-plugin-node": "^11.0.0",
+    "eslint": "^7.12.0",
+    "eslint-config-semistandard": "^15.0.1",
+    "eslint-config-standard": "^15.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.2"
   }
 }
