@@ -266,13 +266,13 @@ const gridzillaDefaults = {
 
 const facadeDefaults = {
   scrollSceneDefaultsWithHeader: {
-    headerTextTop: 2*14 - 2,
-    scrollTextTop: 3*14 - 2,
+    headerTextTop: 2*15 - 2,
+    scrollTextTop: 3*15 - 2,
     typeface: "*default*", fontSize: 12,
     speed: 60
   },
   scrollSceneDefaultsNoHeader: {
-    scrollTextTop: 3*14 - 2,
+    scrollTextTop: 3*15 - 2,
     typeface: "*default*", fontSize: 12,
     speed: 60
     }
