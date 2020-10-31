@@ -572,15 +572,25 @@ function configureFontTestScenes(gridzilla, facade) {
 function configureHalloweenScenes(gridzilla) {
 
   // create scenes
+  const welcomeBanner = new BannerScene(gridzilla, onPaused,
+    {
+      line1: "Welcome to",
+      line2: "Holiday Lights",
+      line3: "on Farmstead Lane   ",
+      color: new Color(colorNameToRgb["White"]),
+      period: 2000
+    });
+
+  // create scenes
   const halloweenMessageScene = new ScrollingTextScene(gridzilla, null, onPaused,
     {
       // imageNames: eosImageNames,
       headerText: "Happy Halloween!",
       scrollText: "             "
-       + "     The Holiday Lights show begins Thansgiving evening.  "
-       + "The elves are working on hard to get the show ready.  "
-       + "This is only a test!  Please comeback to see the show. "
-       + "        ",
+       + "          The Holiday Lights show begins Thansgiving evening.  "
+       + "The elves are working hard to get the show ready.  "
+       + "This is only a test!  Please come back to see the show.        "
+       + "         ",
        color: new Color(colorNameToRgb["Orange"])
       },
       Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
@@ -589,8 +599,49 @@ function configureHalloweenScenes(gridzilla) {
         { color: new Color(colorNameToRgb["Orange"]) } )
     );
 
+  //show Halloween images
+  const halloweenImageScene = new ImageScene(gridzilla, onPaused,
+    {
+      period: 10000,
+      perImagePeriod: 9000,
+      imagesConfiguration: [
+        { name: "ghost.png" },
+        { name: "pumpkin.png" },
+        { name: "woodstock 38x38.png" },
+        { name: "snowman.png" },
+        { name: "snowflake.png" },
+      ]
+    });
+
+  const goChiefsScene = new ScrollingTextScene(gridzilla, null, onPaused,
+    {
+      scrollText: "   Go Chiefs!   Go Chiefs!   Go Chiefs!   Go Chiefs!   Go Chiefs!       ",
+      color: new Color(colorNameToRgb["Dark Red"])
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Dark Red"]) } ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Dark Red"]) } )
+  );
+
+  const goSportingScene = new ScrollingTextScene(gridzilla, null, onPaused,
+    {
+      scrollText: "        Go Sporting KC!   Go Sporting KC!   Go Sporting KC!        ",
+      color: new Color(colorNameToRgb["Sporting Blue"])
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Sporting Blue"]) } ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Sporting Blue"]) } )
+  );
+  
   scenes = [
+    welcomeBanner,
     halloweenMessageScene,
+    halloweenImageScene,
+    goChiefsScene,
+    halloweenImageScene,
+    goSportingScene
   ];
 
 }
