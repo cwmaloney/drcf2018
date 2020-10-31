@@ -1,9 +1,9 @@
 {
-  "name": "farmstead-lights-nolf",
-  "description": "Children's Farmstead NOLF",
-  "version": "2018.10.25",
+  "name": "elbert",
+  "description": "Server for Holiday Lights on Farmstead Lane, Holiday, Valentines Day",
+  "version": "2020.10.30",
   "private": true,
-  "author": "Chris Maloney",
+  "author": "Chris Maloney & Blake Stewart",
   "engines": {
     "node": ">= 12.19.0",
     "npm": ">= 6.14.8"
@@ -25,7 +25,7 @@
     "uuid": "^8.3.1"
   },
   "devDependencies": {
-    "eslint": "^7.12.0",
+    "eslint": "^7.12.1",
     "eslint-config-semistandard": "^15.0.1",
     "eslint-config-standard": "^15.0.0",
     "eslint-plugin-import": "^2.22.1",

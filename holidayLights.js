@@ -8,7 +8,7 @@ const SocketIo = require("socket.io");
 const BodyParser = require("body-parser");
 const Cors = require("cors");
 
-const Uuidv4 = require('uuid/v4');
+const Uuid = require('uuid');
 const EnvConfig = require("./envConfig.js");
 const TransformFactory = require("./TransformFactory.js");
 
@@ -155,7 +155,7 @@ app.get("/status", function(request, response) {
 
 function checkSessionId(request, response) {
   if (!request.body.sessionId) {
-    request.body.sessionId = Uuidv4();
+    request.body.sessionId = Uuid();
   }
 }
 
@@ -569,6 +569,38 @@ function configureFontTestScenes(gridzilla, facade) {
 
 }
 
+function configureHalloweenScenes(gridzilla) {
+  
+  const goChiefsScene = new ImageScene(gridzilla, onPaused,
+    {
+      period: 10000,
+      imagesConfiguration: [
+        { name: "Go Chiefs.png" }
+      ]
+    });
+
+  // create scenes
+  const halloweenMessageScene = new ScrollingTextScene(gridzilla, null, onPaused,
+    {
+      // imageNames: eosImageNames,
+      headerText: "Happy Halloween!",
+      scrollText: "             "
+       + "The Holiday Lights show begins on Thansgiving. "
+       + "The elfs are working on hard to get the show ready. "
+       + "This is only a test! Please comeback to see the show. "
+       + "     "
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      {color: new Color(255, 255, 255)} ),
+  );
+
+  scenes = [
+    halloweenMessageScene,
+    goChiefsScene
+  ];
+
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // the "start-up" code
 //////////////////////////////////////////////////////////////////////////////
@@ -591,6 +623,8 @@ BitmapBuffer.initializeFonts().then( () =>  {
       configureValentineScenes(gridzilla, facade);
     else if (show === "Holiday")
       configureHolidayScenes(gridzilla);
+    else if (show === "Halloween")
+      configureHalloweenScenes(gridzilla);
     else if (show === "EOS")
       configureEosScenes(gridzilla, facade);
     else if (show == "fontTest")
