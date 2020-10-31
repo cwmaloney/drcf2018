@@ -570,14 +570,6 @@ function configureFontTestScenes(gridzilla, facade) {
 }
 
 function configureHalloweenScenes(gridzilla) {
-  
-  const goChiefsScene = new ImageScene(gridzilla, onPaused,
-    {
-      period: 10000,
-      imagesConfiguration: [
-        { name: "Go Chiefs.png" }
-      ]
-    });
 
   // create scenes
   const halloweenMessageScene = new ScrollingTextScene(gridzilla, null, onPaused,
@@ -585,18 +577,20 @@ function configureHalloweenScenes(gridzilla) {
       // imageNames: eosImageNames,
       headerText: "Happy Halloween!",
       scrollText: "             "
-       + "The Holiday Lights show begins on Thansgiving. "
-       + "The elfs are working on hard to get the show ready. "
-       + "This is only a test! Please comeback to see the show. "
-       + "     "
-    },
-    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
-      {color: new Color(255, 255, 255)} ),
-  );
+       + "     The Holiday Lights show begins Thansgiving evening.  "
+       + "The elves are working on hard to get the show ready.  "
+       + "This is only a test!  Please comeback to see the show. "
+       + "        ",
+       color: new Color(colorNameToRgb["Orange"])
+      },
+      Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+        { color: new Color(colorNameToRgb["Orange"]) } ),
+      Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+        { color: new Color(colorNameToRgb["Orange"]) } )
+    );
 
   scenes = [
     halloweenMessageScene,
-    goChiefsScene
   ];
 
 }
