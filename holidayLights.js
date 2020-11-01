@@ -578,7 +578,7 @@ function configureHalloweenScenes(gridzilla) {
       line2: "Holiday Lights",
       line3: "on Farmstead Lane   ",
       color: new Color(colorNameToRgb["White"]),
-      period: 2000
+      period: 3000
     });
 
   // create scenes
@@ -587,7 +587,7 @@ function configureHalloweenScenes(gridzilla) {
       // imageNames: eosImageNames,
       headerText: "Happy Halloween!",
       scrollText: "             "
-       + "          The Holiday Lights show begins Thansgiving evening.  "
+       + "          The Holiday Lights show begins Thanksgiving evening.  "
        + "The elves are working hard to get the show ready.  "
        + "This is only a test!  Please come back to see the show.        "
        + "         ",
