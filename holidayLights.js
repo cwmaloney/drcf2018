@@ -8,7 +8,7 @@ const SocketIo = require("socket.io");
 const BodyParser = require("body-parser");
 const Cors = require("cors");
 
-const Uuid = require('uuid');
+const { v4: uuidV4 } = require('uuid');
 const EnvConfig = require("./envConfig.js");
 const TransformFactory = require("./TransformFactory.js");
 
@@ -110,11 +110,14 @@ app.use(Cors());
 //app.options('*', Cors());
 
 // the name "io" follows the Socket.io "nameing convention"
-const io = SocketIo(server);
-//io.set('origins', '*:*');
-io.origins((origin, callback) => {
-  callback(null, true);
-});
+const io = SocketIo(server, {
+    cors: {
+      origin: "https://farmsteadlights.com",
+      methods: ["GET", "POST"],
+      // allowedHeaders: ["my-custom-header"],
+      // credentials: true
+    }
+  });
 
 //////////////////////////////////////////////////////////////////////////////
 // routing
@@ -155,7 +158,7 @@ app.get("/status", function(request, response) {
 
 function checkSessionId(request, response) {
   if (!request.body.sessionId) {
-    request.body.sessionId = Uuid();
+    request.body.sessionId = uuidV4();
   }
 }
 
@@ -282,18 +285,20 @@ const teamMembers =
   ".                             Mark Callegari (The Creator of Holiday Lights),"
 + " Chris Callegari,"
 + " Blake Stewart,"
-+ " Chris & Rachel Maloney,"
++ " Chris Maloney,"
 + " Ken & Min Vrana,"
++ " Mike McCamon,"
++ " Steve Bullard,"
 + " Kyle Weafer,"
 + " Foley Equipment,"
 + " Pretech Precast Concrete,"
-+ " Enerfab Midwest (Brian Jackson, Steve Bullard),"
-+ " T.J. Kilian and KJO Media, "
++ " Enerfab Midwest & Brian Jackson,"
++ " Lowes on Stateline"
++ " T.J. Kilian and KJO Media,"
 + " Jolt Lighting,"
 + " Gieske Custom Metal Fabricators,"
-+ " The Farmstead Team:"
-+ " Jerry, Walt, Virgil, Kathi, Laurie, Orrin, Matt"
-+ " & John Webb"
++ " & The Farmstead Team:"
++ " Jerry, Walt, Virgil, Kathi, Laurie, Orrin, Matt."
 + "                           .";
 
 function configureHolidayScenes(gridzilla) {
@@ -378,7 +383,8 @@ function configureHolidayScenes(gridzilla) {
         { name: "Enerfab Logo 36x168.gif" },
         { name: "Foley Logo 36x168.gif" },
         { name: "Jolt Lighting Logo 36x106.gif" },
-        { name: "Pretech Logo 36x168.gif" }
+        { name: "Pretech Logo 36x168.gif" },
+        { name: "Lowes_78x36_V2.png"}
       ]
     });
 
@@ -407,18 +413,33 @@ function configureHolidayScenes(gridzilla) {
       { color: new Color(colorNameToRgb["Dark Red"]) } )
   );
   
+  const thanksFrontLineYouScene = new ScrollingTextScene(gridzilla, null, onPaused,
+    {
+      period: 4*60*1000,
+      headerText: "Thanks!",
+      scrollText: "        Thank you healthcare workers, first reponsders, and veterans!        ",
+      minimumInterval: 9*60*1000,
+      color: new Color(colorNameToRgb["Blue"])
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Blue"]) } ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Blue"]) } )
+  );
+
   scenes = [
     welcomeBanner,
     instructionsBanner,
     instructions2Banner,
     hashtagBanner,
-    goChiefsScene,
+    // goChiefsScene,
     messagesScene,
     cheersScene,
     holidayImageScene,
     // preSnakesBanner,
     // snakeScene,
-    thankYouScene
+    thankYouScene,
+    thanksFrontLineYouScene
   ];
 
 }
@@ -646,6 +667,94 @@ function configureHalloweenScenes(gridzilla) {
 
 }
 
+function configurePreSeasonScenes(gridzilla) {
+
+  // create scenes
+  const welcomeBanner = new BannerScene(gridzilla, onPaused,
+    {
+      line1: "Welcome to",
+      line2: "Holiday Lights",
+      line3: "on Farmstead Lane   ",
+      color: new Color(colorNameToRgb["White"]),
+      period: 3000
+    });
+
+  // create scenes
+  const preSeasonMessageScene = new ScrollingTextScene(gridzilla, null, onPaused,
+      {
+      period: 120000,
+      headerText: "Happy Pre-Holidays!",
+      scrollText: "             "
+        + "         "
+        + "The Holiday Lights show begins Thanksgiving evening.  "
+        + "The elves are working hard to get the show ready.  "
+        + "Please come back to see the show.         "
+        + "         ",
+      color: new Color(colorNameToRgb["Blue"])
+      },
+      Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+        { color: new Color(colorNameToRgb["Green"]) } ),
+      Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+        { color: new Color(colorNameToRgb["Green"]) } )
+    );
+
+  //show images
+  const preSeasonImageScene = new ImageScene(gridzilla, onPaused,
+    {
+      period: 10000,
+      perImagePeriod: 9000,
+      imagesConfiguration: [
+        { name: "snowman.png" },
+        { name: "snowflake.png" },
+        { name: "Christmas Snoopy Tree 168x36 (2019 V1).png" },
+        { name: "Christmas Train 830x36 (2019 V7).png", period: 29000 },
+      ]
+    });
+
+  const goChiefsScene = new ScrollingTextScene(gridzilla, null, onPaused,
+    {
+      scrollText: "   Go Chiefs!   Go Chiefs!   Go Chiefs!   Go Chiefs!   Go Chiefs!       ",
+      color: new Color(colorNameToRgb["Dark Red"])
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Dark Red"]) } ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Dark Red"]) } )
+  );
+
+  const goSportingScene = new ScrollingTextScene(gridzilla, null, onPaused,
+    {
+      scrollText: "        Go Sporting KC!   Go Sporting KC!   Go Sporting KC!        ",
+      color: new Color(colorNameToRgb["Sporting Blue"])
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Sporting Blue"]) } ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Sporting Blue"]) } )
+  );
+
+  const thanksFrontLineYouScene = new ScrollingTextScene(gridzilla, null, onPaused,
+    {
+      scrollText: "        Thank you healthcar workers, first reponsders, and veterans!        ",
+      color: new Color(colorNameToRgb["Blue"])
+    },
+    Object.assign(gridzillaDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Blue"]) } ),
+    Object.assign(facadeDefaults.scrollSceneDefaultsWithHeader,
+      { color: new Color(colorNameToRgb["Blue"]) } )
+  );
+  
+  scenes = [
+    welcomeBanner,
+    preSeasonMessageScene,
+    preSeasonImageScene,
+    thanksFrontLineYouScene,
+    goChiefsScene,
+    goSportingScene
+  ];
+
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // the "start-up" code
 //////////////////////////////////////////////////////////////////////////////
@@ -668,8 +777,10 @@ BitmapBuffer.initializeFonts().then( () =>  {
       configureValentineScenes(gridzilla, facade);
     else if (show === "Holiday")
       configureHolidayScenes(gridzilla);
-    else if (show === "Halloween")
+      else if (show === "Halloween")
       configureHalloweenScenes(gridzilla);
+   else if (show === "PreSeason")
+      configurePreSeasonScenes(gridzilla);
     else if (show === "EOS")
       configureEosScenes(gridzilla, facade);
     else if (show == "fontTest")
